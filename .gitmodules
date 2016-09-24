@@ -1,6 +1,0 @@
-[submodule "web/js-cookie"]
-	path = web/js-cookie
-	url = git@github.com:js-cookie/js-cookie.git
-[submodule "web/phpMQTT"]
-	path = web/phpMQTT
-	url = git@github.com:dbudwin/phpMQTT.git
