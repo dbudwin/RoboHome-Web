@@ -17,7 +17,7 @@ RoboHome is a SaaS tool that also integrates with Amazon's Echo to enable contro
 
 ###Configuring
 
-1. Open the `Credentials.php` file and populate the information needed to connect to your MQTT broker, MySQL database, and an Amazon login token.
+1. Open the `secrets.ini` file and populate the information needed to connect to your MQTT broker, MySQL database, and an Amazon login token.
 2. [Flash your NodeMCU](https://nodemcu.readthedocs.io/en/dev/en/flash/) with an image from https://www.nodemcu-build.com/
   1. Make sure you select the following modules: GPIO, HTTP, MQTT, file, net, node, timer, UART, wifi
 
