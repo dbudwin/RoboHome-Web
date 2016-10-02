@@ -1,9 +1,6 @@
 <?php
 
 class LoginController extends Controller {
-    function beforeRoute() {
-    }
-
     function index() {
         $template = new Template;
         echo $template->render("index.html");
