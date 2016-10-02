@@ -12,8 +12,8 @@ class UserDevicesModel extends DB\SQL\Mapper {
     }
 
     public function delete($userId) {
-        $id = $this->load(array("DeviceID = ?", $userId));
-        $this->load(array("ID = ?", $id->ID));
+        $userDevice = $this->load(array("DeviceID = ?", $userId));
+        $this->load(array("ID = ?", $userDevice->ID));
         $this->erase();
     }
 }

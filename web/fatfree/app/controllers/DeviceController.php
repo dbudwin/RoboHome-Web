@@ -1,6 +1,19 @@
 <?php
 
 class DeviceController extends Controller {
+    protected $db;
+    protected $devicesModel;
+    protected $rfDeviceModel;
+    protected $userDevicesModel;
+    
+    function __construct() {
+        parent::__construct();
+        $db = $this->db;
+        $this->devicesModel = new DevicesModel($db);
+        $this->rfDeviceModel = new RFDeviceModel($db);
+        $this->userDevicesModel = new UserDevicesModel($db);
+    }
+
     function devices($f3, $args) {
         $currentUser = $this->currentUser($f3);
         $devicesForCurrentUser = $this->devicesForUser($currentUser->ID);
@@ -11,22 +24,19 @@ class DeviceController extends Controller {
     }
 
     function add($f3) {
-        $db = $this->db;
-        $devicesModel = new DevicesModel($db);
-        $deviceId = $devicesModel->add();
         $currentUserId = $this->currentUser($f3)->ID;
-        $userDevicesModel = new UserDevicesModel($db);
-        $userDevicesModel->add($currentUserId, $deviceId);
+        $this->devicesModel = new DevicesModel($this->db);
+        $deviceId = $this->devicesModel->add();
+        $this->rfDeviceModel->add($deviceId);
+        $this->userDevicesModel->add($currentUserId, $deviceId);
         $f3->reroute("@devices");
     }
 
     function delete($f3, $args) {
-        $db = $this->db;
         $deviceId = $args["id"];
-        $userDevicesModel = new UserDevicesModel($db);
-        $userDevicesModel->delete($deviceId);
-        $devicesModel = new DevicesModel($db);
-        $devicesModel->delete($deviceId);
+        $this->userDevicesModel->delete($deviceId);
+        $this->rfDeviceModel->delete($deviceId);
+        $this->devicesModel->delete($deviceId);
         $f3->reroute("@devices");
     }
 
@@ -38,8 +48,7 @@ class DeviceController extends Controller {
     }
 
     private function currentUser($f3) {
-        $db = $this->db;
-        $userModel = new UserModel($db);
+        $userModel = new UserModel($this->db);
         $currentUser = $userModel->findUser($f3->get("SESSION.user"))[0];
 
         return $currentUser;
