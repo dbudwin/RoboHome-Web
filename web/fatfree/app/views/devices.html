@@ -31,13 +31,12 @@
                             <ul class="nav navbar-nav navbar-right">
                                 <li>
                                     <a id="Logout" href="#" id="LoginWithAmazon"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Logout</a>
-
-                                <script type="text/javascript">
-                                    document.getElementById("Logout").onclick = function() {
-                                        amazon.Login.logout();
-                                        window.location = "logout";
-                                    };
-                                </script>
+                                    <script type="text/javascript">
+                                        document.getElementById("Logout").onclick = function() {
+                                            amazon.Login.logout();
+                                            window.location = "logout";
+                                        };
+                                    </script>
                                 </li>
                             </ul>
                         </div>
@@ -90,31 +89,31 @@
                                                 <div class="form-group row">
                                                     <label for="Name" class="col-xs-4 col-form-label">Device Name</label>
                                                     <div class="col-xs-8">
-                                                        <input class="form-control" type="text" placeholder="e.x. Living Room Light" name="Name">
+                                                        <input class="form-control" type="text" placeholder="e.x. Living Room Light" name="Name" required="true"    >
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
                                                     <label for="Name" class="col-xs-4 col-form-label">Device Description</label>
                                                     <div class="col-xs-8">
-                                                        <input class="form-control" type="text" placeholder="e.x. Light in corner of downstairs living room" name="Description">
+                                                        <input class="form-control" type="text" placeholder="e.x. Light in corner of downstairs living room" name="Description" required="true">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
                                                     <label for="OnCode" class="col-xs-4 col-form-label">On Code</label>
                                                     <div class="col-xs-8">
-                                                        <input class="form-control" type="number" value="0" name="OnCode">
+                                                        <input class="form-control" type="number" value="0" name="OnCode" required="true">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
                                                     <label for="OffCode" class="col-xs-4 col-form-label">Off Code</label>
                                                         <div class="col-xs-8">
-                                                        <input class="form-control" type="number" value="0" name="OffCode">
+                                                        <input class="form-control" type="number" value="0" name="OffCode" required="true">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
                                                     <label for="PulseLength" class="col-xs-4 col-form-label">Pulse Length</label>
                                                         <div class="col-xs-8">
-                                                        <input class="form-control" type="number" value="184" name="PulseLength">
+                                                        <input class="form-control" type="number" value="184" name="PulseLength" required="true">
                                                     </div>
                                                 </div>
                                             </div>
