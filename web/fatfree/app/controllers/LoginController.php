@@ -1,13 +1,23 @@
 <?php
 
 class LoginController extends Controller {
+    function beforeRoute() {
+        //Overridden to prevent endless redirects if a user is redirected to the login page for not being logged in
+
+        if ($this->f3->get("SESSION.user") !== null ) {
+            if ($this->f3->get("ALIAS") == "loginPage") {
+                $this->f3->reroute("@devices");
+            }
+        }
+    }
+
     function index() {
         $template = new Template;
         echo $template->render("index.html");
     }
 
     function login($f3) {
-        parse_str($_SERVER['QUERY_STRING']);
+        parse_str($_SERVER["QUERY_STRING"]);
 
         //Verify that the access token belongs to us
         $c = curl_init("https://api.amazon.com/auth/o2/tokeninfo?access_token=" . urlencode($access_token));
