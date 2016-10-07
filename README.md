@@ -21,4 +21,8 @@ RoboHome is a SaaS tool that also integrates with Amazon's Echo to enable contro
 2. [Flash your NodeMCU](https://nodemcu.readthedocs.io/en/dev/en/flash/) with an image from https://www.nodemcu-build.com/
   1. Make sure you select the following modules: GPIO, HTTP, MQTT, file, net, node, timer, UART, wifi
 
-*NOTE: This is a new project and will be changing rapidly, more details will be provided when entering a beta state*
+###Notes
+
+- To avoid seeing the `secrets.ini` file (particulary when Git says you have unstaged changes during a rebase) in your repo and you don't want to ignore it, run `git update-index --assume-unchanged web/fatfree/app/secrets.ini`
+
+*This is a new project and will be changing rapidly, more details will be provided when entering a beta state*
