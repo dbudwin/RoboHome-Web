@@ -5,6 +5,7 @@ class DeviceController extends Controller {
     protected $devicesModel;
     protected $rfDeviceModel;
     protected $userDevicesModel;
+    protected $userDevicesViewModel;
     
     function __construct() {
         parent::__construct();
@@ -12,11 +13,12 @@ class DeviceController extends Controller {
         $this->devicesModel = new DevicesModel($db);
         $this->rfDeviceModel = new RFDeviceModel($db);
         $this->userDevicesModel = new UserDevicesModel($db);
+        $this->userDevicesViewModel = new UserDevicesViewModel($db);
     }
 
-    function devices($f3, $args) {
+    function devices($f3) {
         $currentUser = $this->currentUser($f3);
-        $devicesForCurrentUser = $this->devicesForUser($currentUser->ID);
+        $devicesForCurrentUser = $this->userDevicesViewModel->devicesForUser($currentUser->ID);
         $f3->set("name", $currentUser->Name);
         $f3->set("devices", $devicesForCurrentUser);
         $template = new Template;
@@ -33,18 +35,18 @@ class DeviceController extends Controller {
     }
 
     function delete($f3, $args) {
+        $currentUserId = $this->currentUser($f3)->ID;
         $deviceId = $args["id"];
-        $this->userDevicesModel->delete($deviceId);
-        $this->rfDeviceModel->delete($deviceId);
-        $this->devicesModel->delete($deviceId);
+
+        $doesUserOwnDevice = $this->userDevicesViewModel->doesUserOwnDevice($currentUserId, $deviceId);
+
+        if ($doesUserOwnDevice) {
+            $this->userDevicesModel->delete($deviceId);
+            $this->rfDeviceModel->delete($deviceId);
+            $this->devicesModel->delete($deviceId);
+        }
+
         $f3->reroute("@devices");
-    }
-
-    private function devicesForUser($userId) {
-        $userDevicesView = new DB\SQL\Mapper($this->db, "UserDevicesView");
-        $devicesForUser = $userDevicesView->find(array("UserDevices_UserID = ?", $userId));
-
-        return $devicesForUser;
     }
 
     private function currentUser($f3) {
