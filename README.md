@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/dbudwin/RoboHome.svg?branch=master)](https://travis-ci.org/dbudwin/RoboHome)
+
 #RoboHome
 
 ##What Is RoboHome?
