@@ -1,13 +1,17 @@
 <?php
 
-class UserDevicesViewModel extends DB\SQL\Mapper {
+namespace Models;
+
+class UserDevicesViewModel extends \DB\SQL\Mapper
+{
     protected $db;
     protected $userDevicesView;
 
-    public function __construct(DB\SQL $db) {
+    public function __construct(\DB\SQL $db)
+    {
         parent::__construct($db, "UserDevicesView");
         $db = $this->db;
-        $this->userDevicesView = new DB\SQL\Mapper($this->db, "UserDevicesView");
+        $this->userDevicesView = new \DB\SQL\Mapper($this->db, "UserDevicesView");
     }
 
     function devicesForUser($userId) {

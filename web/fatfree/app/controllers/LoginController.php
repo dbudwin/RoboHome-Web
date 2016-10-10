@@ -1,5 +1,7 @@
 <?php
 
+namespace Controllers;
+
 class LoginController extends Controller {
     function beforeRoute() {
         //Overridden to prevent endless redirects if a user is redirected to the login page for not being logged in
@@ -11,8 +13,9 @@ class LoginController extends Controller {
         }
     }
 
-    function index() {
-        $template = new Template;
+    public function index()
+    {
+        $template = new \Template;
         echo $template->render("index.html");
     }
 
@@ -45,7 +48,7 @@ class LoginController extends Controller {
 
         $db = $this->db;
 
-        $userModel = new UserModel($db);
+        $userModel = new \Models\UserModel($db);
 
         $currentUser = $userModel->findUser($d->user_id)[0];
 

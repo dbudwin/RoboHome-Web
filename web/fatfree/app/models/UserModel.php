@@ -1,7 +1,11 @@
 <?php
 
-class UserModel extends DB\SQL\Mapper {
-    public function __construct(DB\SQL $db) {
+namespace Models;
+
+class UserModel extends \DB\SQL\Mapper
+{
+    public function __construct(\DB\SQL $db)
+    {
         parent::__construct($db, "Users");
     }
 

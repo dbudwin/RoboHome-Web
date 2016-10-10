@@ -1,7 +1,11 @@
 <?php
 
-class RFDeviceModel extends DB\SQL\Mapper {
-    public function __construct(DB\SQL $db) {
+namespace Models;
+
+class RFDeviceModel extends \DB\SQL\Mapper
+{
+    public function __construct(\DB\SQL $db)
+    {
         parent::__construct($db, "RFDevice");
     }
 
