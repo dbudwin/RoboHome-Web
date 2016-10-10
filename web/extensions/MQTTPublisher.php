@@ -20,7 +20,7 @@
 
     $mqtt = new phpMQTT($MQTT_HOST, $MQTT_PORT, "ClientID".rand()); 
 
-    if ($mqtt->connect(true, NULL, $MQTT_USERNAME, $MQTT_PASSWORD)) {
+    if ($mqtt->connect(true, null, $MQTT_USERNAME, $MQTT_PASSWORD)){
         $mqtt->publish($topic, $message, 0);
         $mqtt->close();
     } else {
