@@ -2,7 +2,8 @@
 
 namespace Controllers;
 
-class Controller {
+class Controller
+{
     protected $f3;
     protected $db;
 
@@ -23,13 +24,15 @@ class Controller {
         $this->db = $db;
     }
 
-    function beforeRoute() {
-        if ($this->f3->get("SESSION.user") === null ) {
+    function beforeRoute()
+    {
+        if ($this->f3->get("SESSION.user") === null) {
             $this->f3->reroute("@loginPage");
             exit;
         }
     }
 
-    function afterRoute() {
+    function afterRoute()
+    {
     }
 }

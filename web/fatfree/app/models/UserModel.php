@@ -9,35 +9,41 @@ class UserModel extends \DB\SQL\Mapper
         parent::__construct($db, "Users");
     }
 
-    public function all() {
+    public function all()
+    {
         $this->load();
         return $this->query;
     }
 
-    public function findUser($id) {
+    public function findUser($id)
+    {
         $this->load(array("UserID = ?", $id));
         return $this->query;
     }
 
-    public function add() {
+    public function add()
+    {
         $this->copyFrom("POST");
         $this->save();
     }
 
-    public function createNewUser($name, $email, $userId) {
+    public function createNewUser($name, $email, $userId)
+    {
         $this->Name = $name;
         $this->Email = $email;
         $this->UserID = $userId;
         $this->save();
     }
     
-    public function edit($id) {
+    public function edit($id)
+    {
         $this->load(array("ID = ?", $id));
         $this->copyFrom("POST");
         $this->update();
     }
     
-    public function delete($id) {
+    public function delete($id)
+    {
         $this->load(array("ID = ?", $id));
         $this->erase();
     }

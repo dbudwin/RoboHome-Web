@@ -2,14 +2,16 @@
 
 namespace Controllers;
 
-class DeviceController extends Controller {
+class DeviceController extends Controller
+{
     protected $db;
     protected $devicesModel;
     protected $rfDeviceModel;
     protected $userDevicesModel;
     protected $userDevicesViewModel;
     
-    function __construct() {
+    function __construct()
+    {
         parent::__construct();
         $db = $this->db;
         $this->devicesModel = new \Models\DevicesModel($db);
@@ -18,7 +20,8 @@ class DeviceController extends Controller {
         $this->userDevicesViewModel = new \Models\UserDevicesViewModel($db);
     }
 
-    function devices($f3) {
+    function devices($f3)
+    {
         $currentUser = $this->currentUser($f3);
         $devicesForCurrentUser = $this->userDevicesViewModel->devicesForUser($currentUser->ID);
         $f3->set("name", $currentUser->Name);
@@ -27,7 +30,8 @@ class DeviceController extends Controller {
         echo $template->render("devices.html");
     }
 
-    function add($f3) {
+    function add($f3)
+    {
         $currentUserId = $this->currentUser($f3)->ID;
         $deviceId = $this->devicesModel->add();
         $this->rfDeviceModel->add($deviceId);
@@ -35,7 +39,8 @@ class DeviceController extends Controller {
         $f3->reroute("@devices");
     }
 
-    function delete($f3, $args) {
+    function delete($f3, $args)
+    {
         $currentUserId = $this->currentUser($f3)->ID;
         $deviceId = $args["id"];
 

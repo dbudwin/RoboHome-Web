@@ -14,13 +14,15 @@ class UserDevicesViewModel extends \DB\SQL\Mapper
         $this->userDevicesView = new \DB\SQL\Mapper($this->db, "UserDevicesView");
     }
 
-    function devicesForUser($userId) {
+    function devicesForUser($userId)
+    {
         $devicesForUser = $this->userDevicesView->find(array("UserDevices_UserID = ?", $userId));
 
         return $devicesForUser;
     }
 
-    public function doesUserOwnDevice($userId, $deviceId) {
+    public function doesUserOwnDevice($userId, $deviceId)
+    {
         $this->userDevicesView->load(array("UserDevices_UserID = ? AND DeviceID = ?", $userId, $deviceId));
 
         return !$this->userDevicesView->dry();

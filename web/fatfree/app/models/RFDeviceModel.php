@@ -9,13 +9,15 @@ class RFDeviceModel extends \DB\SQL\Mapper
         parent::__construct($db, "RFDevice");
     }
 
-    public function add($id) {
+    public function add($id)
+    {
         $this->copyFrom("POST");
         $this->DeviceID = $id;
         $this->save();
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         $rfDevice = $this->load(array("DeviceID = ?", $id));
         $this->load(array("ID = ?", $rfDevice->ID));
         $this->erase();
