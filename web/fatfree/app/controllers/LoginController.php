@@ -4,7 +4,7 @@ namespace Controllers;
 
 class LoginController extends Controller
 {
-    function beforeRoute()
+    public function beforeRoute()
     {
         //Overridden to prevent endless redirects if a user is redirected to the login page for not being logged in
 
@@ -21,7 +21,7 @@ class LoginController extends Controller
         echo $template->render("index.html");
     }
 
-    function login($f3)
+    public function login($f3)
     {
         parse_str($_SERVER["QUERY_STRING"]);
 
@@ -65,7 +65,7 @@ class LoginController extends Controller
         $f3->reroute("@devices");
     }
 
-    function logout($f3)
+    public function logout($f3)
     {
         $f3->clear("SESSION.user");
         $f3->reroute("@loginPage");

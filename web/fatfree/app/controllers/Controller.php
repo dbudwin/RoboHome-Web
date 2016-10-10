@@ -24,7 +24,7 @@ class Controller
         $this->db = $db;
     }
 
-    function beforeRoute()
+    public function beforeRoute()
     {
         if ($this->f3->get("SESSION.user") === null) {
             $this->f3->reroute("@loginPage");
@@ -32,7 +32,7 @@ class Controller
         }
     }
 
-    function afterRoute()
+    public function afterRoute()
     {
     }
 }

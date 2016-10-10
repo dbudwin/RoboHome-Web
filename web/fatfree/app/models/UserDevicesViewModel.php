@@ -14,7 +14,7 @@ class UserDevicesViewModel extends \DB\SQL\Mapper
         $this->userDevicesView = new \DB\SQL\Mapper($this->db, "UserDevicesView");
     }
 
-    function devicesForUser($userId)
+    public function devicesForUser($userId)
     {
         $devicesForUser = $this->userDevicesView->find(array("UserDevices_UserID = ?", $userId));
 
