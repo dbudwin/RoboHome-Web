@@ -1,0 +1,29 @@
+engines:
+  csslint:
+    enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+        - javascript
+        - php
+  eslint:
+    enabled: true
+  fixme:
+    enabled: true
+  phpcodesniffer:
+    enabled: true
+    config:
+      standard: "PSR1,PSR2"
+  phpmd:
+    enabled: true
+    config:
+      rulesets: "cleancode,controversial,design,unusedcode,phpmdruleset.xml"
+ratings:
+  paths:
+    - "**.css"
+    - "**.js"
+    - "**.php"
+exclude_paths:
+  - "web/fatfree/lib"
+  - "web/fatfree/javascript/js.cookie.js"
