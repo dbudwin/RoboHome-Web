@@ -36,8 +36,8 @@ class LoginController extends Controller
 
     private function redirectLoggedInUserToDevicesPage($f3)
     {
-        if ($f3->get("SESSION.user") !== null) {
-            if ($f3->get("ALIAS") == "loginPage") {
+        if (!$f3->devoid("SESSION.user")) {
+            if ($f3->get("ALIAS") === "loginPage") {
                 $f3->reroute("@devices");
             }
         }
