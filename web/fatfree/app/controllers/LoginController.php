@@ -48,7 +48,7 @@ class LoginController extends Controller
         $amazonOAuthUrl = "https://api.amazon.com/auth/o2/tokeninfo?access_token=" . urlencode($accessToken);
         $amazonUserProfileCurlHandle = curl_init($amazonOAuthUrl);
         curl_setopt($amazonUserProfileCurlHandle, CURLOPT_RETURNTRANSFER, true);
-            
+
         $amazonUserProfileCurlResultJson = curl_exec($amazonUserProfileCurlHandle);
         curl_close($amazonUserProfileCurlHandle);
         $decodedUser = json_decode($amazonUserProfileCurlResultJson);

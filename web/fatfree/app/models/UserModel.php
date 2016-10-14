@@ -34,7 +34,7 @@ class UserModel extends \DB\SQL\Mapper
         $this->UserID = $userId;
         $this->save();
     }
-    
+
     public function edit($id)
     {
         $this->load(array("ID = ?", $id));
