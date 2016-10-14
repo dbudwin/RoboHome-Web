@@ -18,7 +18,7 @@ engines:
   phpmd:
     enabled: true
     config:
-      rulesets: "cleancode,controversial,design,unusedcode,phpmdruleset.xml"
+      rulesets: "cleancode,design,unusedcode,phpmdruleset.xml"
 ratings:
   paths:
     - "**.css"
