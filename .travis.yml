@@ -12,7 +12,7 @@ install:
   composer install --prefer-dist
 
 script:
-  phpunit --configuration web/tests/phpunit.xml
+  phpunit --configuration tests/phpunit.xml
 
 notifications:
   slack:
