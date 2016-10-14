@@ -25,4 +25,4 @@ ratings:
     - "**.js"
     - "**.php"
 exclude_paths:
-  - "web/fatfree/lib"
+  - "fatfree/lib"
