@@ -26,4 +26,3 @@ ratings:
     - "**.php"
 exclude_paths:
   - "web/fatfree/lib"
-  - "web/fatfree/javascript/js.cookie.js"
