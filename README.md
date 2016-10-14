@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/dbudwin/RoboHome.svg?branch=master)](https://travis-ci.org/dbudwin/RoboHome)
+[![Code Climate](https://codeclimate.com/github/dbudwin/RoboHome/badges/gpa.svg)](https://codeclimate.com/github/dbudwin/RoboHome)
 
 #RoboHome
 
