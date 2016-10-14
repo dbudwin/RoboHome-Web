@@ -9,6 +9,7 @@
     </rule>
     <rule ref="rulesets/naming.xml">
         <exclude name="ShortVariable" />
+        <exclude name="LongVariable" />
     </rule>
     <rule ref="rulesets/codesize.xml/ExcessiveMethodLength">
         <properties>
@@ -18,6 +19,11 @@
     <rule ref="rulesets/naming.xml/ShortVariable">
         <properties>
             <property name="exceptions" value="db,f3,id" />
+        </properties>
+    </rule>
+    <rule ref="rulesets/naming.xml/LongVariable">
+        <properties>
+            <property name="maximum" value="35" />
         </properties>
     </rule>
 </ruleset>

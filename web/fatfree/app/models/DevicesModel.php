@@ -1,11 +1,16 @@
 <?php
 
-class DevicesModel extends DB\SQL\Mapper {
-    public function __construct(DB\SQL $db) {
+namespace Models;
+
+class DevicesModel extends \DB\SQL\Mapper
+{
+    public function __construct(\DB\SQL $db)
+    {
         parent::__construct($db, "Devices");
     }
 
-    public function add() {
+    public function add()
+    {
         $this->copyFrom("POST");
         $this->Type = 1;
         $this->save();
@@ -13,7 +18,8 @@ class DevicesModel extends DB\SQL\Mapper {
         return $id;
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         $this->load(array("ID = ?", $id));
         $this->erase();
     }
