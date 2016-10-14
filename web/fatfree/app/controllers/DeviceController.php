@@ -9,7 +9,7 @@ class DeviceController extends Controller
     protected $rfDeviceModel;
     protected $userDevicesModel;
     protected $userDevicesViewModel;
-    
+
     public function __construct()
     {
         parent::__construct();
