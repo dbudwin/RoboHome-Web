@@ -1,7 +1,7 @@
-<phpunit backupGlobals="true" bootstrap="./bootstrap.php">
+<phpunit bootstrap="./bootstrap.php">
     <filter>
-        <whitelist>
-            <directory>/fatfree</directory>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">../fatfree/app</directory>
         </whitelist>
     </filter>
     <testsuite>
