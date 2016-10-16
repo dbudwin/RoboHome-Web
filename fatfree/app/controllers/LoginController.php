@@ -19,13 +19,15 @@ class LoginController extends Controller
     {
         parse_str($_SERVER["QUERY_STRING"]);
 
-        $this->verifyUserTokenMatchesAmazonToken($f3, $access_token);
+        if ($this->verifyUserTokenMatchesAmazonToken($f3, $access_token)) {
+            $decodedUserProfile = $this->exchangeAccessTokenForDecodedUserProfile($access_token);
+            $loggedInUser = $this->getLoggedInUserProfile($decodedUserProfile);
 
-        $decodedUserProfile = $this->exchangeAccessTokenForDecodedUserProfile($access_token);
-        $loggedInUser = $this->getLoggedInUserProfile($decodedUserProfile);
-
-        $f3->set("SESSION.user", $loggedInUser->UserID);
-        $f3->reroute("@devices");
+            $f3->set("SESSION.user", $loggedInUser->UserID);
+            $f3->reroute("@devices");
+        }
+        
+        $f3->error(401);
     }
 
     public function logout($f3)
@@ -56,10 +58,10 @@ class LoginController extends Controller
         $userToken = $decodedUser->aud;
 
         if ($userToken != $f3->get("AMAZON_TOKEN")) {
-            header("HTTP/1.1 404 Not Found");
-            echo "Page not found";
-            exit;
+            return false;
         }
+
+        return true;
     }
 
     private function exchangeAccessTokenForDecodedUserProfile($accessToken)
