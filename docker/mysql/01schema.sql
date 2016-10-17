@@ -154,7 +154,7 @@ CREATE TABLE `sessions` (
 /*!50001 SET character_set_results     = utf8mb4 */;
 /*!50001 SET collation_connection      = utf8mb4_unicode_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`dbudwin`@`208.113.128.0/255.255.128.0` SQL SECURITY DEFINER */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
 /*!50001 VIEW `UserDevicesView` AS select `UserDevices`.`UserID` AS `UserDevices_UserID`,`UserDevices`.`DeviceID` AS `DeviceID`,`Users`.`Name` AS `Users_Name`,`Users`.`Email` AS `Email`,`Users`.`UserID` AS `Users_UserID`,`Devices`.`Name` AS `Devices_Name`,`Devices`.`Description` AS `Description`,`Devices`.`Type` AS `Devices_Type`,`DeviceTypes`.`Type` AS `DeviceTypes_Type` from (((`UserDevices` join `Users` on((`UserDevices`.`UserID` = `Users`.`ID`))) join `Devices` on((`UserDevices`.`DeviceID` = `Devices`.`ID`))) join `DeviceTypes` on((`Devices`.`Type` = `DeviceTypes`.`ID`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
