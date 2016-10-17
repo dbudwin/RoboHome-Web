@@ -15,7 +15,7 @@ RoboHome is a SaaS tool that also integrates with Amazon's Echo to enable contro
 
 ###Requirements
 
-1. Webserver with PHP 5.6 or greater with MySQL and a SSL/TLS cert [available for Free with Let's Encrypt](https://www.letsencrypt.org/). This is used to host the Bootstrap based website to add, delete, edit, and control devices from anywhere.
+1. Webserver with PHP 5.6 or greater with MySQL and a SSL/TLS cert [available for Free with Let's Encrypt](https://www.letsencrypt.org/) (This last part isn't needed if using Docker, see below). This is used to host the Bootstrap based website to add, delete, edit, and control devices from anywhere.
 2. MQTT broker for pub-sub. I personally use [CloudMQTT](https://www.cloudmqtt.com/). This service is used to send messages a webservice and a microcontroller.
 3. An account with [Amazon](https://www.amazon.com/) to be used for account registration using OAuth.
 4. An account with [Login with Amazon](https://login.amazon.com/) to allow your website to use OAuth to verify users.  Tip, be sure to register both www and non-www versions of URLs for the "Allowed JavaScript Origins."
@@ -23,6 +23,10 @@ RoboHome is a SaaS tool that also integrates with Amazon's Echo to enable contro
 ###Configuring
 
 1. Open the `secrets.ini` file and populate the information needed to connect to your MQTT broker, MySQL database, and an Amazon login Client ID.
+
+###Docker :whale2:
+
+This project uses [Docker Compose](https://docs.docker.com/compose/) to help easily emulate a test environment for rapid development and testing.  This container has the PHP, MySQL, and phpMyAdmin services.  For login to work, you'll need to add `http://localhost` to the "Allowed JavaScript Origins" in your Login With Amazon App Console.  Once you have Docker installed and running, execute `docker compose up` and visit `http://localhost/fatfree` to view the website.  To access phpMyAdmin, navigate to `http://localhost:8183` and login with the following credentials; Server: `db`, user: `root`, password: `password`.
 
 ##Contributing
 
