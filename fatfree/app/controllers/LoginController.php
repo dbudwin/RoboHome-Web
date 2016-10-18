@@ -56,7 +56,7 @@ class LoginController extends Controller
         $decodedUser = json_decode($amazonUserProfileCurlResultJson);
 
         $userToken = $decodedUser->aud;
-
+        
         if ($userToken != $f3->get("AMAZON_TOKEN")) {
             return false;
         }
@@ -71,7 +71,7 @@ class LoginController extends Controller
 
         curl_setopt($amazonUserProfileCurlHandle, CURLOPT_HTTPHEADER, $httpHeaders);
         curl_setopt($amazonUserProfileCurlHandle, CURLOPT_RETURNTRANSFER, true);
-            
+
         $amazonUserProfileCurlResultJson = curl_exec($amazonUserProfileCurlHandle);
         curl_close($amazonUserProfileCurlHandle);
 
@@ -91,18 +91,18 @@ class LoginController extends Controller
         $loggedInUser = $userModel->findUser($userId)[0];
 
         if ($loggedInUser === null) {
-            $loggedInUser = $this->createNewUser($decodedUserProfile);
+            $loggedInUser = $this->createNewUser($userModel, $decodedUserProfile);
         }
 
         return $loggedInUser;
     }
 
-    private function createNewUser($decodedUserProfile)
+    private function createNewUser($userModel, $decodedUserProfile)
     {
         $name = $decodedUserProfile->name;
         $email = $decodedUserProfile->email;
         $userId = $decodedUserProfile->user_id;
-        
+
         $userModel->createNewUser($name, $email, $userId);
 
         $newlyCreatedUser = $userModel->findUser($userId)[0];
