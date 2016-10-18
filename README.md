@@ -13,16 +13,18 @@ RoboHome is a SaaS tool that also integrates with Amazon's Echo to enable contro
 
 ##Developing RoboHome-Web
 
-###Requirements
+###Requirements :white_check_mark:
 
 1. Webserver with PHP 5.6 or greater with MySQL and a SSL/TLS cert [available for Free with Let's Encrypt](https://www.letsencrypt.org/) (This last part isn't needed if using Docker, see below). This is used to host the Bootstrap based website to add, delete, edit, and control devices from anywhere.
 2. MQTT broker for pub-sub. I personally use [CloudMQTT](https://www.cloudmqtt.com/). This service is used to send messages a webservice and a microcontroller.
 3. An account with [Amazon](https://www.amazon.com/) to be used for account registration using OAuth.
 4. An account with [Login with Amazon](https://login.amazon.com/) to allow your website to use OAuth to verify users.  Tip, be sure to register both www and non-www versions of URLs for the "Allowed JavaScript Origins."
+5. [Composer](https://getcomposer.org/) dependency manager for PHP
 
-###Configuring
+###Configuring :wrench:
 
 1. Open the `secrets.ini` file and populate the information needed to connect to your MQTT broker, MySQL database, and an Amazon login Client ID.
+2. Run `composer install` from the root folder to download and install third party PHP dependencies.
 
 ###Docker :whale2:
 
@@ -30,12 +32,18 @@ This project uses [Docker Compose](https://docs.docker.com/compose/) to help eas
 
 ##Contributing
 
-###How To Contribute
+###How To Contribute :gift:
 
-Contributions are always welcome!  Please open a PR with your code or feel free to make an issue.  All PRs will need to be reviewed and pass automated checks.  This repo supports the principles of [Bob Martin's Clean Code](http://www.goodreads.com/book/show/3735293-clean-code).
+Contributions are always welcome!  Please fork this repo and open a PR with your code or feel free to make an issue.  All PRs will need to be reviewed and pass automated checks.  If feedback is given on a PR, please submit updates to the original PR in the form of [fixup! commits](https://robots.thoughtbot.com/autosquashing-git-commits) which will later be squashed before the PR is merged.
 
-###Notes
+This repo supports the principles of [Bob Martin's Clean Code](http://www.goodreads.com/book/show/3735293-clean-code).
+
+###Notes :notebook:
 
 - To avoid seeing the `secrets.ini` file (particulary when Git says you have unstaged changes during a rebase) in your repo and you don't want to ignore it, run `git update-index --assume-unchanged web/fatfree/app/secrets.ini`
+- Before you release this application...
+    - If you're using Docker Compose, please take the time to update the username and default password to be more secure.  The current implementation is designed for locally running this application.
+    - Update the `config.ini` file and set `DEBUG = 0` for added security to prevent displaying overly detailed debug logs to users.
+
 
 *This is a new project and will be changing rapidly, more details will be provided when entering a beta state*
