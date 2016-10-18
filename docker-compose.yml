@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+  web:
+    build: ./docker/php
+    ports:
+      - 80:80
+    volumes:
+      - .:/var/www/html/
+  db:
+    build: ./docker/mysql
+    ports:
+      - 3306
+  phpmyadmin:
+    build: ./docker/phpmyadmin
+    restart: always
+    links:
+      - db
+    ports:
+      - 8183:80
