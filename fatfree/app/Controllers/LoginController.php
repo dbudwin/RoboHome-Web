@@ -26,7 +26,7 @@ class LoginController extends Controller
             $f3->set("SESSION.user", $loggedInUser->UserID);
             $f3->reroute("@devices");
         }
-        
+
         $f3->error(401);
     }
 

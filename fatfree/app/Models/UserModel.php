@@ -41,7 +41,7 @@ class UserModel extends \DB\SQL\Mapper
         $this->copyFrom("POST");
         $this->update();
     }
-    
+
     public function delete($id)
     {
         $this->load(array("ID = ?", $id));
