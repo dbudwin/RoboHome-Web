@@ -40,7 +40,7 @@ This repo supports the principles of [Bob Martin's Clean Code](http://www.goodre
 
 ###Notes :notebook:
 
-- To avoid seeing the `secrets.ini` file (particulary when Git says you have unstaged changes during a rebase) in your repo and you don't want to ignore it, run `git update-index --assume-unchanged web/fatfree/app/secrets.ini`
+- To avoid seeing the `secrets.ini` file (particulary when Git says you have unstaged changes during a rebase) in your repo and you don't want to ignore it, run `git update-index --assume-unchanged fatfree/app/secrets.ini`
 - Before you release this application...
     - If you're using Docker Compose, please take the time to update the username and default password to be more secure.  The current implementation is designed for locally running this application.
     - Update the `config.ini` file and set `DEBUG = 0` for added security to prevent displaying overly detailed debug logs to users.
