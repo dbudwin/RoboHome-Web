@@ -1,38 +1,36 @@
 <?php
 
+namespace Test\Models;
+
 use Models\DevicesModel;
 
-class DeicesModelTest extends BaseModelTest
+class DevicesModelTest extends BaseModelTest
 {
-    public function testConstruct()
+    private $deviceModel;
+
+    public function setUp()
     {
-        $deviceModel = new DevicesModel($this->getConnection());
+        $this->deviceModel = new DevicesModel($this->getConnection());
     }
 
     public function testAdd()
     {
         $_POST = array('Name' => 'dummy', 'Description' => 'lorem ipsum', 'Type' => 1);
 
-        $deviceModel = new DevicesModel($this->getConnection());
-
-        $newId = $deviceModel->add();
+        $newId = $this->deviceModel->add();
 
         $this->assetEqual(1, $newId);
-        $this->assetEqual('dummy', $deviceModel->Name);
-        $this->assetEqual('lorem ipsum', $deviceModel->Description);
-        $this->assetEqual(1, $deviceModel->Type);
+        $this->assetEqual('dummy', $this->deviceModel->Name);
+        $this->assetEqual('lorem ipsum', $this->deviceModel->Description);
+        $this->assetEqual(1, $this->deviceModel->Type);
     }
 
     public function testDelete()
     {
-        $_POST = array('Name' => 'dummy', 'Description' => 'lorem ipsum', 'type' => 1);
+        $newId = $this->deviceModel->add();
+        $this->deviceModel->delete($newId);
 
-        $deviceModel = new DevicesModel($this->getConnection());
-
-        $newId = $deviceModel->add();
-        $deviceModel->delete($newId);
-
-        $this->assetEqual(false, $deviceModel->findone(['id' => $newId]));
+        $this->assetEqual(false, $this->deviceModel->findone(['id' => $newId]));
     }
-
 }
+

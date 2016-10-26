@@ -1,28 +1,22 @@
 <?php
 
+namespace Test\Models;
+
+use PHPUnit\Framework\TestCase;
 use DB\SQL;
 
-abstract class BaseModelTest extends PHPUnit_Extensions_Database_TestCase
+abstract class BaseModelTest extends TestCase
 {
-    static private $pdo = null;
-
-    private $conn = null;
+    private $connection = null;
 
     final public function getConnection()
     {
-        if ($this->conn === null) {
-            if (self::$pdo == null) {
-                self::$pdo = new SQL( $GLOBALS['DB_DSN'], $GLOBALS['DB_USER'], $GLOBALS['DB_PASSWD'] );
-                self::$pdo->exec(file_get_contents('./schema.sql'));
-            }
-            $this->conn = $this->createDefaultDBConnection(self::$pdo, $GLOBALS['DB_DBNAME']);
+        if ($this->connection === null) {
+            $this->connection = new SQL($GLOBALS['DB_DSN'], $GLOBALS['DB_USER'], $GLOBALS['DB_PASSWORD']);
+            $this->connection->exec(file_get_contents('./schema.sql'));
         }
 
-        return $this->conn;
-    }
-
-    public function getDataSet()
-    {
-        return ;
+        return $this->connection;
     }
 }
+
