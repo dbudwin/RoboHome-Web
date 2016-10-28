@@ -1,4 +1,11 @@
 {
+    "autoload": {
+        "files": ["fatfree/lib/base.php"],
+        "psr-4": {
+            "Models\\":"fatfree/app/Models",
+            "Controllers\\":"fatfree/app/Controllers"
+        }
+    },
     "require-dev": {
         "phpunit/phpunit": "5.5.*",
         "phpunit/dbunit": ">=1.2",
