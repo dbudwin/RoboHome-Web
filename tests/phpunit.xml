@@ -7,9 +7,4 @@
     <testsuite>
         <directory>./</directory>
     </testsuite>
-    <php>
-        <var name="DB_DSN" value="sqlite::memory:" />
-        <var name="DB_USER" value="" />
-        <var name="DB_PASSWORD" value="" />
-    </php>
 </phpunit>
