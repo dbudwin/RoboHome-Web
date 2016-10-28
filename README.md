@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/dbudwin/RoboHome-Web.svg?branch=master)](https://travis-ci.org/dbudwin/RoboHome-Web)
 [![Code Climate](https://codeclimate.com/github/dbudwin/RoboHome-Web/badges/gpa.svg)](https://codeclimate.com/github/dbudwin/RoboHome-Web)
+[![Test Coverage](https://codeclimate.com/github/dbudwin/RoboHome-Web/badges/coverage.svg)](https://codeclimate.com/github/dbudwin/RoboHome-Web/coverage)
 
 #RoboHome-Web
 
@@ -16,7 +17,7 @@ RoboHome is a SaaS tool that also integrates with Amazon's Echo to enable contro
 ###Requirements :white_check_mark:
 
 1. Webserver with PHP 5.6 or greater with MySQL and a SSL/TLS cert [available for Free with Let's Encrypt](https://www.letsencrypt.org/) (This last part isn't needed if using Docker, see below). This is used to host the Bootstrap based website to add, delete, edit, and control devices from anywhere.
-2. MQTT broker for pub-sub. I personally use [CloudMQTT](https://www.cloudmqtt.com/). This service is used to send messages a webservice and a microcontroller.
+2. MQTT broker for pub-sub. I personally use [CloudMQTT](https://www.cloudmqtt.com/). This service is used to send messages from a webservice to a microcontroller.
 3. An account with [Amazon](https://www.amazon.com/) to be used for account registration using OAuth.
 4. An account with [Login with Amazon](https://login.amazon.com/) to allow your website to use OAuth to verify users.  Tip, be sure to register both www and non-www versions of URLs for the "Allowed JavaScript Origins."
 5. [Composer](https://getcomposer.org/) dependency manager for PHP
@@ -28,7 +29,7 @@ RoboHome is a SaaS tool that also integrates with Amazon's Echo to enable contro
 
 ###Docker :whale2:
 
-This project uses [Docker Compose](https://docs.docker.com/compose/) to help easily emulate a test environment for rapid development and testing.  This container has the PHP, MySQL, and phpMyAdmin services.  For login to work, you'll need to add `http://localhost` to the "Allowed JavaScript Origins" in your Login With Amazon App Console.  Once you have Docker installed and running, execute `docker compose up` and visit `http://localhost/fatfree` to view the website.  To access phpMyAdmin, navigate to `http://localhost:8183` and login with the following credentials; Server: `db`, user: `root`, password: `password`.
+This project uses [Docker Compose](https://docs.docker.com/compose/) to help easily emulate a test environment for rapid development and testing.  This container has the PHP, MySQL, and phpMyAdmin services.  For login to work, you'll need to add `http://localhost` to the "Allowed JavaScript Origins" in your Login With Amazon App Console.  Once you have Docker installed and running, execute `docker-compose up` and visit `http://localhost/fatfree` to view the website.  To access phpMyAdmin, navigate to `http://localhost:8183` and login with the following credentials; Server: `db`, user: `root`, password: `password`.
 
 ##Contributing
 
@@ -40,7 +41,7 @@ This repo supports the principles of [Bob Martin's Clean Code](http://www.goodre
 
 ###Notes :notebook:
 
-- To avoid seeing the `secrets.ini` file (particulary when Git says you have unstaged changes during a rebase) in your repo and you don't want to ignore it, run `git update-index --assume-unchanged web/fatfree/app/secrets.ini`
+- To avoid seeing the `secrets.ini` file (particulary when Git says you have unstaged changes during a rebase) in your repo and you don't want to ignore it, run `git update-index --assume-unchanged fatfree/app/secrets.ini`
 - Before you release this application...
     - If you're using Docker Compose, please take the time to update the username and default password to be more secure.  The current implementation is designed for locally running this application.
     - Update the `config.ini` file and set `DEBUG = 0` for added security to prevent displaying overly detailed debug logs to users.
