@@ -7,8 +7,14 @@ use PHPUnit\Framework\TestCase;
 
 abstract class BaseModelTest extends TestCase
 {
+    protected $faker = null;
     private $connection = null;
     private $tempDatabaseFilename = './tests/temp.sqlite3';
+
+    public function __construct()
+    {
+        $this->faker = \Faker\Factory::create();
+    }
 
     protected function tearDown()
     {

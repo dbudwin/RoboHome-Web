@@ -6,13 +6,17 @@ use Models\DevicesModel;
 
 class DevicesModelTest extends BaseModelTest
 {
+    private $description;
     private $devicesModel;
+    private $name;
 
     public function setUp()
     {
-        $_POST = array('Name' => 'dummy', 'Description' => 'lorem ipsum');
-
         $this->devicesModel = new DevicesModel($this->getConnection());
+        $this->name = $this->faker->name;
+        $this->description = $this->faker->text;
+
+        $_POST = array('Name' => $this->name, 'Description' => $this->description);
     }
 
     public function testAdd()
@@ -20,8 +24,8 @@ class DevicesModelTest extends BaseModelTest
         $newId = $this->devicesModel->add();
 
         $this->assertEquals(1, $newId);
-        $this->assertEquals('dummy', $this->devicesModel->Name);
-        $this->assertEquals('lorem ipsum', $this->devicesModel->Description);
+        $this->assertEquals($this->name, $this->devicesModel->Name);
+        $this->assertEquals($this->description, $this->devicesModel->Description);
         $this->assertEquals(1, $this->devicesModel->Type);
     }
 
