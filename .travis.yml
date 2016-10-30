@@ -8,6 +8,10 @@ php:
   - hhvm
   - nightly
 
+before_install:
+  - if [[ "$TRAVIS_PHP_VERSION" = "php*" ]]; then phpenv config-add travisconfig.ini ; fi
+  - if [[ "$TRAVIS_PHP_VERSION" = "hhv*" ]]; then cat travisconfig.ini >> /etc/hhvm/php.ini ; fi
+
 install:
   composer install --prefer-dist
 
