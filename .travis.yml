@@ -11,15 +11,19 @@ php:
 install:
   composer install --prefer-dist
 
+branches:
+  only: 
+    - master
+    
+addons:
+  code_climate:
+    repo_token: $CODECLIMATE_REPO_TOKEN
+
 script:
   phpunit --coverage-clover build/logs/clover.xml --configuration tests/phpunit.xml
 
 after_script:
-  - vendor/bin/test-reporter
-
-addons:
-  code_climate:
-    repo_token: $CODECLIMATE_REPO_TOKEN
+  - vendor/bin/test-reporter --coverage-report build/logs/clover.xml
 
 notifications:
   slack:
