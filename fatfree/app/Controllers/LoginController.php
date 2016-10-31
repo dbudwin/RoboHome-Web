@@ -103,7 +103,7 @@ class LoginController extends Controller
         $email = $decodedUserProfile->email;
         $userId = $decodedUserProfile->user_id;
 
-        $userModel->createNewUser($name, $email, $userId);
+        $userModel->add($name, $email, $userId);
 
         $newlyCreatedUser = $userModel->findUser($userId)[0];
 
