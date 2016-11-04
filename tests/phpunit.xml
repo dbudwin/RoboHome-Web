@@ -1,7 +1,7 @@
 <phpunit bootstrap="./bootstrap.php">
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">../fatfree/app</directory>
+            <directory suffix=".php">../app</directory>
         </whitelist>
     </filter>
     <testsuite>

@@ -1,9 +1,8 @@
 {
     "autoload": {
-        "files": ["fatfree/lib/base.php"],
         "psr-4": {
-            "Models\\":"fatfree/app/Models",
-            "Controllers\\":"fatfree/app/Controllers"
+            "Models\\": "app/models",
+            "Controllers\\": "app/controllers"
         }
     },
     "require-dev": {
@@ -11,5 +10,9 @@
         "phpunit/dbunit": ">=1.2",
         "codeclimate/php-test-reporter": "^0.3.2",
         "fzaninotto/faker": "^1.6"
+    },
+    "require": {
+        "bcosca/fatfree-core": "dev-master",
+        "php-di/php-di": "^5.4"
     }
 }
