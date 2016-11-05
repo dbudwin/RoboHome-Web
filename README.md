@@ -29,7 +29,7 @@ RoboHome is a SaaS tool that also integrates with Amazon's Echo to enable contro
 
 ###Docker :whale2:
 
-This project uses [Docker Compose](https://docs.docker.com/compose/) to help easily emulate a test environment for rapid development and testing.  This container has the PHP, MySQL, and phpMyAdmin services.  For login to work, you'll need to add `http://localhost` to the "Allowed JavaScript Origins" in your Login With Amazon App Console.  Once you have Docker installed and running, execute `docker-compose up` and visit `http://localhost/fatfree` to view the website.  To access phpMyAdmin, navigate to `http://localhost:8183` and login with the following credentials; Server: `db`, user: `root`, password: `password`.
+This project uses [Docker Compose](https://docs.docker.com/compose/) to help easily emulate a test environment for rapid development and testing.  This container has the PHP, MySQL, and phpMyAdmin services.  For login to work, you'll need to add `http://localhost` to the "Allowed JavaScript Origins" in your Login With Amazon App Console.  Once you have Docker installed and running, execute `docker-compose up` and visit `http://localhost` to view the website.  To access phpMyAdmin, navigate to `http://localhost:8183` and login with the following credentials; Server: `db`, user: `root`, password: `password`.
 
 ##Contributing
 
@@ -41,7 +41,7 @@ This repo supports the principles of [Bob Martin's Clean Code](http://www.goodre
 
 ###Notes :notebook:
 
-- To avoid seeing the `secrets.ini` file (particulary when Git says you have unstaged changes during a rebase) in your repo and you don't want to ignore it, run `git update-index --assume-unchanged fatfree/app/secrets.ini`
+- To avoid seeing the `secrets.ini` file (particulary when Git says you have unstaged changes during a rebase) in your repo and you don't want to ignore it, run `git update-index --assume-unchanged app/secrets.ini`
 - Before you release this application...
     - If you're using Docker Compose, please take the time to update the username and default password to be more secure.  The current implementation is designed for locally running this application.
     - Update the `config.ini` file and set `DEBUG = 0` for added security to prevent displaying overly detailed debug logs to users.

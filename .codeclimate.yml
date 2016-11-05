@@ -24,5 +24,3 @@ ratings:
     - "**.css"
     - "**.js"
     - "**.php"
-exclude_paths:
-  - "fatfree/lib"
