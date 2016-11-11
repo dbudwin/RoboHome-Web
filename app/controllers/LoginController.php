@@ -82,9 +82,7 @@ class LoginController extends Controller
 
     private function getLoggedInUserProfile($decodedUserProfile)
     {
-        $db = $this->db;
-
-        $userModel = new \Models\UserModel($db);
+        $userModel = $this->container->get('UserModel');
 
         $userId = $decodedUserProfile->user_id;
 

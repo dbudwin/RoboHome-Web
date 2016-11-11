@@ -4,24 +4,13 @@ namespace Controllers;
 
 class Controller
 {
+    protected $container;
     protected $f3;
-    protected $db;
 
-    public function __construct()
+    public function __construct(\Base $f3)
     {
-        $f3 = \Base::instance();
         $this->f3 = $f3;
-
-        $mysqlServerName = $f3->get("MYSQL_SERVERNAME");
-        $mysqlDatabseName = $f3->get("MYSQL_DBNAME");
-
-        $db = new \DB\SQL(
-            "mysql:host={$mysqlServerName};port=3306;dbname={$mysqlDatabseName}",
-            $f3->get("MYSQL_USERNAME"),
-            $f3->get("MYSQL_PASSWORD")
-        );
-
-        $this->db = $db;
+        $this->container = $this->f3->get('container');
     }
 
     public function beforeRoute()
@@ -30,9 +19,5 @@ class Controller
             $this->f3->reroute("@loginPage");
             exit;
         }
-    }
-
-    public function afterRoute()
-    {
     }
 }
