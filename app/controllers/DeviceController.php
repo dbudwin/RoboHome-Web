@@ -4,20 +4,19 @@ namespace Controllers;
 
 class DeviceController extends Controller
 {
-    protected $db;
     protected $devicesModel;
     protected $rfDeviceModel;
     protected $userDevicesModel;
     protected $userDevicesViewModel;
 
-    public function __construct()
+    public function __construct(\Base $f3)
     {
-        parent::__construct();
-        $db = $this->db;
-        $this->devicesModel = new \Models\DevicesModel($db);
-        $this->rfDeviceModel = new \Models\RFDeviceModel($db);
-        $this->userDevicesModel = new \Models\UserDevicesModel($db);
-        $this->userDevicesViewModel = new \Models\UserDevicesViewModel($db);
+        parent::__construct($f3);
+        
+        $this->devicesModel = $this->container->get('DevicesModel');
+        $this->rfDeviceModel = $this->container->get('RFDeviceModel');
+        $this->userDevicesModel = $this->container->get('UserDevicesModel');
+        $this->userDevicesViewModel = $this->container->get('UserDevicesViewModel');
     }
 
     public function devices($f3)
@@ -57,7 +56,7 @@ class DeviceController extends Controller
 
     private function currentUser($f3)
     {
-        $userModel = new \Models\UserModel($this->db);
+        $userModel = $this->container->get('UserModel');
         $currentUser = $userModel->findUser($f3->get("SESSION.user"))[0];
 
         return $currentUser;
