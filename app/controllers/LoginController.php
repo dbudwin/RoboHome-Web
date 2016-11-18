@@ -12,19 +12,19 @@ class LoginController extends Controller
     public function index()
     {
         $template = new \Template;
-        echo $template->render("index.html");
+        echo $template->render('index.html');
     }
 
     public function login($f3)
     {
-        parse_str($_SERVER["QUERY_STRING"]);
+        parse_str($_SERVER['QUERY_STRING']);
 
         if ($this->verifyUserTokenMatchesAmazonToken($f3, $access_token)) {
             $decodedUserProfile = $this->exchangeAccessTokenForDecodedUserProfile($access_token);
             $loggedInUser = $this->getLoggedInUserProfile($decodedUserProfile);
 
-            $f3->set("SESSION.user", $loggedInUser->UserID);
-            $f3->reroute("@devices");
+            $f3->set('SESSION.user', $loggedInUser->UserID);
+            $f3->reroute('@devices');
         }
 
         $f3->error(401);
@@ -32,22 +32,22 @@ class LoginController extends Controller
 
     public function logout($f3)
     {
-        $f3->clear("SESSION.user");
-        $f3->reroute("@loginPage");
+        $f3->clear('SESSION.user');
+        $f3->reroute('@loginPage');
     }
 
     private function redirectLoggedInUserToDevicesPage($f3)
     {
-        if (!$f3->devoid("SESSION.user")) {
-            if ($f3->get("ALIAS") === "loginPage") {
-                $f3->reroute("@devices");
+        if (!$f3->devoid('SESSION.user')) {
+            if ($f3->get('ALIAS') === 'loginPage') {
+                $f3->reroute('@devices');
             }
         }
     }
 
     private function verifyUserTokenMatchesAmazonToken($f3, $accessToken)
     {
-        $amazonOAuthUrl = "https://api.amazon.com/auth/o2/tokeninfo?access_token=" . urlencode($accessToken);
+        $amazonOAuthUrl = 'https://api.amazon.com/auth/o2/tokeninfo?access_token=' . urlencode($accessToken);
         $amazonUserProfileCurlHandle = curl_init($amazonOAuthUrl);
         curl_setopt($amazonUserProfileCurlHandle, CURLOPT_RETURNTRANSFER, true);
 
@@ -57,7 +57,7 @@ class LoginController extends Controller
 
         $userToken = $decodedUser->aud;
         
-        if ($userToken != $f3->get("AMAZON_TOKEN")) {
+        if ($userToken != $f3->get('AMAZON_TOKEN')) {
             return false;
         }
 
@@ -66,8 +66,8 @@ class LoginController extends Controller
 
     private function exchangeAccessTokenForDecodedUserProfile($accessToken)
     {
-        $amazonUserProfileCurlHandle = curl_init("https://api.amazon.com/user/profile");
-        $httpHeaders = array("Authorization: bearer " . $accessToken);
+        $amazonUserProfileCurlHandle = curl_init('https://api.amazon.com/user/profile');
+        $httpHeaders = array('Authorization: bearer ' . $accessToken);
 
         curl_setopt($amazonUserProfileCurlHandle, CURLOPT_HTTPHEADER, $httpHeaders);
         curl_setopt($amazonUserProfileCurlHandle, CURLOPT_RETURNTRANSFER, true);

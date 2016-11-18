@@ -23,10 +23,10 @@ class DeviceController extends Controller
     {
         $currentUser = $this->currentUser($f3);
         $devicesForCurrentUser = $this->userDevicesViewModel->devicesForUser($currentUser->ID);
-        $f3->set("name", $currentUser->Name);
-        $f3->set("devices", $devicesForCurrentUser);
+        $f3->set('name', $currentUser->Name);
+        $f3->set('devices', $devicesForCurrentUser);
         $template = new \Template;
-        echo $template->render("devices.html");
+        echo $template->render('devices.html');
     }
 
     public function add($f3)
@@ -35,13 +35,13 @@ class DeviceController extends Controller
         $deviceId = $this->devicesModel->add();
         $this->rfDeviceModel->add($deviceId);
         $this->userDevicesModel->add($currentUserId, $deviceId);
-        $f3->reroute("@devices");
+        $f3->reroute('@devices');
     }
 
     public function delete($f3, $args)
     {
         $currentUserId = $this->currentUser($f3)->ID;
-        $deviceId = $args["id"];
+        $deviceId = $args['id'];
 
         $doesUserOwnDevice = $this->userDevicesViewModel->doesUserOwnDevice($currentUserId, $deviceId);
 
@@ -51,13 +51,13 @@ class DeviceController extends Controller
             $this->devicesModel->delete($deviceId);
         }
 
-        $f3->reroute("@devices");
+        $f3->reroute('@devices');
     }
 
     private function currentUser($f3)
     {
         $userModel = $this->container->get('UserModel');
-        $currentUser = $userModel->findUser($f3->get("SESSION.user"))[0];
+        $currentUser = $userModel->findUser($f3->get('SESSION.user'))[0];
 
         return $currentUser;
     }
