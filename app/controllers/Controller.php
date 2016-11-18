@@ -15,8 +15,8 @@ class Controller
 
     public function beforeRoute()
     {
-        if ($this->f3->get("SESSION.user") === null) {
-            $this->f3->reroute("@loginPage");
+        if ($this->f3->get('SESSION.user') === null) {
+            $this->f3->reroute('@loginPage');
             exit;
         }
     }

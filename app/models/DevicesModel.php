@@ -6,12 +6,12 @@ class DevicesModel extends \DB\SQL\Mapper
 {
     public function __construct(\DB\SQL $db)
     {
-        parent::__construct($db, "Devices");
+        parent::__construct($db, 'Devices');
     }
 
     public function add()
     {
-        $this->copyFrom("POST");
+        $this->copyFrom('POST');
         $this->Type = 1;
         $this->save();
         $id = $this->ID;
@@ -20,7 +20,7 @@ class DevicesModel extends \DB\SQL\Mapper
 
     public function delete($id)
     {
-        $this->load(array("ID = ?", $id));
+        $this->load(array('ID = ?', $id));
         $this->erase();
     }
 }
