@@ -3,7 +3,7 @@
 require_once('vendor/autoload.php');
 
 $builder = new \DI\ContainerBuilder();
-$builder->addDefinitions(__DIR__ . '/app/di/definitions.php');
+$builder->addDefinitions(__DIR__ . '/app/common/di/definitions.php');
 $builder->useAnnotations(false);
 
 $container = $builder->build();

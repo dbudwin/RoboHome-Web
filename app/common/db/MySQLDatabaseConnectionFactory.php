@@ -1,6 +1,6 @@
 <?php
 
-namespace DB;
+namespace Common\DB;
 
 class MySQLDatabaseConnectionFactory implements IDatabaseConnectionFactory
 {
