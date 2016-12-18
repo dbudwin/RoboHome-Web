@@ -16,7 +16,7 @@ class AmazonLoginController extends Controller
 
         $userToken = $decodedUser->aud;
 
-        if ($userToken != $f3->get('AMAZON_TOKEN')) {
+        if ($userToken === null || $userToken != $f3->get('AMAZON_TOKEN')) {
             return false;
         }
 

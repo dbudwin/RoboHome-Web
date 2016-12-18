@@ -17,14 +17,20 @@ class LoginController extends \Common\Controllers\AmazonLoginController
 
     public function login($f3)
     {
-        parse_str($_SERVER['QUERY_STRING']);
+        $queryString = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
 
-        if ($this->verifyUserTokenMatchesAmazonToken($f3, $access_token)) {
-            $decodedUserProfile = $this->exchangeAccessTokenForDecodedUserProfile($access_token);
-            $loggedInUser = $this->getLoggedInUserProfile($decodedUserProfile);
+        parse_str($queryString, $queryStringArray);
 
-            $f3->set('SESSION.user', $loggedInUser->UserID);
-            $f3->reroute('@devices');
+        if (array_key_exists('access_token', $queryStringArray)) {
+            $accessToken = $queryStringArray['access_token'];
+
+            if ($this->verifyUserTokenMatchesAmazonToken($f3, $accessToken)) {
+                $decodedUserProfile = $this->exchangeAccessTokenForDecodedUserProfile($accessToken);
+                $loggedInUser = $this->getLoggedInUserProfile($decodedUserProfile);
+
+                $f3->set('SESSION.user', $loggedInUser->UserID);
+                $f3->reroute('@devices');
+            }
         }
 
         $f3->error(401);
