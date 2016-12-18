@@ -4,17 +4,12 @@ namespace Tests\Models;
 
 use DB\SQL;
 use PHPUnit\Framework\TestCase;
+use Tests\BaseUnitTest;
 
-abstract class BaseModelTest extends TestCase
+abstract class BaseModelTest extends BaseUnitTest
 {
-    protected $faker = null;
-    private $connection = null;
+    private $connection;
     private $tempDatabaseFilename = './tests/temp.sqlite3';
-
-    public function __construct()
-    {
-        $this->faker = \Faker\Factory::create();
-    }
 
     protected function tearDown()
     {
