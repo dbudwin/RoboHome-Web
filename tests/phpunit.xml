@@ -3,7 +3,7 @@
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">../app</directory>
             <exclude>
-                <file>../app/di/definitions.php</file>
+                <file>../app/common/di/definitions.php</file>
             </exclude>
         </whitelist>
     </filter>

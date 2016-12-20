@@ -21,5 +21,5 @@ return [
     UserModel::class => function (ContainerInterface $container) {
         return new \Models\UserModel($container->get(SQL::class));
     },
-    SQL::class => DI\factory([\DB\MySQLDatabaseConnectionFactory::class, 'createConnection']),
+    SQL::class => DI\factory([\Common\DB\MySQLDatabaseConnectionFactory::class, 'createConnection'])
 ];

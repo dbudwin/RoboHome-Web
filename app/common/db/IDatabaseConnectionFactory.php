@@ -1,6 +1,6 @@
 <?php
 
-namespace DB;
+namespace Common\DB;
 
 interface IDatabaseConnectionFactory
 {

@@ -1,51 +1,10 @@
 <?php
 
-namespace Controllers;
+namespace Common\Controllers;
 
-class LoginController extends Controller
+class AmazonLoginController extends Controller
 {
-    public function beforeRoute()
-    {
-        $this->redirectLoggedInUserToDevicesPage($this->f3);
-    }
-
-    public function index()
-    {
-        $template = new \Template;
-        echo $template->render('index.html');
-    }
-
-    public function login($f3)
-    {
-        parse_str($_SERVER['QUERY_STRING']);
-
-        if ($this->verifyUserTokenMatchesAmazonToken($f3, $access_token)) {
-            $decodedUserProfile = $this->exchangeAccessTokenForDecodedUserProfile($access_token);
-            $loggedInUser = $this->getLoggedInUserProfile($decodedUserProfile);
-
-            $f3->set('SESSION.user', $loggedInUser->UserID);
-            $f3->reroute('@devices');
-        }
-
-        $f3->error(401);
-    }
-
-    public function logout($f3)
-    {
-        $f3->clear('SESSION.user');
-        $f3->reroute('@loginPage');
-    }
-
-    private function redirectLoggedInUserToDevicesPage($f3)
-    {
-        if (!$f3->devoid('SESSION.user')) {
-            if ($f3->get('ALIAS') === 'loginPage') {
-                $f3->reroute('@devices');
-            }
-        }
-    }
-
-    private function verifyUserTokenMatchesAmazonToken($f3, $accessToken)
+    protected function verifyUserTokenMatchesAmazonToken($f3, $accessToken)
     {
         $amazonOAuthUrl = 'https://api.amazon.com/auth/o2/tokeninfo?access_token=' . urlencode($accessToken);
         $amazonUserProfileCurlHandle = curl_init($amazonOAuthUrl);
@@ -56,15 +15,15 @@ class LoginController extends Controller
         $decodedUser = json_decode($amazonUserProfileCurlResultJson);
 
         $userToken = $decodedUser->aud;
-        
-        if ($userToken != $f3->get('AMAZON_TOKEN')) {
+
+        if ($userToken === null || $userToken != $f3->get('AMAZON_TOKEN')) {
             return false;
         }
 
         return true;
     }
 
-    private function exchangeAccessTokenForDecodedUserProfile($accessToken)
+    protected function exchangeAccessTokenForDecodedUserProfile($accessToken)
     {
         $amazonUserProfileCurlHandle = curl_init('https://api.amazon.com/user/profile');
         $httpHeaders = array('Authorization: bearer ' . $accessToken);
@@ -80,7 +39,7 @@ class LoginController extends Controller
         return $decodedUserProfileArray;
     }
 
-    private function getLoggedInUserProfile($decodedUserProfile)
+    protected function getLoggedInUserProfile($decodedUserProfile)
     {
         $userModel = $this->container->get('UserModel');
 
@@ -95,7 +54,7 @@ class LoginController extends Controller
         return $loggedInUser;
     }
 
-    private function createNewUser($userModel, $decodedUserProfile)
+    protected function createNewUser($userModel, $decodedUserProfile)
     {
         $name = $decodedUserProfile->name;
         $email = $decodedUserProfile->email;

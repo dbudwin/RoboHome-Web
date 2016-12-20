@@ -1,13 +1,13 @@
 <?php
 
-namespace Controllers;
+namespace Web\Controllers;
 
-class DeviceController extends Controller
+class DeviceController extends WebController
 {
-    protected $devicesModel;
-    protected $rfDeviceModel;
-    protected $userDevicesModel;
-    protected $userDevicesViewModel;
+    private $devicesModel;
+    private $rfDeviceModel;
+    private $userDevicesModel;
+    private $userDevicesViewModel;
 
     public function __construct(\Base $f3)
     {

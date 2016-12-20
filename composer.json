@@ -1,8 +1,11 @@
 {
     "autoload": {
         "psr-4": {
-            "Models\\": "app/models",
-            "Controllers\\": "app/controllers"
+            "DB\\": "app/common/db",
+            "Models\\": "app/web/models",
+            "Web\\Controllers\\": "app/web/controllers",
+            "Common\\Controllers\\": "app/common/controllers",
+            "API\\Controllers\\": "app/api/controllers"
         }
     },
     "require-dev": {

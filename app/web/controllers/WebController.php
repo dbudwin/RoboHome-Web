@@ -1,18 +1,11 @@
 <?php
 
-namespace Controllers;
+namespace Web\Controllers;
 
-class Controller
+class WebController extends \Common\Controllers\Controller
 {
     protected $container;
-    protected $f3;
-
-    public function __construct(\Base $f3)
-    {
-        $this->f3 = $f3;
-        $this->container = $this->f3->get('container');
-    }
-
+    
     public function beforeRoute()
     {
         if ($this->f3->get('SESSION.user') === null) {
