@@ -12,9 +12,9 @@ install:
   composer install --prefer-dist
 
 branches:
-  only: 
+  only:
     - master
-    
+
 addons:
   code_climate:
     repo_token: $CODECLIMATE_REPO_TOKEN
