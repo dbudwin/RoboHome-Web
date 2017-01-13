@@ -8,12 +8,13 @@ class Device extends Model
 {
     protected $fillable = ['name', 'description', 'type'];
     protected $table = 'devices';
-    
-    public function add($name, $description, $type)
+
+    public function add($name, $description, $type, $userId)
     {
         $this->name = $name;
         $this->description = $description;
         $this->device_type_id = $type;
+        $this->user_id = $userId;
         $this->save();
 
         return $this;
