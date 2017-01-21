@@ -1,8 +1,7 @@
 {
-    "name": "laravel/laravel",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
-    "license": "MIT",
+    "name": "RoboHome-Web",
+    "description": "The web portion of the RoboHome project.",
+    "license": "GPL-3.0+",
     "type": "project",
     "require": {
         "php": ">=5.6.4",
