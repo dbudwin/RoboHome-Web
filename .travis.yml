@@ -1,34 +1,32 @@
-language:
-  php
+language: php
 
 php:
   - 5.6
   - 7.0
   - 7.1
-  - hhvm
   - nightly
 
-install:
-  composer install --prefer-dist
-
-branches:
-  only:
-    - master
+matrix:
+  fast_finish: true
+  allow_failures:
+    - php: nightly
 
 addons:
   code_climate:
     repo_token: $CODECLIMATE_REPO_TOKEN
 
+before_script:
+  - composer self-update
+  - composer install --prefer-dist
+
 script:
-  phpunit --coverage-clover build/logs/clover.xml --configuration tests/phpunit.xml
+  - ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml --configuration phpunit.xml
 
 after_script:
-  - vendor/bin/test-reporter --coverage-report build/logs/clover.xml
+  - ./vendor/bin/test-reporter --coverage-report build/logs/clover.xml
 
 notifications:
   slack:
     rooms:
-      secure:
-        a5AWEsvi7JUo6SmatOvTX/lCkGG/BS2mXOQeDk2a/YJHDo7A58xV8zo5ZbratyOeogY6FH0To+FTWUugcIxSTiuUaFZncUkBi3RsQRhdzR6kwtajMb/3S0HTkJXIW1enTDXnswPR8FgWmTUPXma3UcVc3dURODVQpybbqwPgmyR8zJmBfEQAtyjmYMGUbYHsz6zIjTHgtSrG2F0dehIsdbIb0AD12sZtF1kLIaacrY3eBphf/z9gaJB2ocDaM9FIgCUWqqVqoZ5VyhyBKMNqMZuUj75Pu7V/GbB/lOhxPbkRk0HcDLMunbTKUgtGCaWhd7sUbnhk0Z5RuQT6KNVb0clYq81EDud4bhYDp5RNtiD98YXmd/ermQXgAWibk66r7i7EvaJiqWKymt6/U1jOCA5ggRG8em7ALSbYjfSeim1aEzKKdbLAtx1ImFVI2e16F9boPGIvIR/7nQkJy4iZd4NzxGjmR4QS4s+bVOUffYi2xRaCUX4GFJdUhTtWVVauFpkdWbLzapCjI1sOFFFHz/dKyFptyPSLYZ1C3fgmgaRmQd2ok3sCRBca6m/3RlzK8DnrnbrDIgKyU3hEARUqPR1YQWjHyKoOg1OqgRZo37xJsB6Eel5Mmw6e1AlFE+I23+bVgKyOaxxw4LdGEwVG/cxi5LdZxY1QIA+b+u3hU2k=
-  email:
-    false
+      secure: a5AWEsvi7JUo6SmatOvTX/lCkGG/BS2mXOQeDk2a/YJHDo7A58xV8zo5ZbratyOeogY6FH0To+FTWUugcIxSTiuUaFZncUkBi3RsQRhdzR6kwtajMb/3S0HTkJXIW1enTDXnswPR8FgWmTUPXma3UcVc3dURODVQpybbqwPgmyR8zJmBfEQAtyjmYMGUbYHsz6zIjTHgtSrG2F0dehIsdbIb0AD12sZtF1kLIaacrY3eBphf/z9gaJB2ocDaM9FIgCUWqqVqoZ5VyhyBKMNqMZuUj75Pu7V/GbB/lOhxPbkRk0HcDLMunbTKUgtGCaWhd7sUbnhk0Z5RuQT6KNVb0clYq81EDud4bhYDp5RNtiD98YXmd/ermQXgAWibk66r7i7EvaJiqWKymt6/U1jOCA5ggRG8em7ALSbYjfSeim1aEzKKdbLAtx1ImFVI2e16F9boPGIvIR/7nQkJy4iZd4NzxGjmR4QS4s+bVOUffYi2xRaCUX4GFJdUhTtWVVauFpkdWbLzapCjI1sOFFFHz/dKyFptyPSLYZ1C3fgmgaRmQd2ok3sCRBca6m/3RlzK8DnrnbrDIgKyU3hEARUqPR1YQWjHyKoOg1OqgRZo37xJsB6Eel5Mmw6e1AlFE+I23+bVgKyOaxxw4LdGEwVG/cxi5LdZxY1QIA+b+u3hU2k=
+  email: false
