@@ -1,10 +1,11 @@
 <?php
 
-namespace Tests\Unit\Controller;
+namespace Tests\Unit\Controller\Web;
 
 use App\Http\Wrappers\ICurlRequest;
 use App\User;
 use Mockery;
+use Tests\Unit\Controller\Common\ControllerTestCase;
 
 class LoginControllerTest extends ControllerTestCase
 {

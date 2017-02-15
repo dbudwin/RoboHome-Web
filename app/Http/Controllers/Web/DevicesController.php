@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
 use App\Device;
+use App\Http\Controllers\Common\Controller;
 use App\RFDevice;
 use App\User;
 use DB;

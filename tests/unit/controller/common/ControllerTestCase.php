@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Controller;
+namespace Tests\Unit\Controller\Common;
 
 use Illuminate\Foundation\Testing\TestResponse;
 use Tests\TestCase;
