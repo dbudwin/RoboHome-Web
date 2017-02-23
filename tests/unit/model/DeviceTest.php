@@ -9,7 +9,7 @@ class DeviceTest extends ModelTestCase
 {
     public function testAdd_GivenDeviceAddedToDatabase_DatabaseOnlyHasOneDeviceRecord()
     {
-        $device = new Device;
+        $device = new Device();
         $name = self::$faker->word();
         $description = self::$faker->sentence();
         $type = self::$faker->randomDigit();
@@ -26,7 +26,7 @@ class DeviceTest extends ModelTestCase
 
     public function testRFDevice_GivenRFDeviceAddedToDatabase_FoundRFDeviceMatches()
     {
-        $device = new Device;
+        $device = new Device();
         $name = self::$faker->word();
         $description = self::$faker->sentence();
         $type = self::$faker->randomDigit();
@@ -34,7 +34,7 @@ class DeviceTest extends ModelTestCase
 
         $addedDevice = $device->add($name, $description, $type, $userId);
 
-        $rfDevice = new RFDevice;
+        $rfDevice = new RFDevice();
         $onCode = self::$faker->randomNumber();
         $offCode = self::$faker->randomNumber();
         $pulseLength = self::$faker->randomNumber();

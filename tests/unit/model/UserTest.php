@@ -8,7 +8,7 @@ class UserTest extends ModelTestCase
 {
     public function testAdd_GivenUserAddedToDatabase_DatabaseOnlyHasOneUserRecord()
     {
-        $user = new User;
+        $user = new User();
         $name = self::$faker->name();
         $email = self::$faker->email();
         $userId = self::$faker->uuid();

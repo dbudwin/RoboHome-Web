@@ -8,7 +8,7 @@ class RFDeviceTest extends ModelTestCase
 {
     public function testAdd_GivenRFDeviceAddedToDatabase_DatabaseOnlyHasOneRFDeviceRecord()
     {
-        $rfDevice = new RFDevice;
+        $rfDevice = new RFDevice();
         $onCode = self::$faker->randomNumber();
         $offCode = self::$faker->randomNumber();
         $pulseLength = self::$faker->randomNumber();
