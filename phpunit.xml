@@ -42,4 +42,7 @@
         <env name="SESSION_USER_ID" value="userId"/>
         <env name="QUEUE_DRIVER" value="sync"/>
     </php>
+    <logging>
+        <log type="coverage-clover" target="build/logs/clover.xml"/>
+    </logging>
 </phpunit>
