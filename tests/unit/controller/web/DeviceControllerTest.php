@@ -1,11 +1,12 @@
 <?php
 
-namespace Tests\Unit\Controller;
+namespace Tests\Unit\Controller\Web;
 
 use App\Device;
 use App\RFDevice;
 use App\User;
 use Mockery;
+use Tests\Unit\Controller\Common\ControllerTestCase;
 
 class DeviceControllerTest extends ControllerTestCase
 {

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
+use App\Http\Controllers\Common\Controller;
 use App\Http\Wrappers\ICurlRequest;
 use App\User;
 use Illuminate\Http\Request;
