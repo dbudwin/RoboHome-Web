@@ -15,6 +15,10 @@ addons:
   code_climate:
     repo_token: $CODECLIMATE_REPO_TOKEN
 
+branches:
+  only:
+    - master
+
 before_script:
   - composer self-update
   - composer install --prefer-dist
