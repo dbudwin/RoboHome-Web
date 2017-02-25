@@ -6,9 +6,9 @@ use App\Device;
 use App\RFDevice;
 use App\User;
 use Mockery;
-use Tests\Unit\Controller\Common\ControllerTestCase;
+use Tests\Unit\Controller\Common\DeviceControllerTestCase;
 
-class DeviceControllerTest extends ControllerTestCase
+class DeviceControllerTest extends DeviceControllerTestCase
 {
     public function testDevices_GivenUserNotLoggedIn_RedirectToIndex()
     {
@@ -101,44 +101,6 @@ class DeviceControllerTest extends ControllerTestCase
         $this->assertRedirectedToRouteWith302($response, '/devices');
     }
 
-    private function givenSingleUserExists()
-    {
-        $user = $this->createUser(self::$faker->uuid());
-
-        $mockUserTable = Mockery::mock(User::class);
-        $mockUserTable
-            ->shouldReceive('where')->with('user_id', $user->user_id)->andReturn(Mockery::self())
-            ->shouldReceive('first')->andReturn($user);
-
-        $this->app->instance(User::class, $mockUserTable);
-
-        return $user;
-    }
-
-    private function givenSingleUserExistsWithDevices($device1Name, $device2Name, $device3Name)
-    {
-        $userId = self::$faker->uuid();
-
-        $user = $this->createUser($userId);
-
-        $collection = new Device();
-
-        $devices = $collection->newCollection(
-            [
-                new Device(['name' => $device1Name, 'user_id' => $userId]),
-                new Device(['name' => $device2Name, 'user_id' => $userId]),
-                new Device(['name' => $device3Name, 'user_id' => $userId])
-            ]
-        );
-
-        $mockUserRecord = Mockery::mock(User::class)->makePartial();
-        $mockUserRecord->shouldReceive('getAttribute')->with('devices')->once()->andReturn($devices);
-
-        $this->mockUserTable($mockUserRecord, $userId);
-
-        return $user;
-    }
-
     private function addDeviceForUser($userId, $deviceName)
     {
         $mockDeviceModel = Mockery::mock(Device::class);
@@ -159,35 +121,5 @@ class DeviceControllerTest extends ControllerTestCase
             ]);
 
         return $response;
-    }
-
-    private function createUser($userId)
-    {
-        $user = new User();
-
-        $user->id = self::$faker->randomDigit();
-        $user->name = self::$faker->name();
-        $user->email = self::$faker->email();
-        $user->user_id = $userId;
-
-        return $user;
-    }
-
-    private function givenDoesUserOwnDevice($user, $deviceId, $doesUserOwnDevice)
-    {
-        $mockUserRecord = Mockery::mock(User::class);
-        $mockUserRecord->shouldReceive('doesUserOwnDevice')->with($deviceId)->once()->andReturn($doesUserOwnDevice);
-
-        $this->mockUserTable($mockUserRecord, $user->user_id);
-    }
-
-    private function mockUserTable($mockUserRecord, $userId)
-    {
-        $mockUserTable = Mockery::mock(User::class);
-        $mockUserTable
-            ->shouldReceive('where')->with('user_id', $userId)->once()->andReturn(Mockery::self())
-            ->shouldReceive('first')->once()->andReturn($mockUserRecord);
-
-        $this->app->instance(User::class, $mockUserTable);
     }
 }

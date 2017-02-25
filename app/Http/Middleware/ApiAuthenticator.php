@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Http\Authentication\ILoginAuthenticator;
 use Closure;
+use Illuminate\Http\Request;
 
 class ApiAuthenticator
 {
@@ -14,12 +15,12 @@ class ApiAuthenticator
         $this->loginAuthenticator = $loginAuthenticator;
     }
 
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next)
     {
         $user = $this->loginAuthenticator->processApiLoginRequest($request);
 
         if ($user === null) {
-            abort(401, 'Unauthorized');
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
         $request->attributes->add(['currentUserId' => $user->user_id]);
