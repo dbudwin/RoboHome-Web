@@ -21,12 +21,40 @@ class AmazonLoginAuthenticator implements ILoginAuthenticator
     {
         $accessToken = $request->query('access_token');
 
+        $loggedInUser = $this->getUserForAccessToken($accessToken);
+
+        return $loggedInUser;
+    }
+
+    public function processApiLoginRequest(Request $request)
+    {
+        $httpAuthorizationHeader = $request->header('Authorization');
+
+        preg_match('/Bearer (.*)/', $httpAuthorizationHeader, $matches);
+
+        if (!isset($matches[1])) {
+            return null;
+        }
+
+        $accessToken = $matches[1];
+
+        $loggedInUser = $this->getUserForAccessToken($accessToken);
+
+        return $loggedInUser;
+    }
+
+    private function getUserForAccessToken($accessToken)
+    {
         if (empty($accessToken) || !$this->verifyUserTokenMatchesAmazonToken($accessToken)) {
             return null;
         }
 
         $decodedUserProfile = $this->exchangeAccessTokenForDecodedUserProfile($accessToken);
         $loggedInUser = $this->getLoggedInUserProfile($decodedUserProfile);
+
+        if ($loggedInUser === null) {
+            $loggedInUser = $this->createNewUserIfUserDoesNotExist($decodedUserProfile);
+        }
 
         return $loggedInUser;
     }
@@ -71,14 +99,17 @@ class AmazonLoginAuthenticator implements ILoginAuthenticator
         $userId = $decodedUserProfile->user_id;
         $loggedInUser = $this->userModel->where('user_id', $userId)->first();
 
-        if ($loggedInUser === null) {
-            $loggedInUser = $this->userModel->add(
-                $decodedUserProfile->name,
-                $decodedUserProfile->email,
-                $decodedUserProfile->user_id
-            );
-        }
-
         return $loggedInUser;
+    }
+
+    private function createNewUserIfUserDoesNotExist($decodedUserProfile)
+    {
+        $user = $this->userModel->add(
+            $decodedUserProfile->name,
+            $decodedUserProfile->email,
+            $decodedUserProfile->user_id
+        );
+
+        return $user;
     }
 }
