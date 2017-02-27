@@ -42,18 +42,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
 
     public function testProcessLogin_GivenValidCurlRequests_ReturnsNewUser()
     {
-        $user = $this->createUser();
-
-        $mockUserTable = Mockery::mock(User::class);
-        $mockUserTable
-            ->shouldReceive('where')->withAnyArgs()->once()->andReturn(Mockery::self())
-            ->shouldReceive('first')->once()
-            ->shouldReceive('add')->withAnyArgs()->once()->andReturn($user);
-        $this->app->instance(User::class, $mockUserTable);
-
-        $this->amazonLoginAuthenticator = new AmazonLoginAuthenticator($this->mockCurlRequest, $mockUserTable);
-
-        $this->givenValidCurlRequests(env('AMAZON_TOKEN'), 2, 3, 1, 2);
+        $user = $this->givenNewUserToBeCreated();
 
         $result = $this->callProcessLoginRequest();
 
@@ -78,6 +67,74 @@ class AmazonLoginAuthenticatorTest extends TestCase
         $this->assertNull($result);
     }
 
+    public function testProcessApiLoginRequest_GivenValidAuthorizationHeader_ReturnsExistingUser()
+    {
+        $this->givenValidCurlRequests(env('AMAZON_TOKEN'), 2, 3, 1, 2);
+        $mockRequest = $this->givenValidAuthorizationHeader();
+
+        $result = $this->amazonLoginAuthenticator->processApiLoginRequest($mockRequest);
+
+        $this->assertEquals($this->user, $result);
+    }
+
+    public function testProcessApiLogin_GivenValidAuthorizationHeader_ReturnsNewUser()
+    {
+        $user = $this->givenNewUserToBeCreated();
+        $mockRequest = $this->givenValidAuthorizationHeader();
+
+        $result = $this->amazonLoginAuthenticator->processApiLoginRequest($mockRequest);
+
+        $this->assertEquals($user, $result);
+    }
+
+    public function testProcessApiLoginRequest_GivenRequestWithNonmatchingAccessToken_ReturnsNull()
+    {
+        $this->givenValidCurlRequests(self::$faker->uuid(), 1, 1, 0, 1);
+        $mockRequest = $this->givenValidAuthorizationHeader();
+
+        $result = $this->amazonLoginAuthenticator->processApiLoginRequest($mockRequest);
+
+        $this->assertNull($result);
+    }
+
+    public function testProcessApiLoginRequest_GivenNoAuthorizationHeader_ReturnsNull()
+    {
+        $mockRequest = Mockery::mock(Request::class);
+        $mockRequest->shouldReceive('header')->once();
+
+        $result = $this->amazonLoginAuthenticator->processApiLoginRequest($mockRequest);
+
+        $this->assertNull($result);
+    }
+
+    public function testProcessApiLoginRequest_GivenMalformedAuthorizationHeader_ReturnsNull()
+    {
+        $mockRequest = Mockery::mock(Request::class);
+        $mockRequest->shouldReceive('header')->with('Authorization')->once()->andReturn(self::$faker->uuid());
+
+        $result = $this->amazonLoginAuthenticator->processApiLoginRequest($mockRequest);
+
+        $this->assertNull($result);
+    }
+
+    private function givenNewUserToBeCreated()
+    {
+        $user = $this->createUser();
+
+        $mockUserTable = Mockery::mock(User::class);
+        $mockUserTable
+            ->shouldReceive('where')->withAnyArgs()->once()->andReturn(Mockery::self())
+            ->shouldReceive('first')->once()
+            ->shouldReceive('add')->withAnyArgs()->once()->andReturn($user);
+        $this->app->instance(User::class, $mockUserTable);
+
+        $this->amazonLoginAuthenticator = new AmazonLoginAuthenticator($this->mockCurlRequest, $mockUserTable);
+
+        $this->givenValidCurlRequests(env('AMAZON_TOKEN'), 2, 3, 1, 2);
+
+        return $user;
+    }
+
     private function createUser()
     {
         $user = new User();
@@ -98,6 +155,14 @@ class AmazonLoginAuthenticatorTest extends TestCase
         $result = $this->amazonLoginAuthenticator->processLoginRequest($mockRequest);
 
         return $result;
+    }
+
+    private function givenValidAuthorizationHeader()
+    {
+        $mockRequest = Mockery::mock(Request::class);
+        $mockRequest->shouldReceive('header')->with('Authorization')->once()->andReturn('Bearer ' . self::$faker->uuid());
+
+        return $mockRequest;
     }
 
     private function givenValidCurlRequests($token, $timesInitCalled, $timesSetOptionCalled, $timesSecondExecuteIsCalled, $timesClosedIsCalled)
