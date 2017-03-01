@@ -63,7 +63,7 @@ class DeviceControllerTest extends DeviceControllerTestCase
         $this->assertRedirectedToRouteWith302($response, '/devices');
     }
 
-    public function testAdd_CallsAddForModels()
+    public function testAdd_GivenSingleUserExists_CallsAddForModels()
     {
         $user = $this->givenSingleUserExists();
         $deviceName = self::$faker->name();
@@ -71,7 +71,17 @@ class DeviceControllerTest extends DeviceControllerTestCase
         $this->addDeviceForUser($user->user_id, $deviceName);
     }
 
-    public function testDelete_GivenDeviceIdThatUserDoesntOwn_RedirectToDevices()
+    public function testAdd_GivenSingleUserExists_SessionContainsSuccessMessage()
+    {
+        $user = $this->givenSingleUserExists();
+        $deviceName = self::$faker->name();
+
+        $response = $this->addDeviceForUser($user->user_id, $deviceName);
+
+        $response->assertSessionHas('alert-success');
+    }
+
+    public function testDelete_GivenUserDoesNotOwnsDevice_RedirectToDevices()
     {
         $user = $this->givenSingleUserExists();
         $deviceId = self::$faker->randomDigit();
@@ -84,21 +94,56 @@ class DeviceControllerTest extends DeviceControllerTestCase
         $this->assertRedirectedToRouteWith302($response, '/devices');
     }
 
-    public function testDelete_GivenDeviceIdThatUserOwns_RedirectToDevices()
+    public function testDelete_GivenUserDoesNotOwnsDevice_SessionContainsErrorMessage()
     {
         $user = $this->givenSingleUserExists();
         $deviceId = self::$faker->randomDigit();
 
-        $mockDeviceModel = Mockery::mock(Device::class);
-        $mockDeviceModel->shouldReceive('destroy')->with($deviceId)->once();
-        $this->app->instance(Device::class, $mockDeviceModel);
+        $this->givenDoesUserOwnDevice($user, $deviceId, false);
 
-        $this->givenDoesUserOwnDevice($user, $deviceId, true);
+        $response = $this->withSession([env('SESSION_USER_ID') => $user->user_id])
+            ->get('/devices/delete/' . $deviceId);
+
+        $response->assertSessionHas('alert-danger');
+    }
+
+    public function testDelete_GivenUserOwnsDevice_RedirectToDevices()
+    {
+        $user = $this->givenSingleUserExists();
+        $deviceId = $this->givenUserOwnsDeviceForDeletion($user);
 
         $response = $this->withSession([env('SESSION_USER_ID') => $user->user_id])
             ->get('/devices/delete/' . $deviceId);
 
         $this->assertRedirectedToRouteWith302($response, '/devices');
+    }
+
+    public function testDelete_GivenUserOwnsDevice_SessionContainsSuccessMessage()
+    {
+        $user = $this->givenSingleUserExists();
+        $deviceId = $this->givenUserOwnsDeviceForDeletion($user);
+
+        $response = $this->withSession([env('SESSION_USER_ID') => $user->user_id])
+            ->get('/devices/delete/' . $deviceId);
+
+        $response->assertSessionHas('alert-success');
+    }
+
+    private function givenUserOwnsDeviceForDeletion($user)
+    {
+        $deviceId = self::$faker->randomDigit();
+
+        $mockDeviceModel = Mockery::mock(Device::class);
+        $mockDeviceModel
+            ->shouldReceive('find')->with($deviceId)->once()->andReturn(Mockery::self())
+            ->shouldReceive('getAttribute')->with('name')->once();
+
+        $mockDeviceModel->shouldReceive('destroy')->with($deviceId)->once();
+        $this->app->instance(Device::class, $mockDeviceModel);
+
+        $this->givenDoesUserOwnDevice($user, $deviceId, true);
+
+        return $deviceId;
     }
 
     private function addDeviceForUser($userId, $deviceName)

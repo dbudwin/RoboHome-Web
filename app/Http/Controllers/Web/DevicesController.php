@@ -47,16 +47,26 @@ class DevicesController extends Controller
         $newDeviceId = $this->deviceModel->add($name, $description, $type, $currentUserId)->id;
         $this->rfDeviceModel->add($onCode, $offCode, $pulseLength, $newDeviceId);
 
+        $request->session()->flash('alert-success', "Device '$name' was successfully added!");
+
         return redirect()->route('devices');
     }
 
-    public function delete($deviceId)
+    public function delete(Request $request, $deviceId)
     {
         $doesUserOwnDevice = $this->currentUser()->doesUserOwnDevice($deviceId);
 
-        if ($doesUserOwnDevice) {
-            $this->deviceModel->destroy($deviceId);
+        if (!$doesUserOwnDevice) {
+            $request->session()->flash('alert-danger', 'Error deleting device!');
+
+            return redirect()->route('devices');
         }
+
+        $name = $this->deviceModel->find($deviceId)->name;
+
+        $this->deviceModel->destroy($deviceId);
+
+        $request->session()->flash('alert-success', "Device '$name' was successfully deleted!");
 
         return redirect()->route('devices');
     }
