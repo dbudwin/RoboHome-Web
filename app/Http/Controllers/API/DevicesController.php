@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Device;
 use App\Http\Controllers\Common\Controller;
 use App\Http\Globals\DeviceActions;
+use App\Http\MQTT\MessagePublisher;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -12,13 +13,15 @@ class DevicesController extends Controller
 {
     private $deviceModel;
     private $userModel;
+    private $messagePublisher;
 
-    public function __construct(Device $deviceModel, User $userModel)
+    public function __construct(Device $deviceModel, User $userModel, MessagePublisher $messagePublisher)
     {
         $this->middleware('apiAuthenticator');
 
         $this->deviceModel = $deviceModel;
         $this->userModel = $userModel;
+        $this->messagePublisher = $messagePublisher;
     }
 
     public function index(Request $request)
@@ -51,7 +54,7 @@ class DevicesController extends Controller
         return $response;
     }
 
-    private function handleControlRequest(Request $request, $responseName)
+    private function handleControlRequest(Request $request, $action, $responseName)
     {
         $userId = $request->get('currentUserId');
         $deviceId = $request->input('id');
@@ -61,6 +64,10 @@ class DevicesController extends Controller
         if (!$doesUserOwnDevice) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+
+        $urlValidAction = strtolower($action);
+
+        $this->messagePublisher->publish($userId, $deviceId, $urlValidAction);
 
         $response = [
             'header' => $this->createHeader($request, $responseName, 'Alexa.ConnectedHome.Control'),

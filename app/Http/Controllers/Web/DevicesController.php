@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Device;
 use App\Http\Controllers\Common\Controller;
 use App\Http\Globals\FlashMessageLevels;
+use App\Http\MQTT\MessagePublisher;
 use App\RFDevice;
 use App\User;
 use DB;
@@ -15,14 +16,16 @@ class DevicesController extends Controller
     private $deviceModel;
     private $rfDeviceModel;
     private $userModel;
+    private $messagePublisher;
 
-    public function __construct(Device $deviceModel, RFDevice $rfDeviceModel, User $userModel)
+    public function __construct(Device $deviceModel, RFDevice $rfDeviceModel, User $userModel, MessagePublisher $messagePublisher)
     {
         $this->middleware('guest');
 
         $this->deviceModel = $deviceModel;
         $this->rfDeviceModel = $rfDeviceModel;
         $this->userModel = $userModel;
+        $this->messagePublisher = $messagePublisher;
     }
 
     public function devices()
@@ -68,6 +71,22 @@ class DevicesController extends Controller
         $this->deviceModel->destroy($id);
 
         $request->session()->flash(FlashMessageLevels::SUCCESS, "Device '$name' was successfully deleted!");
+
+        return redirect()->route('devices');
+    }
+
+    public function handleControlRequest(Request $request, $action, $deviceId)
+    {
+        $currentUser = $this->currentUser();
+        $doesUserOwnDevice = $currentUser->doesUserOwnDevice($deviceId);
+
+        if (!$doesUserOwnDevice) {
+            $request->session()->flash(FlashMessageLevels::DANGER, 'Error controlling device!');
+
+            return redirect()->route('devices');
+        }
+
+        $this->messagePublisher->publish($currentUser->user_id, $deviceId, $action);
 
         return redirect()->route('devices');
     }

@@ -3,10 +3,11 @@
         <title>RoboHome | Devices</title>
         <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
         <script>
-            function toggleOutlet(topic, message) {
-                $.ajax({url: "extensions/MQTTPublisher.php?topic=" + topic + "&message=" + message, success: function(result) {
-                    alert(topic + " was turned " + message);
-                }});
+            function controlDevice(action, id) {
+                $.ajax({
+                    type: "POST",
+                    url: "/devices/" + action + "/" + id
+                });
             }
         </script>
         <!-- Latest compiled and minified CSS -->
@@ -67,8 +68,8 @@
                                         <td class="col-xs-5">{{ $device->name }}</td>
                                         <td class="col-xs-5">
                                             <div class="btn-group" role="group" aria-label="Device Controls">
-                                                <button type="button" class="btn btn-primary" onclick="toggleOutlet('EtekcityOutlet1', 'On');">On</button>
-                                                <button type="button" class="btn btn-primary" onclick="toggleOutlet('EtekcityOutlet1', 'Off');">Off</button>
+                                                <button type="button" class="btn btn-primary" onclick="controlDevice('turnon', '{{ $device->id }}');">On</button>
+                                                <button type="button" class="btn btn-primary" onclick="controlDevice('turnoff', '{{ $device->id }}');">Off</button>
                                             </div>
                                         </td>
                                     </tr>

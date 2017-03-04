@@ -129,6 +129,57 @@ class DeviceControllerTest extends DeviceControllerTestCase
         $response->assertSessionHas('alert-success');
     }
 
+    public function testHandleControlRequest_GivenUserExistsWithDevice_CallsPublish()
+    {
+        $user = $this->givenSingleUserExists();
+        $deviceId = self::$faker->randomDigit();
+        $action = self::$faker->word();
+
+        $mockUserRecord = $this->givenDoesUserOwnDevice($user, $deviceId, true);
+        $mockUserRecord->shouldReceive('getAttribute')->with('user_id')->once()->andReturn($user->user_id);
+
+        $this->mockMessagePublisher();
+
+        $response = $this->callControl($user->user_id, $action, $deviceId);
+
+        $this->assertRedirectedToRouteWith302($response, '/devices');
+    }
+
+    public function testHandleControlRequest_GivenUserExistsWithNoDevices_PublishIsNotCalled()
+    {
+        $user = $this->givenSingleUserExists();
+        $deviceId = self::$faker->randomDigit();
+        $action = self::$faker->word();
+
+        $this->givenDoesUserOwnDevice($user, $deviceId, false);
+        $this->mockMessagePublisher(0);
+
+        $response = $this->callControl($user->user_id, $action, $deviceId);
+
+        $this->assertRedirectedToRouteWith302($response, '/devices');
+    }
+
+    public function testHandleControlRequest_GivenUserExistsWithNoDevices_SessionContainsErrorMessage()
+    {
+        $user = $this->givenSingleUserExists();
+        $deviceId = self::$faker->randomDigit();
+        $action = self::$faker->word();
+
+        $this->givenDoesUserOwnDevice($user, $deviceId, false);
+
+        $response = $this->callControl($user->user_id, $action, $deviceId);
+
+        $response->assertSessionHas('alert-danger');
+    }
+
+    private function callControl($userId, $action, $deviceId)
+    {
+        $response = $this->withSession([env('SESSION_USER_ID') => $userId])
+            ->post("/devices/$action/$deviceId");
+
+        return $response;
+    }
+
     private function givenUserOwnsDeviceForDeletion($user)
     {
         $deviceId = self::$faker->randomDigit();

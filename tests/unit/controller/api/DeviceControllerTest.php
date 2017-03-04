@@ -63,6 +63,17 @@ class DeviceControllerTest extends DeviceControllerTestCase
         $this->assertControlConfirmation($response);
     }
 
+    public function testTurnOn_GivenUserExistsWithDevice_CallsPublish()
+    {
+        $user = $this->givenSingleUserExistsWithNoDevicesRegisteredWithApi();
+        $device = $this->createDevice(self::$faker->word(), $user);
+
+        $this->mockMessagePublisher();
+        $this->givenDeviceIsRegisteredToUser($device, $user->user_id);
+
+        $this->callControl(DeviceActions::TURN_ON, $device->id);
+    }
+
     public function testTurnOn_GivenUserExistsWithNoDevices_Returns401()
     {
         $user = $this->givenSingleUserExistsWithNoDevicesRegisteredWithApi();
@@ -85,6 +96,17 @@ class DeviceControllerTest extends DeviceControllerTestCase
         $response = $this->callControl(DeviceActions::TURN_OFF, $device->id);
 
         $this->assertControlConfirmation($response);
+    }
+
+    public function testTurnOff_GivenUserExistsWithDevice_CallsPublish()
+    {
+        $user = $this->givenSingleUserExistsWithNoDevicesRegisteredWithApi();
+        $device = $this->createDevice(self::$faker->word(), $user);
+
+        $this->mockMessagePublisher();
+        $this->givenDeviceIsRegisteredToUser($device, $user->user_id);
+
+        $this->callControl(DeviceActions::TURN_OFF, $device->id);
     }
 
     public function testTurnOff_GivenUserExistsWithNoDevices_Returns401()
