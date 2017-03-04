@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ae02637df29130c357f7c2415bf10868",
-    "content-hash": "3805edf83bf06aab06ee34e3e9339408",
+    "hash": "8e7f3c713fb357e050dbd9c5169c7e6b",
+    "content-hash": "a26ca46d38d0ffb6d2a3b8e3aefe7f10",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -327,6 +327,43 @@
                 "storage"
             ],
             "time": "2017-02-09 11:33:58"
+        },
+        {
+            "name": "mcfish/libmqtt",
+            "version": "0.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/McFizh/libMQTT.git",
+                "reference": "225e2efcd4f3ee4496c3b0d603d465766c69e68d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/McFizh/libMQTT/zipball/225e2efcd4f3ee4496c3b0d603d465766c69e68d",
+                "reference": "225e2efcd4f3ee4496c3b0d603d465766c69e68d",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "LibMQTT\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Pekka Harjamäki",
+                    "email": "mcfizh@gmail.com"
+                }
+            ],
+            "description": "MQTT 3.1.1 library for PHP with TLS support",
+            "keywords": [
+                "mqtt",
+                "php"
+            ],
+            "time": "2016-08-01 18:15:34"
         },
         {
             "name": "monolog/monolog",
