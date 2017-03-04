@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Device;
 use App\Http\Controllers\Common\Controller;
+use App\Http\Globals\FlashMessageLevels;
 use App\RFDevice;
 use App\User;
 use DB;
@@ -47,7 +48,7 @@ class DevicesController extends Controller
         $newDeviceId = $this->deviceModel->add($name, $description, $type, $currentUserId)->id;
         $this->rfDeviceModel->add($onCode, $offCode, $pulseLength, $newDeviceId);
 
-        $request->session()->flash('alert-success', "Device '$name' was successfully added!");
+        $request->session()->flash(FlashMessageLevels::SUCCESS, "Device '$name' was successfully added!");
 
         return redirect()->route('devices');
     }
@@ -57,7 +58,7 @@ class DevicesController extends Controller
         $doesUserOwnDevice = $this->currentUser()->doesUserOwnDevice($id);
 
         if (!$doesUserOwnDevice) {
-            $request->session()->flash('alert-danger', 'Error deleting device!');
+            $request->session()->flash(FlashMessageLevels::DANGER, 'Error deleting device!');
 
             return redirect()->route('devices');
         }
@@ -66,7 +67,7 @@ class DevicesController extends Controller
 
         $this->deviceModel->destroy($id);
 
-        $request->session()->flash('alert-success', "Device '$name' was successfully deleted!");
+        $request->session()->flash(FlashMessageLevels::SUCCESS, "Device '$name' was successfully deleted!");
 
         return redirect()->route('devices');
     }
