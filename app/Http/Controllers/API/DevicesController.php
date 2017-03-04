@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Device;
 use App\Http\Controllers\Common\Controller;
+use App\Http\Globals\DeviceActions;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -38,14 +39,14 @@ class DevicesController extends Controller
 
     public function turnOn(Request $request)
     {
-        $response = $this->handleControlRequest($request, 'TurnOnConfirmation');
+        $response = $this->handleControlRequest($request, DeviceActions::TURN_ON, 'TurnOnConfirmation');
 
         return $response;
     }
 
     public function turnOff(Request $request)
     {
-        $response = $this->handleControlRequest($request, 'TurnOffConfirmation');
+        $response = $this->handleControlRequest($request, DeviceActions::TURN_OFF, 'TurnOffConfirmation');
 
         return $response;
     }
@@ -71,7 +72,7 @@ class DevicesController extends Controller
 
     private function buildAppliancesJson($devicesForCurrentUser)
     {
-        $actions = ['turnOn', 'turnOff'];
+        $actions = [DeviceActions::TURN_ON, DeviceActions::TURN_OFF];
 
         $appliances = [];
 

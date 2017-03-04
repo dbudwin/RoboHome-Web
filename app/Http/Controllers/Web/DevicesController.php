@@ -52,9 +52,9 @@ class DevicesController extends Controller
         return redirect()->route('devices');
     }
 
-    public function delete(Request $request, $deviceId)
+    public function delete(Request $request, $id)
     {
-        $doesUserOwnDevice = $this->currentUser()->doesUserOwnDevice($deviceId);
+        $doesUserOwnDevice = $this->currentUser()->doesUserOwnDevice($id);
 
         if (!$doesUserOwnDevice) {
             $request->session()->flash('alert-danger', 'Error deleting device!');
@@ -62,9 +62,9 @@ class DevicesController extends Controller
             return redirect()->route('devices');
         }
 
-        $name = $this->deviceModel->find($deviceId)->name;
+        $name = $this->deviceModel->find($id)->name;
 
-        $this->deviceModel->destroy($deviceId);
+        $this->deviceModel->destroy($id);
 
         $request->session()->flash('alert-success', "Device '$name' was successfully deleted!");
 
