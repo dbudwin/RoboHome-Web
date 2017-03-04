@@ -3,6 +3,7 @@
 namespace Tests\Unit\Controller\Api;
 
 use App\Http\Authentication\ILoginAuthenticator;
+use App\Http\Globals\DeviceActions;
 use App\User;
 use Mockery;
 use Tests\Unit\Controller\Common\DeviceControllerTestCase;
@@ -57,9 +58,20 @@ class DeviceControllerTest extends DeviceControllerTestCase
 
         $this->givenDeviceIsRegisteredToUser($device, $user->user_id);
 
-        $response = $this->callControl('turnon', $device->id);
+        $response = $this->callControl(DeviceActions::TURN_ON, $device->id);
 
         $this->assertControlConfirmation($response);
+    }
+
+    public function testTurnOn_GivenUserExistsWithDevice_CallsPublish()
+    {
+        $user = $this->givenSingleUserExistsWithNoDevicesRegisteredWithApi();
+        $device = $this->createDevice(self::$faker->word(), $user);
+
+        $this->mockMessagePublisher();
+        $this->givenDeviceIsRegisteredToUser($device, $user->user_id);
+
+        $this->callControl(DeviceActions::TURN_ON, $device->id);
     }
 
     public function testTurnOn_GivenUserExistsWithNoDevices_Returns401()
@@ -69,7 +81,7 @@ class DeviceControllerTest extends DeviceControllerTestCase
 
         $this->givenDoesUserOwnDevice($user, $deviceId, false);
 
-        $response = $this->callControl('turnon', $deviceId);
+        $response = $this->callControl(DeviceActions::TURN_ON, $deviceId);
 
         $response->assertStatus(401);
     }
@@ -81,9 +93,20 @@ class DeviceControllerTest extends DeviceControllerTestCase
 
         $this->givenDeviceIsRegisteredToUser($device, $user->user_id);
 
-        $response = $this->callControl('turnoff', $device->id);
+        $response = $this->callControl(DeviceActions::TURN_OFF, $device->id);
 
         $this->assertControlConfirmation($response);
+    }
+
+    public function testTurnOff_GivenUserExistsWithDevice_CallsPublish()
+    {
+        $user = $this->givenSingleUserExistsWithNoDevicesRegisteredWithApi();
+        $device = $this->createDevice(self::$faker->word(), $user);
+
+        $this->mockMessagePublisher();
+        $this->givenDeviceIsRegisteredToUser($device, $user->user_id);
+
+        $this->callControl(DeviceActions::TURN_OFF, $device->id);
     }
 
     public function testTurnOff_GivenUserExistsWithNoDevices_Returns401()
@@ -93,7 +116,7 @@ class DeviceControllerTest extends DeviceControllerTestCase
 
         $this->givenDoesUserOwnDevice($user, $deviceId, false);
 
-        $response = $this->callControl('turnoff', $deviceId);
+        $response = $this->callControl(DeviceActions::TURN_OFF, $deviceId);
 
         $response->assertStatus(401);
     }
@@ -141,7 +164,9 @@ class DeviceControllerTest extends DeviceControllerTestCase
 
     private function callControl($action, $deviceId)
     {
-        $response = $this->postJson('/api/devices/' . $action, ['id' => $deviceId], [
+        $urlValidAction = strtolower($action);
+
+        $response = $this->postJson('/api/devices/' . $urlValidAction, ['id' => $deviceId], [
             'HTTP_Authorization' => 'Bearer ' . self::$faker->uuid(),
             'HTTP_Message_Id' => $this->messageId
         ]);

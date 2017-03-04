@@ -3,6 +3,7 @@
 namespace Tests\Unit\Controller\Common;
 
 use App\Device;
+use App\Http\MQTT\MessagePublisher;
 use App\User;
 use Mockery;
 
@@ -98,14 +99,29 @@ class DeviceControllerTestCase extends ControllerTestCase
         $this->app->instance(User::class, $mockUserTable);
     }
 
+    protected function mockMessagePublisher($timesPublishIsCalled = 1)
+    {
+        $mockMessagePublisher = Mockery::mock(MessagePublisher::class);
+        $mockMessagePublisher
+            ->shouldReceive('publish')
+            ->withAnyArgs()->times($timesPublishIsCalled)
+            ->andReturn(true);
+
+        $this->app->instance(MessagePublisher::class, $mockMessagePublisher);
+    }
+
     protected function createDevice($deviceName, $userId)
     {
+        Device::unguard();
+
         $device = new Device([
             'id' => self::$faker->randomDigit(),
             'name' => $deviceName,
             'description' => self::$faker->sentence(),
             'user_id' => $userId
         ]);
+
+        Device::reguard();
 
         return $device;
     }
@@ -116,5 +132,7 @@ class DeviceControllerTestCase extends ControllerTestCase
         $mockUserRecord->shouldReceive('doesUserOwnDevice')->with($deviceId)->once()->andReturn($doesUserOwnDevice);
 
         $this->mockUserTable($mockUserRecord, $user->user_id);
+
+        return $mockUserRecord;
     }
 }
