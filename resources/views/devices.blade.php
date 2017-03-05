@@ -54,7 +54,7 @@
                             <table class="table table-striped table-condensed">
                                 @foreach ($devices as $device)
                                     <tr>
-                                        <td class="col-xs-2">
+                                        <td class="col-xs-1">
                                             <div class="dropdown">
                                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Edit Device">
                                                     <span class="glyphicon glyphicon-cog"></span> <span class="caret"></span>
@@ -65,8 +65,15 @@
                                                 </ul>
                                             </div>
                                         </td>
-                                        <td class="col-xs-5">{{ $device->name }}</td>
-                                        <td class="col-xs-5">
+                                        <td class="col-xs-6">
+                                            <div>
+                                                {{ $device->name }}
+                                            </div>
+                                            <div>
+                                                <small>{{ $device->description }}</small>
+                                            </div>
+                                        </td>
+                                        <td class="col-xs-5 pull-right">
                                             <div class="btn-group" role="group" aria-label="Device Controls">
                                                 <button type="button" class="btn btn-primary" onclick="controlDevice('turnon', '{{ $device->id }}');">On</button>
                                                 <button type="button" class="btn btn-primary" onclick="controlDevice('turnoff', '{{ $device->id }}');">Off</button>
@@ -93,13 +100,13 @@
                                                 <div class="form-group row">
                                                     <label for="name" class="col-xs-4 col-form-label">Device Name</label>
                                                     <div class="col-xs-8">
-                                                        <input class="form-control" type="text" placeholder="e.x. Living Room Light" name="name" required="true"    >
+                                                        <input class="form-control" type="text" placeholder="e.x. Living Room Light" name="name" required="true" maxlength="50">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
                                                     <label for="description" class="col-xs-4 col-form-label">Device Description</label>
                                                     <div class="col-xs-8">
-                                                        <input class="form-control" type="text" placeholder="e.x. Light in corner of downstairs living room" name="description" required="true">
+                                                        <input class="form-control" type="text" placeholder="e.x. Light in corner of downstairs living room" name="description" required="true" maxlength="100">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
