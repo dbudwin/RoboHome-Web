@@ -24,11 +24,8 @@ RoboHome is a SaaS tool that also integrates with Amazon's Echo to enable contro
 
 ###Configuring :wrench:
 
-1. Open the `.env` file and populate the information needed to connect to your MQTT broker, MySQL database (under `DB_CONNECTION`).
-2. Add two new key-value pairs:
-    1. `AMAZON_TOKEN`, set it equal to your key provided by Login With Amazon, it usually looks like `amzn1.application-oa2-client.[UUID]`
-    2. `SESSION_USER_ID`, set it equal to `userId` (i.e. `SESSION_USER_ID=userId`)
-3. Run `composer install` from the root folder to download and install third party PHP dependencies.
+1. Rename `.env.example` to `.env` and populate the information needed to connect to your MQTT broker and MySQL database (under `DB_CONNECTION`).
+2. Run `composer install` from the root folder to download and install third party PHP dependencies.
 
 ###Docker :whale2:
 
@@ -47,6 +44,9 @@ This repo supports the principles of [Bob Martin's Clean Code](http://www.goodre
 ###Notes :notebook:
 
 - Before you release this application...
-    - If you're using Docker Compose, please take the time to update the username and default password to be more secure.  The current implementation is designed for locally running this application.
+    - If you're using Docker Compose, please take the time to update the username and default password to be more secure.  The current implementation is designed for running this application locally.
+    - Secure your Laravel installation by making the following changes to your `.env` file:
+        - Change `APP_ENV` to `production`
+        - Change `APP_DEBUG` to `false`
 
 *This is a new project and will be changing rapidly, more details will be provided when entering a beta state*
