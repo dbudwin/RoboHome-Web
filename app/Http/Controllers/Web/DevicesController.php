@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Device;
 use App\Http\Controllers\Common\Controller;
+use App\Http\Globals\DeviceTypes;
 use App\Http\Globals\FlashMessageLevels;
 use App\Http\MQTT\MessagePublisher;
 use App\RFDevice;
@@ -45,7 +46,7 @@ class DevicesController extends Controller
         $onCode = $request->input('onCode');
         $offCode = $request->input('offCode');
         $pulseLength = $request->input('pulseLength');
-        $type = 1;
+        $type = DeviceTypes::RF_DEVICE;
 
         $currentUserId = $this->currentUser()->id;
         $newDeviceId = $this->deviceModel->add($name, $description, $type, $currentUserId)->id;

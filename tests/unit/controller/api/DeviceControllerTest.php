@@ -3,6 +3,7 @@
 namespace Tests\Unit\Controller\Api;
 
 use App\Http\Authentication\ILoginAuthenticator;
+use App\Http\Controllers\API\DeviceInformation\IDeviceInformation;
 use App\Http\Globals\DeviceActions;
 use App\User;
 use Mockery;
@@ -10,11 +11,16 @@ use Tests\Unit\Controller\Common\DeviceControllerTestCase;
 
 class DeviceControllerTest extends DeviceControllerTestCase
 {
+    private $mockDeviceInformation;
     private $messageId;
 
     public function setUp()
     {
         parent::setUp();
+
+        $this->mockDeviceInformation = Mockery::mock(IDeviceInformation::class);
+
+        $this->app->instance(IDeviceInformation::class, $this->mockDeviceInformation);
 
         $this->messageId = self::$faker->uuid;
     }
@@ -117,6 +123,41 @@ class DeviceControllerTest extends DeviceControllerTestCase
         $this->givenDoesUserOwnDevice($user, $deviceId, false);
 
         $response = $this->callControl(DeviceActions::TURN_OFF, $deviceId);
+
+        $response->assertStatus(401);
+    }
+
+    public function testInfo_GivenUserExistsWithDevice_ReturnsJsonResponse()
+    {
+        $user = $this->givenSingleUserExists();
+        $device = $this->createDevice(self::$faker->word(), $user);
+
+        $this->givenDoesUserOwnDevice($user, $device->id, true);
+
+        $this->mockDeviceInformation->shouldReceive('info')->once();
+
+        $response = $this->postJson('/api/devices/info', [
+            'userId' => $user->user_id,
+            'action' => self::$faker->word(),
+            'deviceId' => $device->id
+        ], []);
+
+        $response->assertStatus(200);
+    }
+
+    public function testInfo_GivenRandomUserAndDevice_Returns401()
+    {
+        $userId = self::$faker->uuid();
+        $user = $this->createUser($userId);
+        $deviceId = self::$faker->randomDigit();
+
+        $this->givenDoesUserOwnDevice($user, $deviceId, false);
+
+        $response = $this->postJson('/api/devices/info', [
+            'userId' => $userId,
+            'action' => self::$faker->word(),
+            'deviceId' => $deviceId
+        ], []);
 
         $response->assertStatus(401);
     }

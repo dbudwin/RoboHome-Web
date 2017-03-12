@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Device;
+use App\Http\Controllers\API\DeviceInformation\IDeviceInformation;
 use App\Http\Controllers\Common\Controller;
 use App\Http\Globals\DeviceActions;
 use App\Http\MQTT\MessagePublisher;
@@ -14,14 +15,16 @@ class DevicesController extends Controller
     private $deviceModel;
     private $userModel;
     private $messagePublisher;
+    private $deviceInformation;
 
-    public function __construct(Device $deviceModel, User $userModel, MessagePublisher $messagePublisher)
+    public function __construct(Device $deviceModel, User $userModel, MessagePublisher $messagePublisher, IDeviceInformation $deviceInformation)
     {
-        $this->middleware('apiAuthenticator');
+        $this->middleware('apiAuthenticator', ['except' => ['info']]);
 
         $this->deviceModel = $deviceModel;
         $this->userModel = $userModel;
         $this->messagePublisher = $messagePublisher;
+        $this->deviceInformation = $deviceInformation;
     }
 
     public function index(Request $request)
@@ -54,12 +57,27 @@ class DevicesController extends Controller
         return $response;
     }
 
+    public function info(Request $request)
+    {
+        $userId = $request->get('userId');
+        $deviceId = $request->get('deviceId');
+        $action = $request->get('action');
+
+        $doesUserOwnDevice = $this->doesUserOwnDevice($userId, $deviceId);
+
+        if (!$doesUserOwnDevice) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        return $this->deviceInformation->info($deviceId, $action);
+    }
+
     private function handleControlRequest(Request $request, $action, $responseName)
     {
         $userId = $request->get('currentUserId');
         $deviceId = $request->input('id');
 
-        $doesUserOwnDevice = $this->currentUser($userId)->doesUserOwnDevice($deviceId);
+        $doesUserOwnDevice = $this->doesUserOwnDevice($userId, $deviceId);
 
         if (!$doesUserOwnDevice) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -121,5 +139,18 @@ class DevicesController extends Controller
         $currentUser = $this->userModel->where('user_id', $userId)->first();
 
         return $currentUser;
+    }
+
+    private function doesUserOwnDevice($userId, $deviceId)
+    {
+        $currentUser = $this->currentUser($userId);
+
+        if ($currentUser === null) {
+            return false;
+        }
+
+        $doesUserOwnDevice = $currentUser->doesUserOwnDevice($deviceId);
+
+        return $doesUserOwnDevice;
     }
 }
