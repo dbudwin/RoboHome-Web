@@ -39,4 +39,9 @@ class DeviceInformationServiceProvider extends ServiceProvider
             $this->app->bind($deviceInformationInterface, 'App\Http\Controllers\API\DeviceInformation\RFDeviceInformation');
         }
     }
+
+    public function provides()
+    {
+        return ['App\Http\Controllers\API\DeviceInformation\IDeviceInformation'];
+    }
 }
