@@ -69,9 +69,7 @@ class DevicesController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        $info = $this->deviceInformation->info($deviceId, $action);
-
-        return $info;
+        return $this->deviceInformation->info($deviceId, $action);
     }
 
     private function handleControlRequest(Request $request, $action, $responseName)

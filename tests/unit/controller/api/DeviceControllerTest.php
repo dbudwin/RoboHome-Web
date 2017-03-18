@@ -131,26 +131,18 @@ class DeviceControllerTest extends DeviceControllerTestCase
     {
         $user = $this->givenSingleUserExists();
         $device = $this->createDevice(self::$faker->word(), $user);
-        $action = self::$faker->word();
-        $responseContent = self::$faker->word();
 
         $this->givenDoesUserOwnDevice($user, $device->id, true);
 
-        $this->mockDeviceInformation->shouldReceive('info')
-            ->withArgs([$device->id, $action])
-            ->andReturn($responseContent)
-            ->once();
+        $this->mockDeviceInformation->shouldReceive('info')->once();
 
         $response = $this->postJson('/api/devices/info', [
             'userId' => $user->user_id,
-            'action' => $action,
+            'action' => self::$faker->word(),
             'deviceId' => $device->id
         ], []);
 
-        $surroundingQuotesFromJsonEncode = 2;
-
         $response->assertStatus(200);
-        $response->assertHeader('Content-Length', strlen($responseContent) + $surroundingQuotesFromJsonEncode);
     }
 
     public function testInfo_GivenRandomUserAndDevice_Returns401()
