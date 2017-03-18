@@ -42,8 +42,8 @@ class MessagePublisherTest extends TestCase
     {
         $mockClient = Mockery::mock(Client::class);
         $mockClient->shouldReceive('connect')->once()->andReturn(false);
-        $mockClient->shouldReceive('publish')->never();
-        $mockClient->shouldReceive('close')->never();
+        $mockClient->shouldNotReceive('publish');
+        $mockClient->shouldNotReceive('close');
 
         $messagePublisher = new MessagePublisher($mockClient);
 
