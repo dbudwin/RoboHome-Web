@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Http\Controllers\API\DeviceInformation\ErrantDeviceInformation;
+use App\Http\Controllers\API\DeviceInformation\IDeviceInformation;
+use App\Http\Controllers\API\DeviceInformation\RFDeviceInformation;
 use App\Http\Globals\DeviceTypes;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
@@ -18,6 +21,7 @@ class DeviceInformationServiceProvider extends ServiceProvider
     public function registerDeviceInformationTypes(Request $request)
     {
         if (!$request->has('deviceId')) {
+            $this->app->bind(IDeviceInformation::class, ErrantDeviceInformation::class);
             return;
         }
 
@@ -28,20 +32,19 @@ class DeviceInformationServiceProvider extends ServiceProvider
         $device = $deviceModel->find($deviceId);
 
         if ($device === null) {
+            $this->app->bind(IDeviceInformation::class, ErrantDeviceInformation::class);
             return;
         }
 
         $deviceType = $device->device_type_id;
 
-        $deviceInformationInterface = 'App\Http\Controllers\API\DeviceInformation\IDeviceInformation';
-
         if ($deviceType === DeviceTypes::RF_DEVICE) {
-            $this->app->bind($deviceInformationInterface, 'App\Http\Controllers\API\DeviceInformation\RFDeviceInformation');
+            $this->app->bind(IDeviceInformation::class, RFDeviceInformation::class);
         }
     }
 
     public function provides()
     {
-        return ['App\Http\Controllers\API\DeviceInformation\IDeviceInformation'];
+        return [IDeviceInformation::class];
     }
 }
