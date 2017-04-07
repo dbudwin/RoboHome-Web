@@ -13,7 +13,7 @@ class MessagePublisher
         $this->client = $client;
     }
 
-    public function publish($userId, $deviceId, $action)
+    public function publish(string $userId, int $deviceId, string $action) : bool
     {
         if (!$this->client->connect()) {
             return false;

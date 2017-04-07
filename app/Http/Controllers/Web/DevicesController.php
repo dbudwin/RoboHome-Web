@@ -10,7 +10,9 @@ use App\Http\MQTT\MessagePublisher;
 use App\RFDevice;
 use App\User;
 use DB;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class DevicesController extends Controller
 {
@@ -29,7 +31,7 @@ class DevicesController extends Controller
         $this->messagePublisher = $messagePublisher;
     }
 
-    public function devices()
+    public function devices() : View
     {
         $currentUser = $this->currentUser();
 
@@ -39,7 +41,7 @@ class DevicesController extends Controller
         ]);
     }
 
-    public function add(Request $request)
+    public function add(Request $request) : RedirectResponse
     {
         $name = $request->input('name');
         $description = $request->input('description');
@@ -57,7 +59,7 @@ class DevicesController extends Controller
         return redirect()->route('devices');
     }
 
-    public function delete(Request $request, $id)
+    public function delete(Request $request, int $id) : RedirectResponse
     {
         $doesUserOwnDevice = $this->currentUser()->doesUserOwnDevice($id);
 
@@ -76,7 +78,7 @@ class DevicesController extends Controller
         return redirect()->route('devices');
     }
 
-    public function handleControlRequest(Request $request, $action, $deviceId)
+    public function handleControlRequest(Request $request, string $action, int $deviceId) : RedirectResponse
     {
         $currentUser = $this->currentUser();
         $doesUserOwnDevice = $currentUser->doesUserOwnDevice($deviceId);
@@ -92,7 +94,7 @@ class DevicesController extends Controller
         return redirect()->route('devices');
     }
 
-    private function currentUser()
+    private function currentUser() : User
     {
         $userId = session(env('SESSION_USER_ID'));
         $currentUser = $this->userModel->where('user_id', $userId)->first();

@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Http\Authentication\ILoginAuthenticator;
 use Closure;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ApiAuthenticator
 {
@@ -15,7 +16,7 @@ class ApiAuthenticator
         $this->loginAuthenticator = $loginAuthenticator;
     }
 
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next) : Response
     {
         $user = $this->loginAuthenticator->processApiLoginRequest($request);
 

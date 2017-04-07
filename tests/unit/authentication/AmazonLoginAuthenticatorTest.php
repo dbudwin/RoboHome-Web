@@ -7,6 +7,7 @@ use App\Http\Wrappers\ICurlRequest;
 use App\User;
 use Illuminate\Http\Request;
 use Mockery;
+use Mockery\MockInterface;
 use Tests\TestCase;
 
 class AmazonLoginAuthenticatorTest extends TestCase
@@ -117,7 +118,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
         $this->assertNull($result);
     }
 
-    private function givenNewUserToBeCreated()
+    private function givenNewUserToBeCreated() : User
     {
         $user = $this->createUser();
 
@@ -135,7 +136,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
         return $user;
     }
 
-    private function createUser()
+    private function createUser() : User
     {
         $user = new User();
 
@@ -147,17 +148,17 @@ class AmazonLoginAuthenticatorTest extends TestCase
         return $user;
     }
 
-    private function callProcessLoginRequest()
+    private function callProcessLoginRequest() : ?User
     {
         $mockRequest = Mockery::mock(Request::class);
         $mockRequest->shouldReceive('query')->with('access_token')->once()->andReturn(self::$faker->uuid());
 
-        $result = $this->amazonLoginAuthenticator->processLoginRequest($mockRequest);
+        $user = $this->amazonLoginAuthenticator->processLoginRequest($mockRequest);
 
-        return $result;
+        return $user;
     }
 
-    private function givenValidAuthorizationHeader()
+    private function givenValidAuthorizationHeader() : MockInterface
     {
         $mockRequest = Mockery::mock(Request::class);
         $mockRequest->shouldReceive('header')->with('Authorization')->once()->andReturn('Bearer ' . self::$faker->uuid());
@@ -165,7 +166,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
         return $mockRequest;
     }
 
-    private function givenValidCurlRequests($token, $timesInitCalled, $timesSetOptionCalled, $timesSecondExecuteIsCalled, $timesClosedIsCalled)
+    private function givenValidCurlRequests(string $token, int $timesInitCalled, int $timesSetOptionCalled, int $timesSecondExecuteIsCalled, int $timesClosedIsCalled)
     {
         $userId = self::$faker->uuid;
 
@@ -194,7 +195,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
             ->shouldReceive('close')->times($timesClosedIsCalled);
     }
 
-    private function givenBadAccessTokenCurlRequests($curlReturnValue, $timesInitCalled, $timesSetOptionCalled, $timesClosedIsCalled)
+    private function givenBadAccessTokenCurlRequests(string $curlReturnValue, int $timesInitCalled, int $timesSetOptionCalled, int $timesClosedIsCalled)
     {
         $this->mockCurlRequest
             ->shouldReceive('init')->withAnyArgs()->times($timesInitCalled)

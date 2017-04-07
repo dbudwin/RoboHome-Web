@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\DeviceInformation;
 
 use App\RFDevice;
+use Illuminate\Http\JsonResponse;
 
 class RFDeviceInformation implements IDeviceInformation
 {
@@ -13,7 +14,7 @@ class RFDeviceInformation implements IDeviceInformation
         $this->rfDeviceModel = $rfDeviceModel;
     }
 
-    public function info($deviceId, $action)
+    public function info(int $deviceId, string $action) : JsonResponse
     {
         $rfDevice = $this->rfDeviceModel->where('device_id', $deviceId)->first();
 

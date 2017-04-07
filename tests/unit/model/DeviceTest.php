@@ -48,7 +48,7 @@ class DeviceTest extends ModelTestCase
         $this->assertEquals(0, RFDevice::count());
     }
 
-    private function addDeviceToDatabase()
+    private function addDeviceToDatabase() : Device
     {
         $device = new Device();
         $name = self::$faker->word();
@@ -61,7 +61,7 @@ class DeviceTest extends ModelTestCase
         return $addedDevice;
     }
 
-    private function addRFDeviceToDatabase(Device $device)
+    private function addRFDeviceToDatabase(Device $device) : RFDevice
     {
         $rfDevice = new RFDevice();
         $onCode = self::$faker->randomNumber();

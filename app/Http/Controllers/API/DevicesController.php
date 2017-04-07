@@ -8,6 +8,7 @@ use App\Http\Controllers\Common\Controller;
 use App\Http\Globals\DeviceActions;
 use App\Http\MQTT\MessagePublisher;
 use App\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class DevicesController extends Controller
@@ -27,7 +28,7 @@ class DevicesController extends Controller
         $this->deviceInformation = $deviceInformation;
     }
 
-    public function index(Request $request)
+    public function index(Request $request) : JsonResponse
     {
         $userId = $request->get('currentUserId');
 
@@ -43,21 +44,21 @@ class DevicesController extends Controller
         return response()->json($response);
     }
 
-    public function turnOn(Request $request)
+    public function turnOn(Request $request) : JsonResponse
     {
         $response = $this->handleControlRequest($request, DeviceActions::TURN_ON, 'TurnOnConfirmation');
 
         return $response;
     }
 
-    public function turnOff(Request $request)
+    public function turnOff(Request $request) : JsonResponse
     {
         $response = $this->handleControlRequest($request, DeviceActions::TURN_OFF, 'TurnOffConfirmation');
 
         return $response;
     }
 
-    public function info(Request $request)
+    public function info(Request $request) : JsonResponse
     {
         $userId = $request->get('userId');
         $deviceId = $request->get('deviceId');
@@ -72,7 +73,7 @@ class DevicesController extends Controller
         return $this->deviceInformation->info($deviceId, $action);
     }
 
-    private function handleControlRequest(Request $request, $action, $responseName)
+    private function handleControlRequest(Request $request, string $action, string $responseName) : JsonResponse
     {
         $userId = $request->get('currentUserId');
         $deviceId = $request->input('id');
@@ -120,7 +121,7 @@ class DevicesController extends Controller
         return $appliances;
     }
 
-    private function createHeader(Request $request, $responseName, $namespace)
+    private function createHeader(Request $request, string $responseName, string $namespace)
     {
         $messageId = $request->header('Message-Id');
 
@@ -134,14 +135,14 @@ class DevicesController extends Controller
         return $header;
     }
 
-    private function currentUser($userId)
+    private function currentUser(string $userId) : User
     {
         $currentUser = $this->userModel->where('user_id', $userId)->first();
 
         return $currentUser;
     }
 
-    private function doesUserOwnDevice($userId, $deviceId)
+    private function doesUserOwnDevice(string $userId, int $deviceId) : bool
     {
         $currentUser = $this->currentUser($userId);
 

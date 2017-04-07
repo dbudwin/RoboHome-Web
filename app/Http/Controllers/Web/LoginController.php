@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Authentication\ILoginAuthenticator;
 use App\Http\Controllers\Common\Controller;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class LoginController extends Controller
@@ -24,7 +25,7 @@ class LoginController extends Controller
         return view('index');
     }
 
-    public function login(Request $request)
+    public function login(Request $request) : RedirectResponse
     {
         $loggedInUser = $this->loginAuthenticator->processLoginRequest($request);
 
@@ -37,7 +38,7 @@ class LoginController extends Controller
         return redirect()->route('devices');
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request) : RedirectResponse
     {
         $request->session()->flush();
 

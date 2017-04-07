@@ -6,6 +6,8 @@ use App\Http\Authentication\ILoginAuthenticator;
 use App\Http\Controllers\API\DeviceInformation\IDeviceInformation;
 use App\Http\Globals\DeviceActions;
 use App\User;
+use Illuminate\Foundation\Testing\TestResponse;
+use Illuminate\Http\JsonResponse;
 use Mockery;
 use Tests\Unit\Controller\Common\DeviceControllerTestCase;
 
@@ -130,11 +132,11 @@ class DeviceControllerTest extends DeviceControllerTestCase
     public function testInfo_GivenUserExistsWithDevice_ReturnsJsonResponse()
     {
         $user = $this->givenSingleUserExists();
-        $device = $this->createDevice(self::$faker->word(), $user);
+        $device = $this->createDevice(self::$faker->word(), $user->user_id);
 
         $this->givenDoesUserOwnDevice($user, $device->id, true);
 
-        $this->mockDeviceInformation->shouldReceive('info')->once();
+        $this->mockDeviceInformation->shouldReceive('info')->once()->andReturn(new JsonResponse());
 
         $response = $this->postJson('/api/devices/info', [
             'userId' => $user->user_id,
@@ -162,7 +164,7 @@ class DeviceControllerTest extends DeviceControllerTestCase
         $response->assertStatus(401);
     }
 
-    private function givenSingleUserExistsWithNoDevicesRegisteredWithApi()
+    private function givenSingleUserExistsWithNoDevicesRegisteredWithApi() : User
     {
         $user = $this->givenSingleUserExists();
 
@@ -179,7 +181,7 @@ class DeviceControllerTest extends DeviceControllerTestCase
         return $user;
     }
 
-    private function givenSingleUserExistsWithDevicesRegisteredWithApi($device1Name, $device2Name, $device3Name)
+    private function givenSingleUserExistsWithDevicesRegisteredWithApi(string $device1Name, string $device2Name, string $device3Name)
     {
         $user = $this->givenSingleUserExistsWithDevices($device1Name, $device2Name, $device3Name);
 
@@ -193,7 +195,7 @@ class DeviceControllerTest extends DeviceControllerTestCase
         $this->app->instance(ILoginAuthenticator::class, $mockRequest);
     }
 
-    private function callDevices()
+    private function callDevices() : TestResponse
     {
         $response = $this->getJson('/api/devices', [
             'HTTP_Authorization' => 'Bearer ' . self::$faker->uuid(),
@@ -203,7 +205,7 @@ class DeviceControllerTest extends DeviceControllerTestCase
         return $response;
     }
 
-    private function callControl($action, $deviceId)
+    private function callControl(string $action, int $deviceId) : TestResponse
     {
         $urlValidAction = strtolower($action);
 
@@ -215,7 +217,7 @@ class DeviceControllerTest extends DeviceControllerTestCase
         return $response;
     }
 
-    private function assertDiscoverAppliancesResponseWithoutDevice($response)
+    private function assertDiscoverAppliancesResponseWithoutDevice(TestResponse $response)
     {
         $response->assertJsonStructure([
             'header' => [
@@ -232,7 +234,7 @@ class DeviceControllerTest extends DeviceControllerTestCase
         $response->assertSee($this->messageId);
     }
 
-    private function assertDiscoverAppliancesResponse($response, $device1Name, $device2Name, $device3Name)
+    private function assertDiscoverAppliancesResponse(TestResponse $response, string $device1Name, string $device2Name, string $device3Name)
     {
         $response->assertJsonStructure([
             'header' => [
@@ -286,7 +288,7 @@ class DeviceControllerTest extends DeviceControllerTestCase
         $response->assertSee($device3Name);
     }
 
-    private function assertControlConfirmation($response)
+    private function assertControlConfirmation(TestResponse $response)
     {
         $response->assertJsonStructure([
             'header' => [

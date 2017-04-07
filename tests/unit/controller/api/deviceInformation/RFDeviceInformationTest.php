@@ -5,6 +5,7 @@ namespace Tests\Unit\Controller\Api\DeviceInformation;
 use App\Http\Controllers\API\DeviceInformation\RFDeviceInformation;
 use App\Http\Globals\DeviceActions;
 use App\RFDevice;
+use Illuminate\Http\JsonResponse;
 use Mockery;
 use Tests\TestCase;
 
@@ -55,7 +56,7 @@ class RFDeviceInformationTest extends TestCase
         $this->assertEquals($result['error'], "Device does not support action '$action'");
     }
 
-    private function callInfo($action)
+    private function callInfo(string $action) : JsonResponse
     {
         $rfDevice = $this->createRFDevice($this->onCode, $this->offCode);
         $rfDeviceInformation = $this->givenRFDeviceInformation($rfDevice);
@@ -65,7 +66,7 @@ class RFDeviceInformationTest extends TestCase
         return $response;
     }
 
-    private function givenRFDeviceInformation($rfDevice)
+    private function givenRFDeviceInformation(RFDevice $rfDevice) : RFDeviceInformation
     {
         $mockRFDeviceTable = Mockery::mock(RFDevice::class);
         $mockRFDeviceTable
@@ -77,7 +78,7 @@ class RFDeviceInformationTest extends TestCase
         return $rfDeviceInformation;
     }
 
-    private function createRFDevice($onCode, $offCode)
+    private function createRFDevice(int $onCode, int $offCode) : RFDevice
     {
         $rfDevice = new RFDevice();
 
