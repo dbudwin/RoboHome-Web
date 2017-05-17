@@ -73,8 +73,8 @@
                                                 <small>{{ $device->description }}</small>
                                             </div>
                                         </td>
-                                        <td class="col-xs-5 pull-right">
-                                            <div class="btn-group" role="group" aria-label="Device Controls">
+                                        <td class="col-xs-5">
+                                            <div class="btn-group pull-right" role="group" aria-label="Device Controls">
                                                 <button type="button" class="btn btn-primary" onclick="controlDevice('turnon', '{{ $device->id }}');">On</button>
                                                 <button type="button" class="btn btn-primary" onclick="controlDevice('turnoff', '{{ $device->id }}');">Off</button>
                                             </div>
