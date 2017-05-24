@@ -10,6 +10,7 @@ matrix:
   fast_finish: true
   allow_failures:
     - php: nightly
+  firefox: latest
 
 addons:
   code_climate:
@@ -19,9 +20,16 @@ branches:
   only:
     - master
 
+before_install:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - "wget https://goo.gl/dR7Lg2" #This downloads 3.2.0, no un-shortened link available
+  - "java -jar selenium-server-standalone-3.2.0.jar > /tmp/selenium.log 2> /tmp/selenium.error &"
+
 before_script:
   - composer self-update
   - composer install --prefer-dist
+  - php artisan serve &
 
 script:
   - ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml --configuration phpunit.xml
