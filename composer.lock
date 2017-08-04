@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "3070cc7b83b67803c9794494a66089f6",
+    "content-hash": "add44f28ff20e4b5d20239fb2be4d723",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -329,16 +329,16 @@
         },
         {
             "name": "mcfish/libmqtt",
-            "version": "0.3.0",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/McFizh/libMQTT.git",
-                "reference": "225e2efcd4f3ee4496c3b0d603d465766c69e68d"
+                "reference": "ad5dc941bf9a3a30e09a3ed4c3b90b3660a8d81a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/McFizh/libMQTT/zipball/225e2efcd4f3ee4496c3b0d603d465766c69e68d",
-                "reference": "225e2efcd4f3ee4496c3b0d603d465766c69e68d",
+                "url": "https://api.github.com/repos/McFizh/libMQTT/zipball/ad5dc941bf9a3a30e09a3ed4c3b90b3660a8d81a",
+                "reference": "ad5dc941bf9a3a30e09a3ed4c3b90b3660a8d81a",
                 "shasum": ""
             },
             "type": "library",
@@ -362,7 +362,7 @@
                 "mqtt",
                 "php"
             ],
-            "time": "2016-08-01T18:15:34+00:00"
+            "time": "2017-06-10T20:02:37+00:00"
         },
         {
             "name": "monolog/monolog",
