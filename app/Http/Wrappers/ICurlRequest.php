@@ -4,11 +4,11 @@ namespace App\Http\Wrappers;
 
 interface ICurlRequest
 {
-    public function init($url);
+    public function init(string $url);
 
-    public function setOption($name, $value);
+    public function setOption(string $name, $value);
 
-    public function execute();
+    public function execute() : string;
 
     public function close();
 }

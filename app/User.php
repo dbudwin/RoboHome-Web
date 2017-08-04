@@ -3,13 +3,14 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Model
 {
     protected $fillable = ['name', 'email', 'user_id'];
     protected $table = 'users';
 
-    public function add($name, $email, $userId)
+    public function add(string $name, string $email, string $userId) : User
     {
         $this->name = $name;
         $this->email = $email;
@@ -19,12 +20,12 @@ class User extends Model
         return $this;
     }
 
-    public function devices()
+    public function devices() : HasMany
     {
         return $this->hasMany(Device::class);
     }
 
-    public function doesUserOwnDevice($deviceId)
+    public function doesUserOwnDevice($deviceId) : bool
     {
         return $this->devices->contains($deviceId);
     }

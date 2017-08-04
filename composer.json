@@ -4,7 +4,7 @@
     "license": "GPL-3.0+",
     "type": "project",
     "require": {
-        "php": ">=7.0.0",
+        "php": ">=7.1.0",
         "laravel/framework": "5.4.*",
         "mcfish/libmqtt": "^1.0.0"
     },
@@ -47,9 +47,6 @@
         ]
     },
     "config": {
-        "platform": {
-            "php": "7.0"
-        },
         "preferred-install": "dist",
         "sort-packages": true
     }

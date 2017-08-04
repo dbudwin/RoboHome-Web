@@ -5,6 +5,7 @@ namespace Tests\Unit\Controller\Web;
 use App\Device;
 use App\RFDevice;
 use App\User;
+use Illuminate\Foundation\Testing\TestResponse;
 use Mockery;
 use Tests\Unit\Controller\Common\DeviceControllerTestCase;
 
@@ -172,7 +173,7 @@ class DeviceControllerTest extends DeviceControllerTestCase
         $response->assertSessionHas('alert-danger');
     }
 
-    private function callControl($userId, $action, $deviceId)
+    private function callControl(string $userId, string $action, int $deviceId) : TestResponse
     {
         $response = $this->withSession([env('SESSION_USER_ID') => $userId])
             ->post("/devices/$action/$deviceId");
@@ -180,7 +181,7 @@ class DeviceControllerTest extends DeviceControllerTestCase
         return $response;
     }
 
-    private function givenUserOwnsDeviceForDeletion($user)
+    private function givenUserOwnsDeviceForDeletion(User $user) : int
     {
         $deviceId = self::$faker->randomDigit();
 
@@ -197,10 +198,12 @@ class DeviceControllerTest extends DeviceControllerTestCase
         return $deviceId;
     }
 
-    private function addDeviceForUser($userId, $deviceName)
+    private function addDeviceForUser(string $userId, string $deviceName) : TestResponse
     {
+        $device = $this->createDevice($deviceName, $userId);
+
         $mockDeviceModel = Mockery::mock(Device::class);
-        $mockDeviceModel->shouldReceive('add')->withAnyArgs()->once()->andReturn(new Device());
+        $mockDeviceModel->shouldReceive('add')->withAnyArgs()->once()->andReturn($device);
         $this->app->instance(Device::class, $mockDeviceModel);
 
         $mockRFDeviceModel = Mockery::mock(RFDevice::class);

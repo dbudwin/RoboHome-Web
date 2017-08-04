@@ -3,24 +3,25 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Device extends Model
 {
     protected $fillable = ['name', 'description', 'type'];
     protected $table = 'devices';
 
-    public function add($name, $description, $type, $userId)
+    public function add(string $name, string $description, string $userId, int $type) : Device
     {
         $this->name = $name;
         $this->description = $description;
-        $this->device_type_id = $type;
         $this->user_id = $userId;
+        $this->device_type_id = $type;
         $this->save();
 
         return $this;
     }
 
-    public function rfDevice()
+    public function rfDevice() : HasOne
     {
         return $this->hasOne(RFDevice::class);
     }

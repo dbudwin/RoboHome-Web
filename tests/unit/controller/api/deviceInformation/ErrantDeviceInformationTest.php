@@ -7,10 +7,10 @@ use Tests\TestCase;
 
 class ErrantDeviceInformationTest extends TestCase
 {
-    public function testInfo()
+    public function testInfo_GivenRandomValues_Returns400()
     {
         $errantDeviceInformation = new ErrantDeviceInformation();
-        $response = $errantDeviceInformation->info(\Mockery::any(), \Mockery::any());
+        $response = $errantDeviceInformation->info(self::$faker->randomDigit(), self::$faker->word());
 
         $this->assertEquals($response->status(), 400);
     }

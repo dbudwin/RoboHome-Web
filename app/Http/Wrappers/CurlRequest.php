@@ -6,17 +6,17 @@ class CurlRequest implements ICurlRequest
 {
     private $handle = null;
 
-    public function init($url)
+    public function init(string $url)
     {
         $this->handle = curl_init($url);
     }
 
-    public function setOption($name, $value)
+    public function setOption(string $name, $value)
     {
         curl_setopt($this->handle, $name, $value);
     }
 
-    public function execute()
+    public function execute() : string
     {
         return curl_exec($this->handle);
     }
