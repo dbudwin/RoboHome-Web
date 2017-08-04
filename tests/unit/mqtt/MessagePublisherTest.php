@@ -33,7 +33,7 @@ class MessagePublisherTest extends TestCase
 
         $messagePublisher = new MessagePublisher($mockClient);
 
-        $result = $messagePublisher->publish($this->userId, $this->deviceId, $this->action);
+        $result = $messagePublisher->publish($this->userId, $this->action, $this->deviceId);
 
         $this->assertTrue($result);
     }
@@ -47,7 +47,7 @@ class MessagePublisherTest extends TestCase
 
         $messagePublisher = new MessagePublisher($mockClient);
 
-        $result = $messagePublisher->publish($this->userId, $this->deviceId, $this->action);
+        $result = $messagePublisher->publish($this->userId, $this->action, $this->deviceId);
 
         $this->assertFalse($result);
     }

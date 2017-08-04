@@ -10,12 +10,12 @@ class Device extends Model
     protected $fillable = ['name', 'description', 'type'];
     protected $table = 'devices';
 
-    public function add(string $name, string $description, int $type, string $userId) : Device
+    public function add(string $name, string $description, string $userId, int $type) : Device
     {
         $this->name = $name;
         $this->description = $description;
-        $this->device_type_id = $type;
         $this->user_id = $userId;
+        $this->device_type_id = $type;
         $this->save();
 
         return $this;

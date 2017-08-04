@@ -89,7 +89,7 @@ class DevicesController extends Controller
             return redirect()->route('devices');
         }
 
-        $this->messagePublisher->publish($currentUser->user_id, $deviceId, $action);
+        $this->messagePublisher->publish($currentUser->user_id, $action, $deviceId);
 
         return redirect()->route('devices');
     }

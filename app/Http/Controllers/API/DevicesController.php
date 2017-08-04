@@ -86,7 +86,7 @@ class DevicesController extends Controller
 
         $urlValidAction = strtolower($action);
 
-        $this->messagePublisher->publish($userId, $deviceId, $urlValidAction);
+        $this->messagePublisher->publish($userId, $urlValidAction, $deviceId);
 
         $response = [
             'header' => $this->createHeader($request, $responseName, 'Alexa.ConnectedHome.Control'),

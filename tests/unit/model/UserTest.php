@@ -58,7 +58,7 @@ class UserTest extends ModelTestCase
         $user = $this->createUser();
 
         $device = new Device();
-        $device = $device->add(self::$faker->word(), self::$faker->sentence(), self::$faker->randomDigit(), $user->id);
+        $device = $device->add(self::$faker->word(), self::$faker->sentence(), $user->id, self::$faker->randomDigit());
 
         $doesUserOwnDevice = $user->doesUserOwnDevice($device->id);
 
@@ -80,6 +80,6 @@ class UserTest extends ModelTestCase
     private function createDevice(string $userId)
     {
         $device = new Device();
-        $device->add(self::$faker->word(), self::$faker->sentence(), self::$faker->randomDigit(), $userId);
+        $device->add(self::$faker->word(), self::$faker->sentence(), $userId, self::$faker->randomDigit());
     }
 }

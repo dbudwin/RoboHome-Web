@@ -12,10 +12,10 @@ class DeviceTest extends ModelTestCase
         $device = new Device();
         $name = self::$faker->word();
         $description = self::$faker->sentence();
-        $type = self::$faker->randomDigit();
         $userId = self::$faker->randomDigit();
+        $type = self::$faker->randomDigit();
 
-        $device = $device->add($name, $description, $type, $userId);
+        $device = $device->add($name, $description, $userId, $type);
 
         $this->assertCount(1, Device::all());
         $this->assertEquals($name, $device->name);
