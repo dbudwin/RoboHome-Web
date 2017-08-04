@@ -3,10 +3,13 @@
 namespace Tests\Unit\Controller\Common;
 
 use Illuminate\Foundation\Testing\TestResponse;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Tests\TestCase;
 
 class ControllerTestCase extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     protected function assertRedirectedToRouteWith302(TestResponse $response, $route)
     {
         $response->assertStatus(302);
