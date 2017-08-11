@@ -7,6 +7,7 @@ use App\Http\Authentication\ILoginAuthenticator;
 use App\Http\Wrappers\CurlRequest;
 use App\Http\Wrappers\ICurlRequest;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Dusk\DuskServiceProvider;
 use LibMQTT\Client;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,5 +24,14 @@ class AppServiceProvider extends ServiceProvider
 
             return $client;
         });
+
+        $this->registerDuskServiceProvider();
+    }
+
+    private function registerDuskServiceProvider() : void
+    {
+        if ($this->app->environment('local', 'testing')) {
+            $this->app->register(DuskServiceProvider::class);
+        }
     }
 }
