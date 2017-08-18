@@ -31,3 +31,5 @@ exclude_paths:
   - "bootstrap/autoload.php"
   - "database/migrations/"
   - "public/css/app.css"
+  - "config/laravellocalization.php"
+  - "resources/lang"
