@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>RoboHome | Devices</title>
+        <title>@lang('global.app') | @lang('devices.page')</title>
         <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
         <script>
             function controlDevice(action, id) {
@@ -26,12 +26,12 @@
                         <div class="navbar-header">
                             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                                  <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
-                            </button><a class="navbar-brand" href="#">RoboHome</a>
+                            </button><a class="navbar-brand" href="#">@lang('global.app')</a>
                         </div>
                         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                             <ul class="nav navbar-nav navbar-right">
                                 <li>
-                                    <a id="Logout" href="#" id="LoginWithAmazon"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Logout</a>
+                                    <a id="Logout" href="#" id="LoginWithAmazon"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> @lang('global.logout')</a>
                                     <script type="text/javascript">
                                         document.getElementById("Logout").onclick = function() {
                                             amazon.Login.logout();
@@ -47,7 +47,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                              <div class="panel-title">
-                                 {{ $name }}'s Controllable Devices
+                                 {{ $name }}@lang('devices.nameMessage')
                              </div>
                         </div>
                         <div class="panel-body">
@@ -60,8 +60,8 @@
                                                     <span class="glyphicon glyphicon-cog"></span> <span class="caret"></span>
                                                 </button>
                                                 <ul class="dropdown-menu">
-                                                    <li><a href="/devices/edit/{{ $device->id }}"><span class="glyphicon glyphicon-pencil"></span> Edit</a></li>
-                                                    <li><a href="/devices/delete/{{ $device->id }}"><span class="glyphicon glyphicon-remove"></span> Delete</a></li>
+                                                    <li><a href="/devices/edit/{{ $device->id }}"><span class="glyphicon glyphicon-pencil"></span> @lang('devices.editButton')</a></li>
+                                                    <li><a href="/devices/delete/{{ $device->id }}"><span class="glyphicon glyphicon-remove"></span> @lang('devices.deleteButton')</a></li>
                                                 </ul>
                                             </div>
                                         </td>
@@ -75,8 +75,8 @@
                                         </td>
                                         <td class="col-xs-5">
                                             <div class="btn-group pull-right" role="group" aria-label="Device Controls">
-                                                <button type="button" class="btn btn-primary" onclick="controlDevice('turnon', '{{ $device->id }}');">On</button>
-                                                <button type="button" class="btn btn-primary" onclick="controlDevice('turnoff', '{{ $device->id }}');">Off</button>
+                                                <button type="button" class="btn btn-primary" onclick="controlDevice('turnon', '{{ $device->id }}');">@lang('devices.onButton')</button>
+                                                <button type="button" class="btn btn-primary" onclick="controlDevice('turnoff', '{{ $device->id }}');">@lang('devices.offButton')</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -85,52 +85,52 @@
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="btn btn-default" aria-label="Add Device" data-toggle="modal" data-target="#deviceModal">
-                                <span class="glyphicon glyphicon-plus"></span> Add Device
+                                <span class="glyphicon glyphicon-plus"></span> @lang('devices.addDeviceButton')
                             </button>
                             <div class="modal fade" id="deviceModal" tabindex="-1" role="dialog" aria-labelledby="deviceModalLabel">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                            <h4 class="modal-title" id="deviceModalLabel">Device Information</h4>
+                                            <h4 class="modal-title" id="deviceModalLabel">@lang('devices.deviceInformation')</h4>
                                         </div>
                                         <form action="/devices/add" method="POST">
                                             {{ csrf_field() }}
                                             <div class="modal-body">
                                                 <div class="form-group row">
-                                                    <label for="name" class="col-xs-4 col-form-label">Device Name</label>
+                                                    <label for="name" class="col-xs-4 col-form-label">@lang('devices.deviceNameField')</label>
                                                     <div class="col-xs-8">
-                                                        <input class="form-control" type="text" placeholder="e.x. Living Room Light" name="name" required="true" maxlength="50">
+                                                        <input class="form-control" type="text" placeholder="@lang('devices.deviceNameFieldPlaceholderText')" name="name" required="true" maxlength="50">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
-                                                    <label for="description" class="col-xs-4 col-form-label">Device Description</label>
+                                                    <label for="description" class="col-xs-4 col-form-label">@lang('devices.deviceDescriptionField')</label>
                                                     <div class="col-xs-8">
-                                                        <input class="form-control" type="text" placeholder="e.x. Light in corner of downstairs living room" name="description" required="true" maxlength="100">
+                                                        <input class="form-control" type="text" placeholder="@lang('devices.deviceDescriptionPlaceholderText')" name="description" required="true" maxlength="100">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
-                                                    <label for="onCode" class="col-xs-4 col-form-label">On Code</label>
+                                                    <label for="onCode" class="col-xs-4 col-form-label">@lang('devices.onCodeField')</label>
                                                     <div class="col-xs-8">
                                                         <input class="form-control" type="number" value="0" name="onCode" required="true">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
-                                                    <label for="offCode" class="col-xs-4 col-form-label">Off Code</label>
+                                                    <label for="offCode" class="col-xs-4 col-form-label">@lang('devices.offCodeField')</label>
                                                         <div class="col-xs-8">
                                                         <input class="form-control" type="number" value="0" name="offCode" required="true">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
-                                                    <label for="pulseLength" class="col-xs-4 col-form-label">Pulse Length</label>
+                                                    <label for="pulseLength" class="col-xs-4 col-form-label">@lang('devices.pulseLengthField')</label>
                                                         <div class="col-xs-8">
                                                         <input class="form-control" type="number" value="184" name="pulseLength" required="true">
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                                <button type="submit" class="btn btn-primary">Add Device</button>
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">@lang('devices.closeButton')</button>
+                                                <button type="submit" class="btn btn-primary">@lang('devices.addDeviceButton')</button>
                                             </div>
                                         </form>
                                     </div>
