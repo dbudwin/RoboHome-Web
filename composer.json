@@ -6,6 +6,7 @@
     "require": {
         "php": ">=7.1.0",
         "laravel/framework": "5.4.*",
+        "mcamara/laravel-localization": "^1.2",
         "mcfish/libmqtt": "^1.0.0"
     },
     "require-dev": {
