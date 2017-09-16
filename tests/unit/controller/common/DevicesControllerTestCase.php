@@ -8,7 +8,7 @@ use App\User;
 use Mockery;
 use Mockery\MockInterface;
 
-class DeviceControllerTestCase extends ControllerTestCase
+class DevicesControllerTestCase extends ControllerTestCase
 {
     protected function givenSingleUserExists() : User
     {
@@ -34,14 +34,14 @@ class DeviceControllerTestCase extends ControllerTestCase
 
         $devices = $collection->newCollection(
             [
-                $this->createDevice($device1Name, $userId),
-                $this->createDevice($device2Name, $userId),
-                $this->createDevice($device3Name, $userId)
+                $this->mockDeviceRecord($device1Name, $userId),
+                $this->mockDeviceRecord($device2Name, $userId),
+                $this->mockDeviceRecord($device3Name, $userId)
             ]
         );
 
         $mockUserRecord = Mockery::mock(User::class)->makePartial();
-        $mockUserRecord->shouldReceive('getAttribute')->with('devices')->once()->andReturn($devices);
+        $mockUserRecord->shouldReceive('getAttribute')->with('devices')->andReturn($devices);
 
         $this->mockUserTable($mockUserRecord, $userId);
 
@@ -58,24 +58,6 @@ class DeviceControllerTestCase extends ControllerTestCase
         $mockUserRecord->shouldReceive('getAttribute')->with('devices')->once()->andReturn($deviceCollection);
 
         $this->mockUserTable($mockUserRecord, $userId);
-    }
-
-    protected function givenSingleUserExistsWithSingleDevice() : Device
-    {
-        $userId = self::$faker->uuid();
-
-        $collection = new Device();
-
-        $device = $this->createDevice(self::$faker->name(), $userId);
-
-        $devices = $collection->newCollection([$device]);
-
-        $mockUserRecord = Mockery::mock(User::class)->makePartial();
-        $mockUserRecord->shouldReceive('getAttribute')->with('devices')->once()->andReturn($devices);
-
-        $this->mockUserTable($mockUserRecord, $userId);
-
-        return $device;
     }
 
     protected function createUser(string $userId) : User
@@ -111,20 +93,28 @@ class DeviceControllerTestCase extends ControllerTestCase
         $this->app->instance(MessagePublisher::class, $mockMessagePublisher);
     }
 
-    protected function createDevice(string $deviceName, string $userId) : Device
+    protected function mockDeviceRecord(string $deviceName, string $userId) : Device
     {
-        Device::unguard();
+        $mockDeviceRecord = $this->createMockDeviceRecord($deviceName, $userId);
 
-        $device = new Device([
-            'id' => self::$faker->randomDigit(),
-            'name' => $deviceName,
-            'description' => self::$faker->sentence(),
-            'user_id' => $userId
+        $this->app->instance(Device::class, $mockDeviceRecord);
+
+        return $mockDeviceRecord;
+    }
+
+    protected function mockDeviceRecordWithHtmlAttributes(string $deviceName, string $userId, string $attributeName, string $attributeValue) : Device
+    {
+        $mockDeviceRecord = $this->createMockDeviceRecord($deviceName, $userId);
+
+        $htmlAttribute = 'data-device-' . $attributeName . '=' . $attributeValue;
+
+        $mockDeviceRecord->shouldReceive('htmlDataAttributesForSpecificDeviceProperties')->andReturn([
+            $htmlAttribute
         ]);
 
-        Device::reguard();
+        $this->app->instance(Device::class, $mockDeviceRecord);
 
-        return $device;
+        return $mockDeviceRecord;
     }
 
     protected function givenDoesUserOwnDevice(User $user, int $deviceId, bool $doesUserOwnDevice) : MockInterface
@@ -135,5 +125,19 @@ class DeviceControllerTestCase extends ControllerTestCase
         $this->mockUserTable($mockUserRecord, $user->user_id);
 
         return $mockUserRecord;
+    }
+
+    private function createMockDeviceRecord(string $deviceName, string $userId): MockInterface
+    {
+        $deviceType = self::$faker->randomDigit();
+
+        $mockDeviceRecord = Mockery::mock(Device::class)->makePartial();
+        $mockDeviceRecord->shouldReceive('getAttribute')->with('id')->andReturn(self::$faker->randomDigit())
+            ->shouldReceive('getAttribute')->with('name')->andReturn($deviceName)
+            ->shouldReceive('getAttribute')->with('description')->andReturn(self::$faker->sentence())
+            ->shouldReceive('getAttribute')->with('user_id')->andReturn($userId)
+            ->shouldReceive('getAttribute')->with('device_type_id')->andReturn($deviceType);
+
+        return $mockDeviceRecord;
     }
 }

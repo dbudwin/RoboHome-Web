@@ -45,13 +45,13 @@ class DevicesController extends Controller
     {
         $name = $request->input('name');
         $description = $request->input('description');
-        $onCode = $request->input('onCode');
-        $offCode = $request->input('offCode');
-        $pulseLength = $request->input('pulseLength');
+        $onCode = $request->input('on_code');
+        $offCode = $request->input('off_code');
+        $pulseLength = $request->input('pulse_length');
         $type = DeviceTypes::RF_DEVICE;
 
         $currentUserId = $this->currentUser()->id;
-        $newDeviceId = $this->deviceModel->add($name, $description, $type, $currentUserId)->id;
+        $newDeviceId = $this->deviceModel->add($name, $description, $currentUserId, $type)->id;
         $this->rfDeviceModel->add($onCode, $offCode, $pulseLength, $newDeviceId);
 
         $request->session()->flash(FlashMessageLevels::SUCCESS, "Device '$name' was successfully added!");
@@ -78,6 +78,30 @@ class DevicesController extends Controller
         return redirect()->route('devices');
     }
 
+    public function update(Request $request, int $id) : RedirectResponse
+    {
+        $doesUserOwnDevice = $this->currentUser()->doesUserOwnDevice($id);
+
+        if (!$doesUserOwnDevice) {
+            $request->session()->flash(FlashMessageLevels::DANGER, 'Error updating device!');
+
+            return redirect()->route('devices');
+        }
+
+        $device = $this->deviceModel->find($id);
+
+        $device->name = $request->input('name');
+        $device->description = $request->input('description');
+
+        $this->updateSpecificDeviceProperties($request, $device);
+
+        $device->save();
+
+        $request->session()->flash(FlashMessageLevels::SUCCESS, "Device '$device->name' was successfully updated!");
+
+        return redirect()->route('devices');
+    }
+
     public function handleControlRequest(Request $request, string $action, int $deviceId) : RedirectResponse
     {
         $currentUser = $this->currentUser();
@@ -100,5 +124,17 @@ class DevicesController extends Controller
         $currentUser = $this->userModel->where('user_id', $userId)->first();
 
         return $currentUser;
+    }
+
+    private function updateSpecificDeviceProperties(Request $request, Device $device) : void
+    {
+        $specificDevice = $device->specificDevice->first();
+        $specificDeviceProperties = $specificDevice->getFillable();
+
+        foreach ($specificDeviceProperties as $property) {
+            $device->specificDevice->$property = $request->input($property);
+        }
+
+        $device->specificDevice->save();
     }
 }

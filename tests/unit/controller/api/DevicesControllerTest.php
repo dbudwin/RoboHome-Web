@@ -9,9 +9,9 @@ use App\User;
 use Illuminate\Foundation\Testing\TestResponse;
 use Illuminate\Http\JsonResponse;
 use Mockery;
-use Tests\Unit\Controller\Common\DeviceControllerTestCase;
+use Tests\Unit\Controller\Common\DevicesControllerTestCase;
 
-class DeviceControllerTest extends DeviceControllerTestCase
+class DevicesControllerTest extends DevicesControllerTestCase
 {
     private $mockDeviceInformation;
     private $messageId;
@@ -62,7 +62,7 @@ class DeviceControllerTest extends DeviceControllerTestCase
     public function testTurnOn_GivenUserExistsWithDevice_ReturnsJsonResponse()
     {
         $user = $this->givenSingleUserExistsWithNoDevicesRegisteredWithApi();
-        $device = $this->createDevice(self::$faker->word(), $user);
+        $device = $this->mockDeviceRecord(self::$faker->word(), $user);
 
         $this->givenDeviceIsRegisteredToUser($device, $user->user_id);
 
@@ -74,7 +74,7 @@ class DeviceControllerTest extends DeviceControllerTestCase
     public function testTurnOn_GivenUserExistsWithDevice_CallsPublish()
     {
         $user = $this->givenSingleUserExistsWithNoDevicesRegisteredWithApi();
-        $device = $this->createDevice(self::$faker->word(), $user);
+        $device = $this->mockDeviceRecord(self::$faker->word(), $user);
 
         $this->mockMessagePublisher();
         $this->givenDeviceIsRegisteredToUser($device, $user->user_id);
@@ -97,7 +97,7 @@ class DeviceControllerTest extends DeviceControllerTestCase
     public function testTurnOff_GivenUserExistsWithDevice_ReturnsJsonResponse()
     {
         $user = $this->givenSingleUserExistsWithNoDevicesRegisteredWithApi();
-        $device = $this->createDevice(self::$faker->word(), $user);
+        $device = $this->mockDeviceRecord(self::$faker->word(), $user);
 
         $this->givenDeviceIsRegisteredToUser($device, $user->user_id);
 
@@ -109,7 +109,7 @@ class DeviceControllerTest extends DeviceControllerTestCase
     public function testTurnOff_GivenUserExistsWithDevice_CallsPublish()
     {
         $user = $this->givenSingleUserExistsWithNoDevicesRegisteredWithApi();
-        $device = $this->createDevice(self::$faker->word(), $user);
+        $device = $this->mockDeviceRecord(self::$faker->word(), $user);
 
         $this->mockMessagePublisher();
         $this->givenDeviceIsRegisteredToUser($device, $user->user_id);
@@ -132,7 +132,7 @@ class DeviceControllerTest extends DeviceControllerTestCase
     public function testInfo_GivenUserExistsWithDevice_ReturnsJsonResponse()
     {
         $user = $this->givenSingleUserExists();
-        $device = $this->createDevice(self::$faker->word(), $user->user_id);
+        $device = $this->mockDeviceRecord(self::$faker->word(), $user->user_id);
 
         $this->givenDoesUserOwnDevice($user, $device->id, true);
 

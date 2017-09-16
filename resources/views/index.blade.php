@@ -32,7 +32,7 @@
                             <p>
                                 <p class="text-center">
                                     <h1><a class="btn btn-primary btn-large" href="#" id="LoginWithAmazon"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Log In</a></h1>
-                                </p> 
+                                </p>
                                 <script type="text/javascript">
                                     document.getElementById("LoginWithAmazon").onclick = function() {
                                         options = { scope : "profile" };
