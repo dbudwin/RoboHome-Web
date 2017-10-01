@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RedirectIfAuthenticated
 {
-    public function handle(Request $request, Closure $next) : Response
+    public function handle(Request $request, Closure $next): Response
     {
         if ($request->session()->has(env('SESSION_USER_ID'))) {
             return $next($request);

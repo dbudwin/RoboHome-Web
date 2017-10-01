@@ -17,7 +17,7 @@ class AmazonLoginAuthenticator implements ILoginAuthenticator
         $this->userModel = $userModel;
     }
 
-    public function processLoginRequest(Request $request) : ?User
+    public function processLoginRequest(Request $request): ?User
     {
         $accessToken = $request->query('access_token');
 
@@ -26,7 +26,7 @@ class AmazonLoginAuthenticator implements ILoginAuthenticator
         return $loggedInUser;
     }
 
-    public function processApiLoginRequest(Request $request) : ?User
+    public function processApiLoginRequest(Request $request): ?User
     {
         $httpAuthorizationHeader = $request->header('Authorization');
 
@@ -43,7 +43,7 @@ class AmazonLoginAuthenticator implements ILoginAuthenticator
         return $loggedInUser;
     }
 
-    private function getUserForAccessToken(?string $accessToken) : ?User
+    private function getUserForAccessToken(?string $accessToken): ?User
     {
         if (empty($accessToken) || !$this->verifyUserTokenMatchesAmazonToken($accessToken)) {
             return null;
@@ -59,7 +59,7 @@ class AmazonLoginAuthenticator implements ILoginAuthenticator
         return $loggedInUser;
     }
 
-    private function verifyUserTokenMatchesAmazonToken(string $accessToken) : bool
+    private function verifyUserTokenMatchesAmazonToken(string $accessToken): bool
     {
         $amazonOAuthUrl = 'https://api.amazon.com/auth/o2/tokeninfo?access_token=' . urlencode($accessToken);
         $this->curlRequest->init($amazonOAuthUrl);
@@ -81,7 +81,7 @@ class AmazonLoginAuthenticator implements ILoginAuthenticator
         return true;
     }
 
-    private function exchangeAccessTokenForDecodedUserProfile(string $accessToken)
+    private function exchangeAccessTokenForDecodedUserProfile(string $accessToken): \stdClass
     {
         $this->curlRequest->init('https://api.amazon.com/user/profile');
         $httpHeaders = ['Authorization: bearer ' . $accessToken];
@@ -94,7 +94,7 @@ class AmazonLoginAuthenticator implements ILoginAuthenticator
         return $decodedUserProfileArray;
     }
 
-    private function getLoggedInUserProfile($decodedUserProfile) : ?User
+    private function getLoggedInUserProfile($decodedUserProfile): ?User
     {
         $userId = $decodedUserProfile->user_id;
         $loggedInUser = $this->userModel->where('user_id', $userId)->first();
@@ -102,7 +102,7 @@ class AmazonLoginAuthenticator implements ILoginAuthenticator
         return $loggedInUser;
     }
 
-    private function createNewUserIfUserDoesNotExist($decodedUserProfile) : User
+    private function createNewUserIfUserDoesNotExist($decodedUserProfile): User
     {
         $user = $this->userModel->add(
             $decodedUserProfile->name,

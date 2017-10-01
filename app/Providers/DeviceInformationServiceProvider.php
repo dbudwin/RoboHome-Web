@@ -13,12 +13,12 @@ class DeviceInformationServiceProvider extends ServiceProvider
 {
     protected $defer = true;
 
-    public function boot()
+    public function boot(): void
     {
         $this->app->call([$this, 'registerDeviceInformationTypes']);
     }
 
-    public function registerDeviceInformationTypes(Request $request)
+    public function registerDeviceInformationTypes(Request $request): void
     {
         if (!$request->has('deviceId')) {
             $this->app->bind(IDeviceInformation::class, ErrantDeviceInformation::class);
@@ -43,7 +43,7 @@ class DeviceInformationServiceProvider extends ServiceProvider
         }
     }
 
-    public function provides()
+    public function provides(): array
     {
         return [IDeviceInformation::class];
     }

@@ -25,7 +25,7 @@ class LoginController extends Controller
         return view('index');
     }
 
-    public function login(Request $request) : RedirectResponse
+    public function login(Request $request): RedirectResponse
     {
         $loggedInUser = $this->loginAuthenticator->processLoginRequest($request);
 
@@ -38,7 +38,7 @@ class LoginController extends Controller
         return redirect()->route('devices');
     }
 
-    public function logout(Request $request) : RedirectResponse
+    public function logout(Request $request): RedirectResponse
     {
         $request->session()->flush();
 

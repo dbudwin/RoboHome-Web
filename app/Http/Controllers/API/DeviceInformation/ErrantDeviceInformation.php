@@ -6,7 +6,7 @@ use Illuminate\Http\JsonResponse;
 
 class ErrantDeviceInformation implements IDeviceInformation
 {
-    public function info(int $deviceId, string $action) : JsonResponse
+    public function info(int $deviceId, string $action): JsonResponse
     {
         return response()->json(['error' => 'Bad Request'], 400);
     }

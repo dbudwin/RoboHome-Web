@@ -10,7 +10,7 @@ class User extends Model
     protected $fillable = ['name', 'email', 'user_id'];
     protected $table = 'users';
 
-    public function add(string $name, string $email, string $userId) : User
+    public function add(string $name, string $email, string $userId): User
     {
         $this->name = $name;
         $this->email = $email;
@@ -20,12 +20,12 @@ class User extends Model
         return $this;
     }
 
-    public function devices() : HasMany
+    public function devices(): HasMany
     {
         return $this->hasMany(Device::class);
     }
 
-    public function doesUserOwnDevice($deviceId) : bool
+    public function doesUserOwnDevice($deviceId): bool
     {
         return $this->devices->contains($deviceId);
     }

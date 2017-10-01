@@ -12,7 +12,7 @@ use LibMQTT\Client;
 
 class AppServiceProvider extends ServiceProvider
 {
-    public function register()
+    public function register(): void
     {
         $this->app->bind(ILoginAuthenticator::class, AmazonLoginAuthenticator::class);
         $this->app->bind(ICurlRequest::class, CurlRequest::class);
@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerDuskServiceProvider();
     }
 
-    private function registerDuskServiceProvider() : void
+    private function registerDuskServiceProvider(): void
     {
         if ($this->app->environment('local', 'testing')) {
             $this->app->register(DuskServiceProvider::class);
