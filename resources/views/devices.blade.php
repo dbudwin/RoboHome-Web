@@ -3,6 +3,28 @@
         <title>RoboHome | Devices</title>
         <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
         <script>
+            $(document).ready(function() {
+                $('#editDeviceModal').on('show.bs.modal', function (event) {
+                    var button = $(event.relatedTarget);
+
+                    var deviceId = button.data('device-id');
+                    var deviceName = button.data('device-name');
+                    var deviceDescription = button.data('device-description');
+                    var deviceOnCode = button.data('device-on-code');
+                    var deviceOffCode = button.data('device-off-code');
+                    var devicePulseLength = button.data('device-pulse-length');
+
+                    var modal = $(this);
+
+                    modal.find('#device-update-form').attr('action', '/devices/update/' + deviceId)
+                    modal.find('#device-name-input').val(deviceName);
+                    modal.find('#device-description-input').val(deviceDescription);
+                    modal.find('#device-on-code-input').val(deviceOnCode);
+                    modal.find('#device-off-code-input').val(deviceOffCode);
+                    modal.find('#device-pulse-length-input').val(devicePulseLength);
+                })
+            });
+
             function controlDevice(action, id) {
                 $.ajax({
                     type: "POST",
@@ -42,8 +64,7 @@
                             </ul>
                         </div>
                     </nav>
-                    @component('partials.flash-messages')
-                    @endcomponent
+                    @include('partials.flash-messages')
                     <div class="panel panel-default">
                         <div class="panel-heading">
                              <div class="panel-title">
@@ -60,8 +81,16 @@
                                                     <span class="glyphicon glyphicon-cog"></span> <span class="caret"></span>
                                                 </button>
                                                 <ul class="dropdown-menu">
-                                                    <li><a href="/devices/edit/{{ $device->id }}"><span class="glyphicon glyphicon-pencil"></span> Edit</a></li>
-                                                    <li><a href="/devices/delete/{{ $device->id }}"><span class="glyphicon glyphicon-remove"></span> Delete</a></li>
+                                                    <li>
+                                                        <a href="#editDeviceModal" aria-label="Edit Device" data-toggle="modal" data-target="#editDeviceModal" data-device-id="{{ $device->id }}" data-device-name="{{ $device->name }}" data-device-description="{{ $device->description }}" @foreach($device->htmlDataAttributesForSpecificDeviceProperties() as $property) {{ $property }} @endforeach>
+                                                            <span class="glyphicon glyphicon-pencil"></span> Edit
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="/devices/delete/{{ $device->id }}">
+                                                            <span class="glyphicon glyphicon-remove"></span> Delete
+                                                        </a>
+                                                    </li>
                                                 </ul>
                                             </div>
                                         </td>
@@ -84,58 +113,11 @@
                             </table>
                         </div>
                         <div class="panel-footer">
-                            <button type="button" class="btn btn-default" aria-label="Add Device" data-toggle="modal" data-target="#deviceModal">
+                            <button type="button" class="btn btn-default" aria-label="Add Device" data-toggle="modal" data-target="#addDeviceModal">
                                 <span class="glyphicon glyphicon-plus"></span> Add Device
                             </button>
-                            <div class="modal fade" id="deviceModal" tabindex="-1" role="dialog" aria-labelledby="deviceModalLabel">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                            <h4 class="modal-title" id="deviceModalLabel">Device Information</h4>
-                                        </div>
-                                        <form action="/devices/add" method="POST">
-                                            {{ csrf_field() }}
-                                            <div class="modal-body">
-                                                <div class="form-group row">
-                                                    <label for="name" class="col-xs-4 col-form-label">Device Name</label>
-                                                    <div class="col-xs-8">
-                                                        <input class="form-control" type="text" placeholder="e.x. Living Room Light" name="name" required="true" maxlength="50">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label for="description" class="col-xs-4 col-form-label">Device Description</label>
-                                                    <div class="col-xs-8">
-                                                        <input class="form-control" type="text" placeholder="e.x. Light in corner of downstairs living room" name="description" required="true" maxlength="100">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label for="onCode" class="col-xs-4 col-form-label">On Code</label>
-                                                    <div class="col-xs-8">
-                                                        <input class="form-control" type="number" value="0" name="onCode" required="true">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label for="offCode" class="col-xs-4 col-form-label">Off Code</label>
-                                                        <div class="col-xs-8">
-                                                        <input class="form-control" type="number" value="0" name="offCode" required="true">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label for="pulseLength" class="col-xs-4 col-form-label">Pulse Length</label>
-                                                        <div class="col-xs-8">
-                                                        <input class="form-control" type="number" value="184" name="pulseLength" required="true">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                                <button type="submit" class="btn btn-primary">Add Device</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
+                            @include('partials.add-device-modal')
+                            @include('partials.edit-device-modal')
                         </div>
                     </div>
                 </div>

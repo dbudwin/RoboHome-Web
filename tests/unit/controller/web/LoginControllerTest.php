@@ -32,14 +32,14 @@ class LoginControllerTest extends ControllerTestCase
 
     public function testIndex_GivenUserLoggedIn_RedirectedToDevices()
     {
-        $response = $this->withSession([env('SESSION_USER_ID') => self::$faker->text()])->call('GET', '/');
-        
+        $response = $this->withSession([env('SESSION_USER_ID') => self::$faker->text()])->get('/');
+
         $this->assertRedirectedToRouteWith302($response, '/devices');
     }
 
     public function testLogin_GivenEmptyRequest_Returns401()
     {
-        $response = $this->call('GET', '/login');
+        $response = $this->get('/login');
 
         $response->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class LoginControllerTest extends ControllerTestCase
 
         $this->app->instance(ILoginAuthenticator::class, $mockLoginAuthenticator);
 
-        $response = $this->call('GET', '/login');
+        $response = $this->get('/login');
 
         $this->assertRedirectedToRouteWith302($response, '/devices');
     }
