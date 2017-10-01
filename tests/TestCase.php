@@ -11,7 +11,7 @@ abstract class TestCase extends BaseTestCase
 
     protected static $faker;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         self::$faker = Faker\Factory::create();
     }

@@ -6,7 +6,7 @@ use App\RFDevice;
 
 class RFDeviceTest extends ModelTestCase
 {
-    public function testAdd_GivenRFDeviceAddedToDatabase_DatabaseOnlyHasOneRFDeviceRecord()
+    public function testAdd_GivenRFDeviceAddedToDatabase_DatabaseOnlyHasOneRFDeviceRecord(): void
     {
         $rfDevice = new RFDevice();
         $onCode = self::$faker->randomNumber();

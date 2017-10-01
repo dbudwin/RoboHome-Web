@@ -10,12 +10,12 @@ abstract class DuskTestCase extends BaseTestCase
 {
     use CreatesApplication;
 
-    public static function prepare()
+    public static function prepare(): void
     {
         static::startChromeDriver();
     }
 
-    protected function driver()
+    protected function driver(): RemoteWebDriver
     {
         return RemoteWebDriver::create(
             'http://localhost:9515',

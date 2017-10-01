@@ -14,7 +14,7 @@ class RFDeviceInformationTest extends TestCase
     private $onCode;
     private $offCode;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -22,7 +22,7 @@ class RFDeviceInformationTest extends TestCase
         $this->offCode = self::$faker->randomDigit();
     }
 
-    public function testInfo_GivenTurnOnAction_ReturnsJsonResponseWithCorrectOnCode()
+    public function testInfo_GivenTurnOnAction_ReturnsJsonResponseWithCorrectOnCode(): void
     {
         $action = DeviceActions::TURN_ON;
 
@@ -33,7 +33,7 @@ class RFDeviceInformationTest extends TestCase
         $this->assertEquals($result['code'], $this->onCode);
     }
 
-    public function testInfo_GivenTurnOffAction_ReturnsJsonResponseWithCorrectOffCode()
+    public function testInfo_GivenTurnOffAction_ReturnsJsonResponseWithCorrectOffCode(): void
     {
         $action = DeviceActions::TURN_OFF;
 
@@ -44,7 +44,7 @@ class RFDeviceInformationTest extends TestCase
         $this->assertEquals($result['code'], $this->offCode);
     }
 
-    public function testInfo_GivenUnknownAction_Returns400()
+    public function testInfo_GivenUnknownAction_Returns400(): void
     {
         $action = self::$faker->word();
 
@@ -56,7 +56,7 @@ class RFDeviceInformationTest extends TestCase
         $this->assertEquals($result['error'], "Device does not support action '$action'");
     }
 
-    private function callInfo(string $action) : JsonResponse
+    private function callInfo(string $action): JsonResponse
     {
         $rfDevice = $this->createRFDevice($this->onCode, $this->offCode);
         $rfDeviceInformation = $this->givenRFDeviceInformation($rfDevice);
@@ -66,7 +66,7 @@ class RFDeviceInformationTest extends TestCase
         return $response;
     }
 
-    private function givenRFDeviceInformation(RFDevice $rfDevice) : RFDeviceInformation
+    private function givenRFDeviceInformation(RFDevice $rfDevice): RFDeviceInformation
     {
         $mockRFDeviceTable = Mockery::mock(RFDevice::class);
         $mockRFDeviceTable
@@ -78,7 +78,7 @@ class RFDeviceInformationTest extends TestCase
         return $rfDeviceInformation;
     }
 
-    private function createRFDevice(int $onCode, int $offCode) : RFDevice
+    private function createRFDevice(int $onCode, int $offCode): RFDevice
     {
         $rfDevice = new RFDevice();
 

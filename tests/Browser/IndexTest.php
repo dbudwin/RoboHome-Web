@@ -7,7 +7,7 @@ use Tests\DuskTestCase;
 
 class IndexTest extends DuskTestCase
 {
-    public function testIndex_VerifyPath()
+    public function testIndex_VerifyPath(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/')
@@ -15,7 +15,7 @@ class IndexTest extends DuskTestCase
         });
     }
 
-    public function testIndex_SeesTitle()
+    public function testIndex_SeesTitle(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/')
@@ -23,7 +23,7 @@ class IndexTest extends DuskTestCase
         });
     }
 
-    public function testIndex_SeesTextInBody()
+    public function testIndex_SeesTextInBody(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/')
@@ -31,7 +31,7 @@ class IndexTest extends DuskTestCase
         });
     }
 
-    public function testIndex_SeesLogInLink()
+    public function testIndex_SeesLogInLink(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/')
