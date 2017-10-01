@@ -28,7 +28,7 @@ class DevicesController extends Controller
         $this->deviceInformation = $deviceInformation;
     }
 
-    public function index(Request $request) : JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $userId = $request->get('currentUserId');
 
@@ -44,21 +44,21 @@ class DevicesController extends Controller
         return response()->json($response);
     }
 
-    public function turnOn(Request $request) : JsonResponse
+    public function turnOn(Request $request): JsonResponse
     {
         $response = $this->handleControlRequest($request, DeviceActions::TURN_ON, 'TurnOnConfirmation');
 
         return $response;
     }
 
-    public function turnOff(Request $request) : JsonResponse
+    public function turnOff(Request $request): JsonResponse
     {
         $response = $this->handleControlRequest($request, DeviceActions::TURN_OFF, 'TurnOffConfirmation');
 
         return $response;
     }
 
-    public function info(Request $request) : JsonResponse
+    public function info(Request $request): JsonResponse
     {
         $userId = $request->get('userId');
         $deviceId = $request->get('deviceId');
@@ -73,7 +73,7 @@ class DevicesController extends Controller
         return $this->deviceInformation->info($deviceId, $action);
     }
 
-    private function handleControlRequest(Request $request, string $action, string $responseName) : JsonResponse
+    private function handleControlRequest(Request $request, string $action, string $responseName): JsonResponse
     {
         $userId = $request->get('currentUserId');
         $deviceId = $request->input('id');
@@ -96,7 +96,7 @@ class DevicesController extends Controller
         return response()->json($response);
     }
 
-    private function buildAppliancesJson($devicesForCurrentUser)
+    private function buildAppliancesJson($devicesForCurrentUser): array
     {
         $actions = [DeviceActions::TURN_ON, DeviceActions::TURN_OFF];
 
@@ -121,7 +121,7 @@ class DevicesController extends Controller
         return $appliances;
     }
 
-    private function createHeader(Request $request, string $responseName, string $namespace)
+    private function createHeader(Request $request, string $responseName, string $namespace): array
     {
         $messageId = $request->header('Message-Id');
 
@@ -135,14 +135,14 @@ class DevicesController extends Controller
         return $header;
     }
 
-    private function currentUser(string $userId) : User
+    private function currentUser(string $userId): User
     {
         $currentUser = $this->userModel->where('user_id', $userId)->first();
 
         return $currentUser;
     }
 
-    private function doesUserOwnDevice(string $userId, int $deviceId) : bool
+    private function doesUserOwnDevice(string $userId, int $deviceId): bool
     {
         $currentUser = $this->currentUser($userId);
 

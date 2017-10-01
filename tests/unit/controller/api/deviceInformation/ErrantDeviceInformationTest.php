@@ -7,7 +7,7 @@ use Tests\TestCase;
 
 class ErrantDeviceInformationTest extends TestCase
 {
-    public function testInfo_GivenRandomValues_Returns400()
+    public function testInfo_GivenRandomValues_Returns400(): void
     {
         $errantDeviceInformation = new ErrantDeviceInformation();
         $response = $errantDeviceInformation->info(self::$faker->randomDigit(), self::$faker->word());

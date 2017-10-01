@@ -16,7 +16,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
     private $mockDeviceInformation;
     private $messageId;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -27,7 +27,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $this->messageId = self::$faker->uuid;
     }
 
-    public function testIndex_GivenUserExistsWithNoDevices_ReturnsJsonResponse()
+    public function testIndex_GivenUserExistsWithNoDevices_ReturnsJsonResponse(): void
     {
         $this->givenSingleUserExistsWithNoDevicesRegisteredWithApi();
 
@@ -36,7 +36,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $this->assertDiscoverAppliancesResponseWithoutDevice($response);
     }
 
-    public function testIndex_GivenUserExistsWithDevices_ReturnsJsonResponse()
+    public function testIndex_GivenUserExistsWithDevices_ReturnsJsonResponse(): void
     {
         $device1Name = self::$faker->word();
         $device2Name = self::$faker->word();
@@ -49,7 +49,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $this->assertDiscoverAppliancesResponse($response, $device1Name, $device2Name, $device3Name);
     }
 
-    public function testIndex_GivenUserDoesNotExist_Returns401()
+    public function testIndex_GivenUserDoesNotExist_Returns401(): void
     {
         $response = $this->getJson('/api/devices', [
             'HTTP_Authorization' => 'Bearer ' . self::$faker->uuid(),
@@ -59,7 +59,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $response->assertStatus(401);
     }
 
-    public function testTurnOn_GivenUserExistsWithDevice_ReturnsJsonResponse()
+    public function testTurnOn_GivenUserExistsWithDevice_ReturnsJsonResponse(): void
     {
         $user = $this->givenSingleUserExistsWithNoDevicesRegisteredWithApi();
         $device = $this->mockDeviceRecord(self::$faker->word(), $user);
@@ -71,7 +71,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $this->assertControlConfirmation($response);
     }
 
-    public function testTurnOn_GivenUserExistsWithDevice_CallsPublish()
+    public function testTurnOn_GivenUserExistsWithDevice_CallsPublish(): void
     {
         $user = $this->givenSingleUserExistsWithNoDevicesRegisteredWithApi();
         $device = $this->mockDeviceRecord(self::$faker->word(), $user);
@@ -82,7 +82,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $this->callControl(DeviceActions::TURN_ON, $device->id);
     }
 
-    public function testTurnOn_GivenUserExistsWithNoDevices_Returns401()
+    public function testTurnOn_GivenUserExistsWithNoDevices_Returns401(): void
     {
         $user = $this->givenSingleUserExistsWithNoDevicesRegisteredWithApi();
         $deviceId = self::$faker->randomDigit();
@@ -94,7 +94,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $response->assertStatus(401);
     }
 
-    public function testTurnOff_GivenUserExistsWithDevice_ReturnsJsonResponse()
+    public function testTurnOff_GivenUserExistsWithDevice_ReturnsJsonResponse(): void
     {
         $user = $this->givenSingleUserExistsWithNoDevicesRegisteredWithApi();
         $device = $this->mockDeviceRecord(self::$faker->word(), $user);
@@ -106,7 +106,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $this->assertControlConfirmation($response);
     }
 
-    public function testTurnOff_GivenUserExistsWithDevice_CallsPublish()
+    public function testTurnOff_GivenUserExistsWithDevice_CallsPublish(): void
     {
         $user = $this->givenSingleUserExistsWithNoDevicesRegisteredWithApi();
         $device = $this->mockDeviceRecord(self::$faker->word(), $user);
@@ -117,7 +117,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $this->callControl(DeviceActions::TURN_OFF, $device->id);
     }
 
-    public function testTurnOff_GivenUserExistsWithNoDevices_Returns401()
+    public function testTurnOff_GivenUserExistsWithNoDevices_Returns401(): void
     {
         $user = $this->givenSingleUserExistsWithNoDevicesRegisteredWithApi();
         $deviceId = self::$faker->randomDigit();
@@ -129,7 +129,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $response->assertStatus(401);
     }
 
-    public function testInfo_GivenUserExistsWithDevice_ReturnsJsonResponse()
+    public function testInfo_GivenUserExistsWithDevice_ReturnsJsonResponse(): void
     {
         $user = $this->givenSingleUserExists();
         $device = $this->mockDeviceRecord(self::$faker->word(), $user->user_id);
@@ -147,7 +147,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $response->assertStatus(200);
     }
 
-    public function testInfo_GivenRandomUserAndDevice_Returns401()
+    public function testInfo_GivenRandomUserAndDevice_Returns401(): void
     {
         $userId = self::$faker->uuid();
         $user = $this->createUser($userId);
@@ -164,7 +164,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $response->assertStatus(401);
     }
 
-    private function givenSingleUserExistsWithNoDevicesRegisteredWithApi() : User
+    private function givenSingleUserExistsWithNoDevicesRegisteredWithApi(): User
     {
         $user = $this->givenSingleUserExists();
 
@@ -181,21 +181,21 @@ class DevicesControllerTest extends DevicesControllerTestCase
         return $user;
     }
 
-    private function givenSingleUserExistsWithDevicesRegisteredWithApi(string $device1Name, string $device2Name, string $device3Name)
+    private function givenSingleUserExistsWithDevicesRegisteredWithApi(string $device1Name, string $device2Name, string $device3Name): void
     {
         $user = $this->givenSingleUserExistsWithDevices($device1Name, $device2Name, $device3Name);
 
         $this->registerUserWithApi($user);
     }
 
-    private function registerUserWithApi(User $user)
+    private function registerUserWithApi(User $user): void
     {
         $mockRequest = Mockery::mock(ILoginAuthenticator::class);
         $mockRequest->shouldReceive('processApiLoginRequest')->withAnyArgs()->once()->andReturn($user);
         $this->app->instance(ILoginAuthenticator::class, $mockRequest);
     }
 
-    private function callDevices() : TestResponse
+    private function callDevices(): TestResponse
     {
         $response = $this->getJson('/api/devices', [
             'HTTP_Authorization' => 'Bearer ' . self::$faker->uuid(),
@@ -205,7 +205,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         return $response;
     }
 
-    private function callControl(string $action, int $deviceId) : TestResponse
+    private function callControl(string $action, int $deviceId): TestResponse
     {
         $urlValidAction = strtolower($action);
 
@@ -217,7 +217,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         return $response;
     }
 
-    private function assertDiscoverAppliancesResponseWithoutDevice(TestResponse $response)
+    private function assertDiscoverAppliancesResponseWithoutDevice(TestResponse $response): void
     {
         $response->assertJsonStructure([
             'header' => [
@@ -234,7 +234,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $response->assertSee($this->messageId);
     }
 
-    private function assertDiscoverAppliancesResponse(TestResponse $response, string $device1Name, string $device2Name, string $device3Name)
+    private function assertDiscoverAppliancesResponse(TestResponse $response, string $device1Name, string $device2Name, string $device3Name): void
     {
         $response->assertJsonStructure([
             'header' => [
@@ -288,7 +288,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $response->assertSee($device3Name);
     }
 
-    private function assertControlConfirmation(TestResponse $response)
+    private function assertControlConfirmation(TestResponse $response): void
     {
         $response->assertJsonStructure([
             'header' => [

@@ -16,7 +16,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
     private $mockCurlRequest;
     private $user;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -32,7 +32,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
         $this->amazonLoginAuthenticator = new AmazonLoginAuthenticator($this->mockCurlRequest, $mockUserTable);
     }
 
-    public function testProcessLogin_GivenValidCurlRequests_ReturnsExistingUser()
+    public function testProcessLogin_GivenValidCurlRequests_ReturnsExistingUser(): void
     {
         $this->givenValidCurlRequests(env('AMAZON_TOKEN'), 2, 3, 1, 2);
 
@@ -41,7 +41,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
         $this->assertEquals($this->user, $result);
     }
 
-    public function testProcessLogin_GivenValidCurlRequests_ReturnsNewUser()
+    public function testProcessLogin_GivenValidCurlRequests_ReturnsNewUser(): void
     {
         $user = $this->givenNewUserToBeCreated();
 
@@ -50,7 +50,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
         $this->assertEquals($user, $result);
     }
 
-    public function testProcessLogin_GivenValidCurlRequestsWithNonmatchingAccessToken_ReturnsNull()
+    public function testProcessLogin_GivenValidCurlRequestsWithNonmatchingAccessToken_ReturnsNull(): void
     {
         $this->givenValidCurlRequests(self::$faker->uuid(), 1, 1, 0, 1);
 
@@ -59,7 +59,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testProcessLogin_GivenValidCurlRequestsNoTokenReturnedFromAmazon_ReturnsNull()
+    public function testProcessLogin_GivenValidCurlRequestsNoTokenReturnedFromAmazon_ReturnsNull(): void
     {
         $this->givenBadAccessTokenCurlRequests(env('AMAZON_TOKEN'), 1, 1, 1);
 
@@ -68,7 +68,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testProcessApiLoginRequest_GivenValidAuthorizationHeader_ReturnsExistingUser()
+    public function testProcessApiLoginRequest_GivenValidAuthorizationHeader_ReturnsExistingUser(): void
     {
         $this->givenValidCurlRequests(env('AMAZON_TOKEN'), 2, 3, 1, 2);
         $mockRequest = $this->givenValidAuthorizationHeader();
@@ -78,7 +78,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
         $this->assertEquals($this->user, $result);
     }
 
-    public function testProcessApiLogin_GivenValidAuthorizationHeader_ReturnsNewUser()
+    public function testProcessApiLogin_GivenValidAuthorizationHeader_ReturnsNewUser(): void
     {
         $user = $this->givenNewUserToBeCreated();
         $mockRequest = $this->givenValidAuthorizationHeader();
@@ -88,7 +88,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
         $this->assertEquals($user, $result);
     }
 
-    public function testProcessApiLoginRequest_GivenRequestWithNonmatchingAccessToken_ReturnsNull()
+    public function testProcessApiLoginRequest_GivenRequestWithNonmatchingAccessToken_ReturnsNull(): void
     {
         $this->givenValidCurlRequests(self::$faker->uuid(), 1, 1, 0, 1);
         $mockRequest = $this->givenValidAuthorizationHeader();
@@ -98,7 +98,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testProcessApiLoginRequest_GivenNoAuthorizationHeader_ReturnsNull()
+    public function testProcessApiLoginRequest_GivenNoAuthorizationHeader_ReturnsNull(): void
     {
         $mockRequest = Mockery::mock(Request::class);
         $mockRequest->shouldReceive('header')->once();
@@ -108,7 +108,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testProcessApiLoginRequest_GivenMalformedAuthorizationHeader_ReturnsNull()
+    public function testProcessApiLoginRequest_GivenMalformedAuthorizationHeader_ReturnsNull(): void
     {
         $mockRequest = Mockery::mock(Request::class);
         $mockRequest->shouldReceive('header')->with('Authorization')->once()->andReturn(self::$faker->uuid());
@@ -118,7 +118,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
         $this->assertNull($result);
     }
 
-    private function givenNewUserToBeCreated() : User
+    private function givenNewUserToBeCreated(): User
     {
         $user = $this->createUser();
 
@@ -136,7 +136,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
         return $user;
     }
 
-    private function createUser() : User
+    private function createUser(): User
     {
         $user = new User();
 
@@ -148,7 +148,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
         return $user;
     }
 
-    private function callProcessLoginRequest() : ?User
+    private function callProcessLoginRequest(): ?User
     {
         $mockRequest = Mockery::mock(Request::class);
         $mockRequest->shouldReceive('query')->with('access_token')->once()->andReturn(self::$faker->uuid());
@@ -158,7 +158,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
         return $user;
     }
 
-    private function givenValidAuthorizationHeader() : MockInterface
+    private function givenValidAuthorizationHeader(): MockInterface
     {
         $mockRequest = Mockery::mock(Request::class);
         $mockRequest->shouldReceive('header')->with('Authorization')->once()->andReturn('Bearer ' . self::$faker->uuid());
@@ -166,7 +166,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
         return $mockRequest;
     }
 
-    private function givenValidCurlRequests(string $token, int $timesInitCalled, int $timesSetOptionCalled, int $timesSecondExecuteIsCalled, int $timesClosedIsCalled)
+    private function givenValidCurlRequests(string $token, int $timesInitCalled, int $timesSetOptionCalled, int $timesSecondExecuteIsCalled, int $timesClosedIsCalled): void
     {
         $userId = self::$faker->uuid;
 
@@ -195,7 +195,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
             ->shouldReceive('close')->times($timesClosedIsCalled);
     }
 
-    private function givenBadAccessTokenCurlRequests(string $curlReturnValue, int $timesInitCalled, int $timesSetOptionCalled, int $timesClosedIsCalled)
+    private function givenBadAccessTokenCurlRequests(string $curlReturnValue, int $timesInitCalled, int $timesSetOptionCalled, int $timesClosedIsCalled): void
     {
         $this->mockCurlRequest
             ->shouldReceive('init')->withAnyArgs()->times($timesInitCalled)

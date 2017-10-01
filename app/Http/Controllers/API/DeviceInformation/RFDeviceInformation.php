@@ -14,7 +14,7 @@ class RFDeviceInformation implements IDeviceInformation
         $this->rfDeviceModel = $rfDeviceModel;
     }
 
-    public function info(int $deviceId, string $action) : JsonResponse
+    public function info(int $deviceId, string $action): JsonResponse
     {
         $rfDevice = $this->rfDeviceModel->where('device_id', $deviceId)->first();
 

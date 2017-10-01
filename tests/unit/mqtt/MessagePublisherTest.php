@@ -13,7 +13,7 @@ class MessagePublisherTest extends TestCase
     private $deviceId;
     private $action;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -22,7 +22,7 @@ class MessagePublisherTest extends TestCase
         $this->action = self::$faker->word();
     }
 
-    public function testPublish_GivenValidConnection_ReturnsTrue()
+    public function testPublish_GivenValidConnection_ReturnsTrue(): void
     {
         $topic = "RoboHome/$this->userId/$this->deviceId";
 
@@ -38,7 +38,7 @@ class MessagePublisherTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testPublish_GivenValidConnection_ReturnsFalse()
+    public function testPublish_GivenValidConnection_ReturnsFalse(): void
     {
         $mockClient = Mockery::mock(Client::class);
         $mockClient->shouldReceive('connect')->once()->andReturn(false);

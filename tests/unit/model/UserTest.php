@@ -7,7 +7,7 @@ use App\User;
 
 class UserTest extends ModelTestCase
 {
-    public function testAdd_GivenUserAddedToDatabase_DatabaseOnlyHasOneUserRecord()
+    public function testAdd_GivenUserAddedToDatabase_DatabaseOnlyHasOneUserRecord(): void
     {
         $user = new User();
         $name = self::$faker->name();
@@ -22,7 +22,7 @@ class UserTest extends ModelTestCase
         $this->assertEquals($userId, $user->user_id);
     }
 
-    public function testDevices_GivenNoDevicesExist_ReturnsNoDevices()
+    public function testDevices_GivenNoDevicesExist_ReturnsNoDevices(): void
     {
         $user = $this->createUser();
 
@@ -31,7 +31,7 @@ class UserTest extends ModelTestCase
         $this->assertEquals(0, $devices->getResults()->count());
     }
 
-    public function testDevices_GivenNoDevicesExist_ReturnsAllTheDevices()
+    public function testDevices_GivenNoDevicesExist_ReturnsAllTheDevices(): void
     {
         $user = $this->createUser();
 
@@ -44,7 +44,7 @@ class UserTest extends ModelTestCase
         $this->assertEquals(3, $devices->count());
     }
 
-    public function testDoesUserOwnDevice_GivenUserDoesNotOwnAnyDevices_ReturnsFalse()
+    public function testDoesUserOwnDevice_GivenUserDoesNotOwnAnyDevices_ReturnsFalse(): void
     {
         $user = $this->createUser();
 
@@ -53,7 +53,7 @@ class UserTest extends ModelTestCase
         $this->assertFalse($doesUserOwnDevice);
     }
 
-    public function testDoesUserOwnDevice_GivenUserOwnsDevice_ReturnsTrue()
+    public function testDoesUserOwnDevice_GivenUserOwnsDevice_ReturnsTrue(): void
     {
         $user = $this->createUser();
 
@@ -65,7 +65,7 @@ class UserTest extends ModelTestCase
         $this->assertTrue($doesUserOwnDevice);
     }
 
-    private function createUser() : User
+    private function createUser(): User
     {
         $user = new User();
         $name = self::$faker->name();
@@ -77,7 +77,7 @@ class UserTest extends ModelTestCase
         return $user;
     }
 
-    private function createDevice(string $userId)
+    private function createDevice(string $userId): void
     {
         $device = new Device();
         $device->add(self::$faker->word(), self::$faker->sentence(), $userId, self::$faker->randomDigit());

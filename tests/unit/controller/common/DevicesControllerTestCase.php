@@ -10,7 +10,7 @@ use Mockery\MockInterface;
 
 class DevicesControllerTestCase extends ControllerTestCase
 {
-    protected function givenSingleUserExists() : User
+    protected function givenSingleUserExists(): User
     {
         $user = $this->createUser(self::$faker->uuid());
 
@@ -24,7 +24,7 @@ class DevicesControllerTestCase extends ControllerTestCase
         return $user;
     }
 
-    protected function givenSingleUserExistsWithDevices(string $device1Name, string $device2Name, string $device3Name) : User
+    protected function givenSingleUserExistsWithDevices(string $device1Name, string $device2Name, string $device3Name): User
     {
         $userId = self::$faker->uuid();
 
@@ -48,7 +48,7 @@ class DevicesControllerTestCase extends ControllerTestCase
         return $user;
     }
 
-    protected function givenDeviceIsRegisteredToUser(Device $device, string $userId)
+    protected function givenDeviceIsRegisteredToUser(Device $device, string $userId): void
     {
         $collection = new Device();
 
@@ -60,7 +60,7 @@ class DevicesControllerTestCase extends ControllerTestCase
         $this->mockUserTable($mockUserRecord, $userId);
     }
 
-    protected function createUser(string $userId) : User
+    protected function createUser(string $userId): User
     {
         $user = new User();
 
@@ -72,7 +72,7 @@ class DevicesControllerTestCase extends ControllerTestCase
         return $user;
     }
 
-    protected function mockUserTable(MockInterface $mockUserRecord, string $userId)
+    protected function mockUserTable(MockInterface $mockUserRecord, string $userId): void
     {
         $mockUserTable = Mockery::mock(User::class);
         $mockUserTable
@@ -82,7 +82,7 @@ class DevicesControllerTestCase extends ControllerTestCase
         $this->app->instance(User::class, $mockUserTable);
     }
 
-    protected function mockMessagePublisher(int $timesPublishIsCalled = 1)
+    protected function mockMessagePublisher(int $timesPublishIsCalled = 1): void
     {
         $mockMessagePublisher = Mockery::mock(MessagePublisher::class);
         $mockMessagePublisher
@@ -93,7 +93,7 @@ class DevicesControllerTestCase extends ControllerTestCase
         $this->app->instance(MessagePublisher::class, $mockMessagePublisher);
     }
 
-    protected function mockDeviceRecord(string $deviceName, string $userId) : Device
+    protected function mockDeviceRecord(string $deviceName, string $userId): Device
     {
         $mockDeviceRecord = $this->createMockDeviceRecord($deviceName, $userId);
 
@@ -102,7 +102,7 @@ class DevicesControllerTestCase extends ControllerTestCase
         return $mockDeviceRecord;
     }
 
-    protected function mockDeviceRecordWithHtmlAttributes(string $deviceName, string $userId, string $attributeName, string $attributeValue) : Device
+    protected function mockDeviceRecordWithHtmlAttributes(string $deviceName, string $userId, string $attributeName, string $attributeValue): Device
     {
         $mockDeviceRecord = $this->createMockDeviceRecord($deviceName, $userId);
 
@@ -117,7 +117,7 @@ class DevicesControllerTestCase extends ControllerTestCase
         return $mockDeviceRecord;
     }
 
-    protected function givenDoesUserOwnDevice(User $user, int $deviceId, bool $doesUserOwnDevice) : MockInterface
+    protected function givenDoesUserOwnDevice(User $user, int $deviceId, bool $doesUserOwnDevice): MockInterface
     {
         $mockUserRecord = Mockery::mock(User::class);
         $mockUserRecord->shouldReceive('doesUserOwnDevice')->with($deviceId)->once()->andReturn($doesUserOwnDevice);

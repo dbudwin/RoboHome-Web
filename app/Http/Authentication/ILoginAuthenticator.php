@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 interface ILoginAuthenticator
 {
-    public function processLoginRequest(Request $request) : ?User;
+    public function processLoginRequest(Request $request): ?User;
 
-    public function processApiLoginRequest(Request $request) : ?User;
+    public function processApiLoginRequest(Request $request): ?User;
 }

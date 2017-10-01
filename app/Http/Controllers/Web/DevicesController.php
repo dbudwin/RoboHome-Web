@@ -31,7 +31,7 @@ class DevicesController extends Controller
         $this->messagePublisher = $messagePublisher;
     }
 
-    public function devices() : View
+    public function devices(): View
     {
         $currentUser = $this->currentUser();
 
@@ -41,7 +41,7 @@ class DevicesController extends Controller
         ]);
     }
 
-    public function add(Request $request) : RedirectResponse
+    public function add(Request $request): RedirectResponse
     {
         $name = $request->input('name');
         $description = $request->input('description');
@@ -59,7 +59,7 @@ class DevicesController extends Controller
         return redirect()->route('devices');
     }
 
-    public function delete(Request $request, int $id) : RedirectResponse
+    public function delete(Request $request, int $id): RedirectResponse
     {
         $doesUserOwnDevice = $this->currentUser()->doesUserOwnDevice($id);
 
@@ -78,7 +78,7 @@ class DevicesController extends Controller
         return redirect()->route('devices');
     }
 
-    public function update(Request $request, int $id) : RedirectResponse
+    public function update(Request $request, int $id): RedirectResponse
     {
         $doesUserOwnDevice = $this->currentUser()->doesUserOwnDevice($id);
 
@@ -102,7 +102,7 @@ class DevicesController extends Controller
         return redirect()->route('devices');
     }
 
-    public function handleControlRequest(Request $request, string $action, int $deviceId) : RedirectResponse
+    public function handleControlRequest(Request $request, string $action, int $deviceId): RedirectResponse
     {
         $currentUser = $this->currentUser();
         $doesUserOwnDevice = $currentUser->doesUserOwnDevice($deviceId);
@@ -118,7 +118,7 @@ class DevicesController extends Controller
         return redirect()->route('devices');
     }
 
-    private function currentUser() : User
+    private function currentUser(): User
     {
         $userId = session(env('SESSION_USER_ID'));
         $currentUser = $this->userModel->where('user_id', $userId)->first();
@@ -126,7 +126,7 @@ class DevicesController extends Controller
         return $currentUser;
     }
 
-    private function updateSpecificDeviceProperties(Request $request, Device $device) : void
+    private function updateSpecificDeviceProperties(Request $request, Device $device): void
     {
         $specificDevice = $device->specificDevice->first();
         $specificDeviceProperties = $specificDevice->getFillable();

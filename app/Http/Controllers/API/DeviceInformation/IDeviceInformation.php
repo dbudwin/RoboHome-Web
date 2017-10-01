@@ -6,5 +6,5 @@ use Illuminate\Http\JsonResponse;
 
 interface IDeviceInformation
 {
-    public function info(int $deviceId, string $action) : JsonResponse;
+    public function info(int $deviceId, string $action): JsonResponse;
 }
