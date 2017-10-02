@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 
 class DevicesController extends Controller
 {
-
     use DeviceOwner;
 
     private $deviceModel;
@@ -137,5 +136,4 @@ class DevicesController extends Controller
 
         return $header;
     }
-
 }

@@ -17,7 +17,6 @@ use Illuminate\View\View;
 
 class DevicesController extends Controller
 {
-
     use DeviceOwner;
 
     private $deviceModel;
@@ -132,5 +131,4 @@ class DevicesController extends Controller
         }
         return true;
     }
-
 }

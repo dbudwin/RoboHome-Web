@@ -6,7 +6,6 @@ use App\User;
 
 trait DeviceOwner
 {
-
     private function getCurrentUser(int $userId = null): ?User
     {
         $userId = is_null($userId) ? session(env('SESSION_USER_ID')) : $userId;
@@ -17,5 +16,4 @@ trait DeviceOwner
     {
         return $user->doesUserOwnDevice($deviceId);
     }
-
 }
