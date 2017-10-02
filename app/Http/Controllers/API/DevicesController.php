@@ -137,4 +137,5 @@ class DevicesController extends Controller
 
         return $header;
     }
+
 }
