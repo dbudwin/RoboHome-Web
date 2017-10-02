@@ -37,7 +37,7 @@ class DevicesController extends Controller
         $userId = $request->get('currentUserId');
 
         // todo : is not secure to do like this, need to test user existence
-        $devicesForCurrentUser = $this->getCurrentUser($userId)->devices;
+        $devicesForCurrentUser = $this->getCurrentUser((int)$userId)->devices;
 
         $response = [
             'header' => $this->createHeader($request, 'DiscoverAppliancesResponse', 'Alexa.ConnectedHome.Discovery'),
@@ -69,7 +69,7 @@ class DevicesController extends Controller
         $deviceId = $request->get('deviceId');
         $action = $request->get('action');
 
-        $user = $this->getCurrentUser($userId);
+        $user = $this->getCurrentUser((int)$userId);
         if (!$user || $this->isDeviceOwner($user, $deviceId)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
@@ -82,7 +82,7 @@ class DevicesController extends Controller
         $userId = $request->get('currentUserId');
         $deviceId = $request->input('id');
 
-        $user = $this->getCurrentUser($userId);
+        $user = $this->getCurrentUser((int)$userId);
         if (!$user || $this->isDeviceOwner($user, $deviceId)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
