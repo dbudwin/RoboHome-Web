@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Device;
 use App\Http\Controllers\API\DeviceInformation\IDeviceInformation;
 use App\Http\Controllers\Common\Controller;
+use App\Http\Controllers\Common\DeviceOwner;
 use App\Http\Globals\DeviceActions;
 use App\Http\MQTT\MessagePublisher;
 use App\User;
@@ -13,6 +14,9 @@ use Illuminate\Http\Request;
 
 class DevicesController extends Controller
 {
+
+    use DeviceOwner;
+
     private $deviceModel;
     private $userModel;
     private $messagePublisher;
@@ -32,7 +36,8 @@ class DevicesController extends Controller
     {
         $userId = $request->get('currentUserId');
 
-        $devicesForCurrentUser = $this->currentUser($userId)->devices;
+        // todo : is not secure to do like this, need to test user existence
+        $devicesForCurrentUser = $this->getCurrentUser($userId)->devices;
 
         $response = [
             'header' => $this->createHeader($request, 'DiscoverAppliancesResponse', 'Alexa.ConnectedHome.Discovery'),
@@ -64,9 +69,8 @@ class DevicesController extends Controller
         $deviceId = $request->get('deviceId');
         $action = $request->get('action');
 
-        $doesUserOwnDevice = $this->doesUserOwnDevice($userId, $deviceId);
-
-        if (!$doesUserOwnDevice) {
+        $user = $this->getCurrentUser($userId);
+        if (!$user || $this->isDeviceOwner($user, $deviceId)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
@@ -78,9 +82,8 @@ class DevicesController extends Controller
         $userId = $request->get('currentUserId');
         $deviceId = $request->input('id');
 
-        $doesUserOwnDevice = $this->doesUserOwnDevice($userId, $deviceId);
-
-        if (!$doesUserOwnDevice) {
+        $user = $this->getCurrentUser($userId);
+        if (!$user || $this->isDeviceOwner($user, $deviceId)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
@@ -133,25 +136,5 @@ class DevicesController extends Controller
         ];
 
         return $header;
-    }
-
-    private function currentUser(string $userId): User
-    {
-        $currentUser = $this->userModel->where('user_id', $userId)->first();
-
-        return $currentUser;
-    }
-
-    private function doesUserOwnDevice(string $userId, int $deviceId): bool
-    {
-        $currentUser = $this->currentUser($userId);
-
-        if ($currentUser === null) {
-            return false;
-        }
-
-        $doesUserOwnDevice = $currentUser->doesUserOwnDevice($deviceId);
-
-        return $doesUserOwnDevice;
     }
 }
