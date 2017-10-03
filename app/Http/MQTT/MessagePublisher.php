@@ -19,9 +19,10 @@ class MessagePublisher
             return false;
         }
 
-        $this->client->publish("RoboHome/$userId/$deviceId", $action, 0);
+        $published = $this->client->publish("RoboHome/$userId/$deviceId", $action, 0);
+
         $this->client->close();
 
-        return true;
+        return $published;
     }
 }

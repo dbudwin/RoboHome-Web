@@ -22,14 +22,15 @@ class MessagePublisherTest extends TestCase
         $this->action = self::$faker->word();
     }
 
-    public function testPublish_GivenValidConnection_ReturnsTrue(): void
+    public function testPublish_GivenValidConnection_WhenMessageSuccessfullyPublished_ReturnsTrue(): void
     {
         $topic = "RoboHome/$this->userId/$this->deviceId";
 
         $mockClient = Mockery::mock(Client::class);
-        $mockClient->shouldReceive('connect')->once()->andReturn(true);
-        $mockClient->shouldReceive('publish')->withArgs([$topic, $this->action, 0])->once();
-        $mockClient->shouldReceive('close')->once();
+        $mockClient
+            ->shouldReceive('connect')->once()->andReturn(true)
+            ->shouldReceive('publish')->withArgs([$topic, $this->action, 0])->once()->andReturn(true)
+            ->shouldReceive('close')->once();
 
         $messagePublisher = new MessagePublisher($mockClient);
 
@@ -38,7 +39,24 @@ class MessagePublisherTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testPublish_GivenValidConnection_ReturnsFalse(): void
+    public function testPublish_GivenValidConnection_WhenMessageUnsuccessfullyPublished_ReturnsFalse(): void
+    {
+        $topic = "RoboHome/$this->userId/$this->deviceId";
+
+        $mockClient = Mockery::mock(Client::class);
+        $mockClient
+            ->shouldReceive('connect')->once()->andReturn(true)
+            ->shouldReceive('publish')->withArgs([$topic, $this->action, 0])->once()->andReturn(false)
+            ->shouldReceive('close')->once();
+
+        $messagePublisher = new MessagePublisher($mockClient);
+
+        $result = $messagePublisher->publish($this->userId, $this->action, $this->deviceId);
+
+        $this->assertFalse($result);
+    }
+
+    public function testPublish_GivenInvalidConnection_ReturnsFalse(): void
     {
         $mockClient = Mockery::mock(Client::class);
         $mockClient->shouldReceive('connect')->once()->andReturn(false);

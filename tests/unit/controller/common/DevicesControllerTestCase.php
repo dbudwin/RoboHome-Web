@@ -17,10 +17,14 @@ class DevicesControllerTestCase extends ControllerTestCase
         return $user;
     }
 
-    protected function mockMessagePublisher(int $timesPublishIsCalled): void
+    protected function mockMessagePublisher(int $timesPublishIsCalled, bool $messagePublishedSuccessfully = true): void
     {
         $mockMessagePublisher = Mockery::mock(MessagePublisher::class);
-        $mockMessagePublisher->shouldReceive('publish')->withAnyArgs()->times($timesPublishIsCalled)->andReturn(true);
+        $mockMessagePublisher
+            ->shouldReceive('publish')
+            ->withAnyArgs()
+            ->times($timesPublishIsCalled)
+            ->andReturn($messagePublishedSuccessfully);
 
         $this->app->instance(MessagePublisher::class, $mockMessagePublisher);
     }
