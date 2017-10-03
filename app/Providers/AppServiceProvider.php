@@ -21,6 +21,9 @@ class AppServiceProvider extends ServiceProvider
             $clientId = substr(str_shuffle(MD5(microtime())), 0, $maxClientIdLength);
             $client = new Client(env('MQTT_SERVER'), env('MQTT_PORT'), $clientId);
             $client->setAuthDetails(env('MQTT_USER'), env('MQTT_PASSWORD'));
+            if (env('MQTT_TLS', false)) {
+                $client->setCryptoProtocol("tls");
+            }
 
             return $client;
         });
