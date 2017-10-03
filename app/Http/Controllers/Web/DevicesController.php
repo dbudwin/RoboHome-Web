@@ -23,7 +23,7 @@ class DevicesController extends Controller
 
     public function __construct(Device $deviceModel, RFDevice $rfDeviceModel, User $userModel, MessagePublisher $messagePublisher)
     {
-        $this->middleware('guest');
+        $this->middleware('authenticated');
 
         $this->deviceModel = $deviceModel;
         $this->rfDeviceModel = $rfDeviceModel;
