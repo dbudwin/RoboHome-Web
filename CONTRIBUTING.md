@@ -12,6 +12,8 @@ Thank you for your generosity and time to lend your skills to this project.  The
 
 [Code Style Guidelines](#code-style-guidelines)
 
+[Hacktoberfest](#hacktoberfest)
+
 # Contributor Covenant Code of Conduct
 
 ## Our Pledge
@@ -111,6 +113,12 @@ There is a linter that runs whenever changes are made, but there are some things
 2. DO make sure functions only ever return a single type.  All functions must have a return type.
 3. DO make sure you follow [the SOLID principles](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)).
 4. DO NOT comment code.  Comments are not a source of truth for the code and it's impossible to enforce that comments are kept up-to-date and are accurate.  The best way to avoid comments is by writing clean, well-tested code with useful naming.
+
+## Hacktoberfest
+
+Hacktoberfest is an annual promotion put on by DigitalOcean and GitHub each October.  It's a wonderful opportunity for open source projects like this one to gain exposure.  However, due to the incentives of the Hacktoberfest promotion, there is an increase in low quality and low effort pull requests duing the month of October.
+
+This project reserves the right to close and report to GitHub pull requests and issues that do not contribute to this project in good faith and abide by this code of conduct.
 
 ## Attribution
 
