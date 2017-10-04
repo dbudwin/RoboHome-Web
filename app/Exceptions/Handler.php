@@ -31,9 +31,17 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return void
      */
-    public function report(Exception $exception): void
+    public function report(Exception $exception): Response
     {
-        parent::report($exception);
+        if ($exception instanceof HttpException) {
+            $statusCode = $exception->getStatusCode();
+            if ($statusCode == 403) {
+                return response()->view('errors.403', [], 403);
+            } else if ($statusCode == 503) {
+                return response()->view('errors.503', [], 500);
+            }
+        } 
+        return response()->view('errors.404', [], 404);
     }
 
     /**
