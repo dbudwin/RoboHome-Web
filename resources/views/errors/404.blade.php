@@ -52,7 +52,11 @@
             <h1><i class="glyphicon glyphicon-exclamation-sign"></i></h1>
             <h2>404 Not Found</h2>
             <p class="lead">We couldn't find what you're looking for on <em><span id="display-domain"></span></em>.</p>
-            <p><a onclick=javascript:checkSite(); class="btn btn-default btn-lg"><span class="green">Take Me To The Homepage</span></a>
+            <p>
+            <a onclick="window.history.back()" class="btn btn-default btn-lg"><span class="green">Go Back</span></a>
+            </p>
+            <p>
+            <a onclick=javascript:checkSite(); class="btn btn-default btn-lg"><span class="green">Take Me To The Homepage</span></a>
             <script type="text/javascript">
                 function checkSite(){
                   var currentSite = window.location.hostname;
