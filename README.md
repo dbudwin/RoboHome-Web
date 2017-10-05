@@ -1,3 +1,4 @@
+[![Slack](https://robohome-slackin.herokuapp.com/badge.svg)](https://robohome-slackin.herokuapp.com)
 [![Build Status](https://travis-ci.org/dbudwin/RoboHome-Web.svg?branch=master)](https://travis-ci.org/dbudwin/RoboHome-Web)
 [![Code Climate](https://codeclimate.com/github/dbudwin/RoboHome-Web/badges/gpa.svg)](https://codeclimate.com/github/dbudwin/RoboHome-Web)
 [![Coverage Status](https://coveralls.io/repos/github/dbudwin/RoboHome-Web/badge.svg)](https://coveralls.io/github/dbudwin/RoboHome-Web)
