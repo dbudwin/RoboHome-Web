@@ -28,6 +28,9 @@ RoboHome is a SaaS tool that also integrates with Amazon's Echo to enable contro
 
 1. Rename `.env.example` to `.env` and populate the information needed to connect to your MQTT broker and MySQL database (under `DB_CONNECTION`).
 2. Run `composer install` from the root folder to download and install third-party PHP dependencies.
+3. Run `php artisan key:generate` from the root folder.  This will populate the `APP_KEY` field in the `.env` file.
+4. Run `php artisan migrate` from the root folder.  This will setup the database using the connection settings defined in the `.env` file.
+5. Run `php artisan serve` from the root folder to start the website.  This command will print to the terminal the local URL where you can visit the website in your browser.
 
 ### Docker :whale2:
 
