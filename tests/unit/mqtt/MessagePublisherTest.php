@@ -18,7 +18,7 @@ class MessagePublisherTest extends TestCase
         parent::setUp();
 
         $this->userId = self::$faker->uuid();
-        $this->deviceId = self::$faker->randomDigit();
+        $this->deviceId = self::$faker->randomNumber();
         $this->action = self::$faker->word();
     }
 

@@ -18,8 +18,8 @@ class RFDeviceInformationTest extends TestCase
     {
         parent::setUp();
 
-        $this->onCode = self::$faker->randomDigit();
-        $this->offCode = self::$faker->randomDigit();
+        $this->onCode = self::$faker->randomNumber();
+        $this->offCode = self::$faker->randomNumber();
     }
 
     public function testInfo_GivenTurnOnAction_ReturnsJsonResponseWithCorrectOnCode(): void
@@ -84,8 +84,8 @@ class RFDeviceInformationTest extends TestCase
 
         $rfDevice->on_code = $onCode;
         $rfDevice->off_code = $offCode;
-        $rfDevice->pulse_length = self::$faker->randomDigit();
-        $rfDevice->device_id = self::$faker->randomDigit();
+        $rfDevice->pulse_length = self::$faker->randomNumber();
+        $rfDevice->device_id = self::$faker->randomNumber();
 
         return $rfDevice;
     }

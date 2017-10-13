@@ -85,7 +85,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
     public function testTurnOn_GivenUserExistsWithNoDevices_Returns401(): void
     {
         $user = $this->givenSingleUserExistsWithNoDevicesRegisteredWithApi();
-        $deviceId = self::$faker->randomDigit();
+        $deviceId = self::$faker->randomNumber();
 
         $this->givenDoesUserOwnDevice($user, $deviceId, false);
 
@@ -120,7 +120,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
     public function testTurnOff_GivenUserExistsWithNoDevices_Returns401(): void
     {
         $user = $this->givenSingleUserExistsWithNoDevicesRegisteredWithApi();
-        $deviceId = self::$faker->randomDigit();
+        $deviceId = self::$faker->randomNumber();
 
         $this->givenDoesUserOwnDevice($user, $deviceId, false);
 
@@ -151,7 +151,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
     {
         $userId = self::$faker->uuid();
         $user = $this->createUser($userId);
-        $deviceId = self::$faker->randomDigit();
+        $deviceId = self::$faker->randomNumber();
 
         $this->givenDoesUserOwnDevice($user, $deviceId, false);
 

@@ -10,7 +10,7 @@ class ErrantDeviceInformationTest extends TestCase
     public function testInfo_GivenRandomValues_Returns400(): void
     {
         $errantDeviceInformation = new ErrantDeviceInformation();
-        $response = $errantDeviceInformation->info(self::$faker->randomDigit(), self::$faker->word());
+        $response = $errantDeviceInformation->info(self::$faker->randomNumber(), self::$faker->word());
 
         $this->assertEquals($response->status(), 400);
     }

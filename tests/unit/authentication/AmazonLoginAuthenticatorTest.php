@@ -140,7 +140,7 @@ class AmazonLoginAuthenticatorTest extends TestCase
     {
         $user = new User();
 
-        $user->id = self::$faker->randomDigit();
+        $user->id = self::$faker->randomNumber();
         $user->name = self::$faker->name();
         $user->email = self::$faker->email();
         $user->user_id = self::$faker->uuid();
