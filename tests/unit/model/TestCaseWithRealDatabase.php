@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
-abstract class ModelTestCase extends TestCase
+abstract class TestCaseWithRealDatabase extends TestCase
 {
     use DatabaseMigrations;
 

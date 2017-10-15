@@ -4,7 +4,7 @@ namespace Tests\Unit\Model;
 
 use App\RFDevice;
 
-class RFDeviceTest extends ModelTestCase
+class RFDeviceTest extends TestCaseWithRealDatabase
 {
     public function testAdd_GivenRFDeviceAddedToDatabase_DatabaseOnlyHasOneRFDeviceRecord(): void
     {

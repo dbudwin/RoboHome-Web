@@ -7,7 +7,7 @@ use App\Http\Globals\DeviceTypes;
 use App\RFDevice;
 use Illuminate\Database\Eloquent\Model;
 
-class DeviceTest extends ModelTestCase
+class DeviceTest extends TestCaseWithRealDatabase
 {
     public function testAdd_GivenDeviceAddedToDatabase_DatabaseOnlyHasOneDeviceRecord(): void
     {

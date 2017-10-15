@@ -5,7 +5,7 @@ namespace Tests\Unit\Model;
 use App\Device;
 use App\User;
 
-class UserTest extends ModelTestCase
+class UserTest extends TestCaseWithRealDatabase
 {
     public function testAdd_GivenUserAddedToDatabase_DatabaseOnlyHasOneUserRecord(): void
     {
