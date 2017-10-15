@@ -7,48 +7,35 @@ use App\User;
 
 class UserTest extends TestCaseWithRealDatabase
 {
-    public function testAdd_GivenUserAddedToDatabase_DatabaseOnlyHasOneUserRecord(): void
-    {
-        $user = new User();
-        $name = self::$faker->name();
-        $email = self::$faker->email();
-        $userId = self::$faker->uuid();
-
-        $user = $user->add($name, $email, $userId);
-
-        $this->assertCount(1, User::all());
-        $this->assertEquals($name, $user->name);
-        $this->assertEquals($email, $user->email);
-        $this->assertEquals($userId, $user->user_id);
-    }
-
-    public function testDevices_GivenNoDevicesExist_ReturnsNoDevices(): void
+    public function testDevices_GivenNoDevicesExist_ReturnsZeroDevices(): void
     {
         $user = $this->createUser();
 
         $devices = $user->devices();
 
-        $this->assertEquals(0, $devices->getResults()->count());
+        $this->assertEquals(0, $devices->count());
     }
 
-    public function testDevices_GivenNoDevicesExist_ReturnsAllTheDevices(): void
+    public function testDevices_GivenUserHasSeveralDevices_ReturnsAllDevices(): void
     {
         $user = $this->createUser();
+        $numberOfDevices = self::$faker->randomDigit();
 
-        $this->createDevice($user->id);
-        $this->createDevice($user->id);
-        $this->createDevice($user->id);
+        $this->createSeveralDevicesForUser($user, $numberOfDevices);
 
-        $devices = $user->devices()->getResults();
+        $devices = $user->devices();
 
-        $this->assertEquals(3, $devices->count());
+        $this->assertEquals($numberOfDevices, $devices->count());
     }
 
-    public function testDoesUserOwnDevice_GivenUserDoesNotOwnAnyDevices_ReturnsFalse(): void
+    public function testDoesUserOwnDevice_GivenFirstUserDoesNotOwnAnyDevices_ReturnsFalse(): void
     {
-        $user = $this->createUser();
+        $firstUser = $this->createUser();
+        $secondUser = $this->createUser();
 
-        $doesUserOwnDevice = $user->doesUserOwnDevice(self::$faker->randomDigit());
+        $deviceIdForSecondUser = $this->createSingleDeviceForUser($secondUser)->id;
+
+        $doesUserOwnDevice = $firstUser->doesUserOwnDevice($deviceIdForSecondUser);
 
         $this->assertFalse($doesUserOwnDevice);
     }
@@ -56,9 +43,7 @@ class UserTest extends TestCaseWithRealDatabase
     public function testDoesUserOwnDevice_GivenUserOwnsDevice_ReturnsTrue(): void
     {
         $user = $this->createUser();
-
-        $device = new Device();
-        $device = $device->add(self::$faker->word(), self::$faker->sentence(), $user->id, self::$faker->randomDigit());
+        $device = $this->createSingleDeviceForUser($user);
 
         $doesUserOwnDevice = $user->doesUserOwnDevice($device->id);
 
@@ -67,19 +52,24 @@ class UserTest extends TestCaseWithRealDatabase
 
     private function createUser(): User
     {
-        $user = new User();
-        $name = self::$faker->name();
-        $email = self::$faker->email();
-        $userId = self::$faker->uuid();
-
-        $user = $user->add($name, $email, $userId);
+        $user = factory(User::class)->create();
 
         return $user;
     }
 
-    private function createDevice(string $userId): void
+    private function createSingleDeviceForUser(User $user): Device
     {
-        $device = new Device();
-        $device->add(self::$faker->word(), self::$faker->sentence(), $userId, self::$faker->randomDigit());
+        $device = factory(Device::class)->create([
+            'user_id' => $user->id
+        ]);
+
+        return $device;
+    }
+
+    private function createSeveralDevicesForUser(User $user, int $numberOfDevicesForUser): void
+    {
+        factory(Device::class, $numberOfDevicesForUser)->create([
+            'user_id' => $user->id
+        ]);
     }
 }
