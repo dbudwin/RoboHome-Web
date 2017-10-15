@@ -1,8 +1,5 @@
 <?php
 
-Route::get('/', 'Web\LoginController@index')->name('index');
-Route::get('/login', 'Web\LoginController@login')->name('login');
-Route::get('/logout', 'Web\LoginController@logout')->name('logout');
 Route::get('/', function () {
     return view('home');
 });

@@ -2,23 +2,24 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Model
+class User extends Authenticatable
 {
-    protected $fillable = ['name', 'email', 'user_id'];
-    protected $table = 'users';
+    use Notifiable;
 
-    public function add(string $name, string $email, string $userId): User
-    {
-        $this->name = $name;
-        $this->email = $email;
-        $this->user_id = $userId;
-        $this->save();
+    protected $fillable = [
+        'name',
+        'email',
+        'password'
+    ];
 
-        return $this;
-    }
+    protected $hidden = [
+        'password',
+        'remember_token'
+    ];
 
     public function devices(): HasMany
     {

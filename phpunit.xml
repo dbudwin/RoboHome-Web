@@ -34,12 +34,10 @@
         </whitelist>
     </filter>
     <php>
-        <env name="AMAZON_TOKEN" value="amzn1.application-oa2-client.foo"/>
         <env name="APP_ENV" value="testing"/>
         <env name="APP_KEY" value="base64:5QAsRYV1WffWMfJIKoyn2ocKNR4MmVoBY3rRAEcp6C4="/>
         <env name="CACHE_DRIVER" value="array"/>
         <env name="SESSION_DRIVER" value="array"/>
-        <env name="SESSION_USER_ID" value="userId"/>
         <env name="QUEUE_DRIVER" value="sync"/>
     </php>
     <logging>

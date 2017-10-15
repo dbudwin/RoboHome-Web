@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Controller\Api;
 
-use App\Http\Authentication\ILoginAuthenticator;
 use App\Http\Controllers\API\DeviceInformation\IDeviceInformation;
 use App\Http\Globals\DeviceActions;
 use App\User;
@@ -190,9 +189,9 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
     private function registerUserWithApi(User $user): void
     {
-        $mockRequest = Mockery::mock(ILoginAuthenticator::class);
-        $mockRequest->shouldReceive('processApiLoginRequest')->withAnyArgs()->once()->andReturn($user);
-        $this->app->instance(ILoginAuthenticator::class, $mockRequest);
+//        $mockRequest = Mockery::mock(ILoginAuthenticator::class);
+//        $mockRequest->shouldReceive('processApiLoginRequest')->withAnyArgs()->once()->andReturn($user);
+//        $this->app->instance(ILoginAuthenticator::class, $mockRequest);
     }
 
     private function callDevices(): TestResponse

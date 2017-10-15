@@ -20,8 +20,6 @@ class DevicesController extends Controller
 
     public function __construct(Device $deviceModel, User $userModel, MessagePublisher $messagePublisher, IDeviceInformation $deviceInformation)
     {
-        $this->middleware('apiAuthenticator', ['except' => ['info']]);
-
         $this->deviceModel = $deviceModel;
         $this->userModel = $userModel;
         $this->messagePublisher = $messagePublisher;
