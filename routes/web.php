@@ -3,6 +3,11 @@
 Route::get('/', 'Web\LoginController@index')->name('index');
 Route::get('/login', 'Web\LoginController@login')->name('login');
 Route::get('/logout', 'Web\LoginController@logout')->name('logout');
+Route::get('/', function () {
+    return view('home');
+});
+
+Auth::routes();
 
 Route::get('/devices', 'Web\DevicesController@devices')->name('devices');
 Route::post('/devices/add', 'Web\DevicesController@add')->name('addDevice');

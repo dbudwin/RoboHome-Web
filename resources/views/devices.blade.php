@@ -37,10 +37,9 @@
         <!-- Latest compiled and minified JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
     </head>
     <body>
-        <div id="amazon-root"></div>
-        <script src="{{ URL::asset('js/loginWithAmazonScript.js') }}" type="text/javascript"></script>
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-12">
@@ -53,13 +52,13 @@
                         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                             <ul class="nav navbar-nav navbar-right">
                                 <li>
-                                    <a id="Logout" href="#" id="LoginWithAmazon"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Logout</a>
-                                    <script type="text/javascript">
-                                        document.getElementById("Logout").onclick = function() {
-                                            amazon.Login.logout();
-                                            window.location = "logout";
-                                        };
-                                    </script>
+                                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        Logout
+                                    </a>
+
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                        {{ csrf_field() }}
+                                    </form>
                                 </li>
                             </ul>
                         </div>

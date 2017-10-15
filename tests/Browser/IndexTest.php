@@ -19,7 +19,7 @@ class IndexTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/')
-                ->assertTitle('RoboHome | Login');
+                ->assertTitle('RoboHome');
         });
     }
 
@@ -36,6 +36,14 @@ class IndexTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser->visit('/')
                 ->assertSeeLink('Log In');
+        });
+    }
+
+    public function testIndex_SeesRegisterLink(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->visit('/')
+                ->assertSeeLink('Register');
         });
     }
 }
