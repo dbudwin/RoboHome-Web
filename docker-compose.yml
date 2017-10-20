@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: robohome
+      MYSQL_ROOT_PASSWORD: password
+
+  web:
+    image: choqco/dk-laravel:php71
+    ports:
+      - "80:80"
+    volumes:
+      - .:/data
+    links:
+      - db
+      - chromedriver
+    environment:
+      MYSQL_HOST: db
+      APP_URL: http://172.17.0.1
+      REMOTE_DRIVER_URL: http://chromedriver:9515
+
+  dbadmin:
+    image: phpmyadmin/phpmyadmin:4.7
+    ports:
+      - "8183:80"
+    links:
+      - db
+
+  chromedriver:
+    image: wakaba/docker-chromedriver:stable
+    command: bash -c "rm -f /tmp/.X0-lock && /cd"
+    stop_signal: SIGKILL

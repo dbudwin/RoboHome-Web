@@ -18,7 +18,7 @@ abstract class DuskTestCase extends BaseTestCase
     protected function driver(): RemoteWebDriver
     {
         return RemoteWebDriver::create(
-            'http://localhost:9515',
+            env('REMOTE_DRIVER_URL', 'http://localhost:9515'),
             DesiredCapabilities::chrome()
         );
     }
