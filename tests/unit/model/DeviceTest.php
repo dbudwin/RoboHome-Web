@@ -14,8 +14,8 @@ class DeviceTest extends ModelTestCase
         $device = new Device();
         $name = self::$faker->word();
         $description = self::$faker->sentence();
-        $userId = self::$faker->randomDigit();
-        $type = self::$faker->randomDigit();
+        $userId = self::$faker->randomNumber();
+        $type = self::$faker->randomNumber();
 
         $addedDevice = $device->add($name, $description, $userId, $type);
 
@@ -90,7 +90,7 @@ class DeviceTest extends ModelTestCase
         $name = self::$faker->word();
         $description = self::$faker->sentence();
         $type = $deviceType;
-        $userId = self::$faker->randomDigit();
+        $userId = self::$faker->randomNumber();
 
         $addedDevice = $device->add($name, $description, $userId, $type);
 

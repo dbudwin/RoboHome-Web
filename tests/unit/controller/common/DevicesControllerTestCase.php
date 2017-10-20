@@ -64,7 +64,7 @@ class DevicesControllerTestCase extends ControllerTestCase
     {
         $user = new User();
 
-        $user->id = self::$faker->randomDigit();
+        $user->id = self::$faker->randomNumber();
         $user->name = self::$faker->name();
         $user->email = self::$faker->email();
         $user->user_id = $userId;
@@ -129,10 +129,10 @@ class DevicesControllerTestCase extends ControllerTestCase
 
     private function createMockDeviceRecord(string $deviceName, string $userId): MockInterface
     {
-        $deviceType = self::$faker->randomDigit();
+        $deviceType = self::$faker->randomNumber();
 
         $mockDeviceRecord = Mockery::mock(Device::class)->makePartial();
-        $mockDeviceRecord->shouldReceive('getAttribute')->with('id')->andReturn(self::$faker->randomDigit())
+        $mockDeviceRecord->shouldReceive('getAttribute')->with('id')->andReturn(self::$faker->randomNumber())
             ->shouldReceive('getAttribute')->with('name')->andReturn($deviceName)
             ->shouldReceive('getAttribute')->with('description')->andReturn(self::$faker->sentence())
             ->shouldReceive('getAttribute')->with('user_id')->andReturn($userId)

@@ -45,7 +45,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $device3Name = self::$faker->word();
 
         $htmlAttributeName = self::$faker->word();
-        $htmlAttributeValue = self::$faker->randomDigit();
+        $htmlAttributeValue = self::$faker->randomNumber();
 
         $user = $this->givenSingleUserExistsWithDevicesContainingHtmlAttibutes($device1Name, $device2Name, $device3Name, $htmlAttributeName, $htmlAttributeValue);
 
@@ -94,7 +94,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
     public function testDelete_GivenUserDoesNotOwnDevice_RedirectToDevices(): void
     {
         $user = $this->givenSingleUserExists();
-        $deviceId = self::$faker->randomDigit();
+        $deviceId = self::$faker->randomNumber();
 
         $this->givenDoesUserOwnDevice($user, $deviceId, false);
 
@@ -107,7 +107,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
     public function testDelete_GivenUserDoesNotOwnDevice_SessionContainsErrorMessage(): void
     {
         $user = $this->givenSingleUserExists();
-        $deviceId = self::$faker->randomDigit();
+        $deviceId = self::$faker->randomNumber();
 
         $this->givenDoesUserOwnDevice($user, $deviceId, false);
 
@@ -142,7 +142,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
     public function testUpdate_GivenUserDoesNotOwnDevice_RedirectToDevices(): void
     {
         $user = $this->givenSingleUserExists();
-        $deviceId = self::$faker->randomDigit();
+        $deviceId = self::$faker->randomNumber();
 
         $this->givenDoesUserOwnDevice($user, $deviceId, false);
 
@@ -155,7 +155,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
     public function testUpdate_GivenUserDoesNotOwnDevice_SessionContainsErrorMessage(): void
     {
         $user = $this->givenSingleUserExists();
-        $deviceId = self::$faker->randomDigit();
+        $deviceId = self::$faker->randomNumber();
 
         $this->givenDoesUserOwnDevice($user, $deviceId, false);
 
@@ -208,7 +208,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
     public function testHandleControlRequest_GivenUserExistsWithDevice_CallsPublish(): void
     {
         $user = $this->givenSingleUserExists();
-        $deviceId = self::$faker->randomDigit();
+        $deviceId = self::$faker->randomNumber();
         $action = self::$faker->word();
 
         $mockUserRecord = $this->givenDoesUserOwnDevice($user, $deviceId, true);
@@ -224,7 +224,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
     public function testHandleControlRequest_GivenUserExistsWithNoDevices_PublishIsNotCalled(): void
     {
         $user = $this->givenSingleUserExists();
-        $deviceId = self::$faker->randomDigit();
+        $deviceId = self::$faker->randomNumber();
         $action = self::$faker->word();
 
         $this->givenDoesUserOwnDevice($user, $deviceId, false);
@@ -238,7 +238,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
     public function testHandleControlRequest_GivenUserExistsWithNoDevices_SessionContainsErrorMessage(): void
     {
         $user = $this->givenSingleUserExists();
-        $deviceId = self::$faker->randomDigit();
+        $deviceId = self::$faker->randomNumber();
         $action = self::$faker->word();
 
         $this->givenDoesUserOwnDevice($user, $deviceId, false);
@@ -258,7 +258,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
     private function givenUserOwnsDeviceForDeletion(User $user): int
     {
-        $deviceId = self::$faker->randomDigit();
+        $deviceId = self::$faker->randomNumber();
 
         $mockDeviceModel = Mockery::mock(Device::class);
         $mockDeviceModel
@@ -315,9 +315,9 @@ class DevicesControllerTest extends DevicesControllerTestCase
             ->post('/devices/add', [
                 'name' => $device->name,
                 'description' => self::$faker->sentence(),
-                'on_code' => self::$faker->randomDigit(),
-                'off_code' => self::$faker->randomDigit(),
-                'pulse_length' => self::$faker->randomDigit()
+                'on_code' => self::$faker->randomNumber(),
+                'off_code' => self::$faker->randomNumber(),
+                'pulse_length' => self::$faker->randomNumber()
             ]);
 
         return $response;
@@ -364,7 +364,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
     private function parametersForUpdatingDevice(): array
     {
         $user = $this->givenSingleUserExists();
-        $deviceId = self::$faker->randomDigit();
+        $deviceId = self::$faker->randomNumber();
         $newDeviceName = self::$faker->word();
         $newDeviceDescription = self::$faker->sentence();
         $newOnCode = self::$faker->randomNumber();
