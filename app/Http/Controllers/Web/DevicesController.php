@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Device;
-use App\Http\Controllers\Common\Controller;
+use App\Http\Controllers\Web\Controller;
 use App\Http\Globals\DeviceTypes;
 use App\Http\Globals\FlashMessageLevels;
 use App\Http\MQTT\MessagePublisher;
@@ -18,27 +18,15 @@ class DevicesController extends Controller
 {
     private $deviceModel;
     private $rfDeviceModel;
-    private $userModel;
     private $messagePublisher;
 
-    public function __construct(Device $deviceModel, RFDevice $rfDeviceModel, User $userModel, MessagePublisher $messagePublisher)
+    public function __construct(Device $deviceModel, RFDevice $rfDeviceModel, MessagePublisher $messagePublisher)
     {
         $this->middleware('authenticated');
 
         $this->deviceModel = $deviceModel;
         $this->rfDeviceModel = $rfDeviceModel;
-        $this->userModel = $userModel;
         $this->messagePublisher = $messagePublisher;
-    }
-
-    public function devices(): View
-    {
-        $currentUser = $this->currentUser();
-
-        return view('devices', [
-            'name' => $currentUser->name,
-            'devices' => $currentUser->devices
-        ]);
     }
 
     public function add(Request $request): RedirectResponse
@@ -116,14 +104,6 @@ class DevicesController extends Controller
         $this->messagePublisher->publish($currentUser->user_id, $action, $deviceId);
 
         return redirect()->route('devices');
-    }
-
-    private function currentUser(): User
-    {
-        $userId = session(env('SESSION_USER_ID'));
-        $currentUser = $this->userModel->where('user_id', $userId)->first();
-
-        return $currentUser;
     }
 
     private function updateSpecificDeviceProperties(Request $request, Device $device): void

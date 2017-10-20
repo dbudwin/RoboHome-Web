@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Authentication\ILoginAuthenticator;
-use App\Http\Controllers\Common\Controller;
+use App\Http\Controllers\Web\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class LoginController extends Controller
 {
@@ -16,10 +17,10 @@ class LoginController extends Controller
         $this->loginAuthenticator = $loginAuthenticator;
     }
 
-    public function index()
+    public function index(): View
     {
         if (session()->has(env('SESSION_USER_ID'))) {
-            return redirect()->route('devices');
+            return $this->devices();
         }
 
         return view('index');
