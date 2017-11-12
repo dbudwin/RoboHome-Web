@@ -2,12 +2,18 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Dusk\DuskServiceProvider;
 use LibMQTT\Client;
 
 class AppServiceProvider extends ServiceProvider
 {
+    public function boot(): void
+    {
+        Schema::defaultStringLength(191);
+    }
+
     public function register(): void
     {
         $this->app->bind(Client::class, function () {
