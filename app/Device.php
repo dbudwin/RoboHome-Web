@@ -3,27 +3,24 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Device extends Model
 {
     protected $fillable = ['name', 'description'];
     protected $table = 'devices';
 
-    public function add(string $name, string $description, int $userId, int $type): Device
+    public static function boot(): void
     {
-        $this->name = $name;
-        $this->description = $description;
-        $this->user_id = $userId;
-        $this->device_type_id = $type;
-        $this->save();
+        parent::boot();
 
-        return $this;
+        static::deleting(function (Device $device) {
+            $device->specificDevice()->delete();
+        });
     }
 
     public function htmlDataAttributesForSpecificDeviceProperties(): array
     {
-        $specificDevice = $this->specificDevice()->first();
+        $specificDevice = $this->specificDevice();
 
         $properties = $specificDevice->getFillable();
 
@@ -38,22 +35,13 @@ class Device extends Model
         return $htmlDataAttributesForSpecificDeviceProperties;
     }
 
-    public function specificDevice(): HasOne
+    private function specificDevice(): Model
     {
         $deviceTypeId = $this->device_type_id;
-        $deviceType = DeviceType::where('id', $deviceTypeId)->first()->type;
+        $deviceType = DeviceType::find($deviceTypeId)->type;
         $deviceTypeClassName = 'App\\' . $deviceType . 'Device';
-        $specificDevice = $this->hasOne($deviceTypeClassName);
+        $specificDevice = $this->hasOne($deviceTypeClassName)->first();
 
         return $specificDevice;
-    }
-
-    public static function boot(): void
-    {
-        parent::boot();
-
-        static::deleting(function ($device) {
-            $device->specificDevice()->delete();
-        });
     }
 }

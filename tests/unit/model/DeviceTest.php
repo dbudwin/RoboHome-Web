@@ -7,31 +7,14 @@ use App\Http\Globals\DeviceTypes;
 use App\RFDevice;
 use Illuminate\Database\Eloquent\Model;
 
-class DeviceTest extends ModelTestCase
+class DeviceTest extends TestCaseWithRealDatabase
 {
-    public function testAdd_GivenDeviceAddedToDatabase_DatabaseOnlyHasOneDeviceRecord(): void
-    {
-        $device = new Device();
-        $name = self::$faker->word();
-        $description = self::$faker->sentence();
-        $userId = self::$faker->randomDigit();
-        $type = self::$faker->randomDigit();
-
-        $addedDevice = $device->add($name, $description, $userId, $type);
-
-        $this->assertCount(1, Device::all());
-        $this->assertEquals($name, $addedDevice->name);
-        $this->assertEquals($description, $addedDevice->description);
-        $this->assertEquals($type, $addedDevice->device_type_id);
-        $this->assertEquals($userId, $addedDevice->user_id);
-    }
-
     public function testHtmlDataAttributesForSpecificDeviceProperties_GivenDeviceAddedToDatabase_AttributesMatchNameAndValueOfAddedDevice(): void
     {
         foreach ($this->deviceTypeConstants() as $specificDeviceType) {
             $addedDevice = $this->addDeviceToDatabase($specificDeviceType);
-            $specificDevice = $this->addSpecificDevice($addedDevice, $specificDeviceType);
-            $specificDeviceProperties = $addedDevice->specificDevice()->first()->getFillable();
+            $specificDevice = $this->addSpecificDevice($addedDevice->id, $specificDeviceType);
+            $specificDeviceProperties = $specificDevice->getFillable();
             $htmlAttributes = $addedDevice->htmlDataAttributesForSpecificDeviceProperties();
 
             $attributeNames = [];
@@ -52,62 +35,12 @@ class DeviceTest extends ModelTestCase
         }
     }
 
-    public function testSpecificDevice_GivenDeviceAddedToDatabase_SpecificDeviceMatches(): void
-    {
-        foreach ($this->deviceTypeConstants() as $specificDeviceType) {
-            $addedDevice = $this->addDeviceToDatabase($specificDeviceType);
-            $specificDevice = $this->addSpecificDevice($addedDevice, $specificDeviceType);
-            $foundSpecificDevice = $addedDevice->specificDevice;
-            $properties = $foundSpecificDevice->getFillable();
-
-            foreach ($properties as $property) {
-                $this->assertEquals($specificDevice->$property, $foundSpecificDevice->$property);
-            }
-
-            $this->assertEquals(RFDevice::class, get_class($foundSpecificDevice));
-        }
-    }
-
-    public function testSpecificDevice_GivenDeviceAddedToDatabase_CascadeDeleteRemovesDeviceAndSpecificDevice(): void
-    {
-        foreach ($this->deviceTypeConstants() as $specificDeviceType) {
-            $addedDevice = $this->addDeviceToDatabase($specificDeviceType);
-            $specificDevice = $this->addSpecificDevice($addedDevice, $specificDeviceType);
-
-            $this->assertEquals(1, Device::count());
-            $this->assertEquals(1, $specificDevice::count());
-
-            $addedDevice->delete();
-
-            $this->assertEquals(0, Device::count());
-            $this->assertEquals(0, $specificDevice::count());
-        }
-    }
-
     private function addDeviceToDatabase(int $deviceType): Device
     {
-        $device = new Device();
-        $name = self::$faker->word();
-        $description = self::$faker->sentence();
-        $type = $deviceType;
-        $userId = self::$faker->randomDigit();
-
-        $addedDevice = $device->add($name, $description, $userId, $type);
-
-        return $addedDevice;
-    }
-
-    private function addRFDeviceToDatabase(Device $device): RFDevice
-    {
-        $rfDevice = new RFDevice();
-        $onCode = self::$faker->randomNumber();
-        $offCode = self::$faker->randomNumber();
-        $pulseLength = self::$faker->randomNumber();
-        $deviceId = $device->id;
-
-        $rfDevice = $rfDevice->add($onCode, $offCode, $pulseLength, $deviceId);
-
-        return $rfDevice;
+        return factory(Device::class)->create([
+            'user_id' => self::$faker->randomNumber(),
+            'device_type_id' => $deviceType
+        ]);
     }
 
     private function assertHtmlAttributesMatchSpecificDeviceProperties(Model $specificDevice, array $attributeNames, array $attributeValues, array $specificDeviceProperties): void
@@ -120,13 +53,20 @@ class DeviceTest extends ModelTestCase
         }
     }
 
-    private function addSpecificDevice(Model $addedDevice, int $specificDeviceType): RFDevice
+    private function addSpecificDevice(int $deviceId, int $specificDeviceType): RFDevice
     {
         if ($specificDeviceType == DeviceTypes::RF_DEVICE) {
-            $specificDevice = $this->addRFDeviceToDatabase($addedDevice);
+            $specificDevice = $this->addRFDeviceToDatabase($deviceId);
         }
 
         return $specificDevice;
+    }
+
+    private function addRFDeviceToDatabase(int $deviceId): RFDevice
+    {
+        return factory(RFDevice::class)->create([
+            'device_id' => $deviceId
+        ]);
     }
 
     private function deviceTypeConstants(): array

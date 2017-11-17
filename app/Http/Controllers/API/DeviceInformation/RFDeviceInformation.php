@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers\API\DeviceInformation;
 
-use App\RFDevice;
+use App\Repositories\IRFDeviceRepository;
 use Illuminate\Http\JsonResponse;
 
 class RFDeviceInformation implements IDeviceInformation
 {
-    private $rfDeviceModel;
+    private $rfDeviceRepository;
 
-    public function __construct(RFDevice $rfDeviceModel)
+    public function __construct(IRFDeviceRepository $rfDeviceRepository)
     {
-        $this->rfDeviceModel = $rfDeviceModel;
+        $this->rfDeviceRepository = $rfDeviceRepository;
     }
 
     public function info(int $deviceId, string $action): JsonResponse
     {
-        $rfDevice = $this->rfDeviceModel->where('device_id', $deviceId)->first();
+        $rfDevice = $this->rfDeviceRepository->get($deviceId);
 
         $response = null;
 

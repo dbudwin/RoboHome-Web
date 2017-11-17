@@ -17,12 +17,10 @@ RoboHome is a SaaS tool that also integrates with Amazon's Echo to enable contro
 
 ### Requirements :white_check_mark:
 
-1. Webserver with PHP 7.1 or greater with MySQL
+1. Web server with PHP 7.1 or greater with MySQL
 2. SSL/TLS cert [available for Free with Let's Encrypt](https://www.letsencrypt.org/).  Note, we must use _slightly_ less secure ciphers than the max due to hardware limitations of the ESP8266 which will need to talk to the RoboHome-Web API over HTTPS to gather information about devices.  If set up correctly, by entering your website in [SSL Lab's SSL Server Test](https://www.ssllabs.com/ssltest/index.html), you should still get an "A" rating.  To get the appropiate ciphers for your server visit [Cipherli.st](https://cipherli.st/) and click "Yes, give me a ciphersuite that works with legacy / old software."
-2. MQTT broker for pub-sub. I personally use [CloudMQTT](https://www.cloudmqtt.com/). This service is used to send messages from a webservice to a microcontroller.
-3. An account with [Amazon](https://www.amazon.com/) to be used for account registration using OAuth.
-4. An account with [Login with Amazon](https://login.amazon.com/) to allow your website to use OAuth to verify users.  Tip, be sure to register both www and non-www versions of URLs for the "Allowed JavaScript Origins."
-5. [Composer](https://getcomposer.org/) dependency manager for PHP
+3. MQTT broker for pub-sub. I personally use [CloudMQTT](https://www.cloudmqtt.com/). This service is used to send messages from a web service to a microcontroller.
+4. [Composer](https://getcomposer.org/) dependency manager for PHP
 
 ### Configuring :wrench:
 
@@ -30,7 +28,8 @@ RoboHome is a SaaS tool that also integrates with Amazon's Echo to enable contro
 2. Run `composer install` from the root folder to download and install third-party PHP dependencies.
 3. Run `php artisan key:generate` from the root folder.  This will populate the `APP_KEY` field in the `.env` file.
 4. Run `php artisan migrate` from the root folder.  This will setup the database using the connection settings defined in the `.env` file.
-5. Run `php artisan serve` from the root folder to start the website.  This command will print to the terminal the local URL where you can visit the website in your browser.
+5. Run `php artisan passport:install` from the root folder and save the output to a safe location.  The output will be needed later to help configure 3rd parties (like Amazon) to authenticate with RoboHome.
+6. Run `php artisan serve` from the root folder to start the website.  This command will print to the terminal the local URL where you can visit the website in your browser.
 
 ### Docker :whale2:
 
@@ -40,7 +39,7 @@ There are a few configuration steps that are different from the manual configura
 1. Rename `.env.docker` to `.env`.
 2. `composer` and `php artisan` are preinstalled commands in the Docker container that you can use via the `web.sh` script in the root directory. For example: `./web.sh composer install` to install Composer dependencies on the container or `./web.sh php artisan migrate` to run the Laravel migrations on the container. This script will run in container automatically.
 
-For login to work, you'll need to add `http://localhost` to the "Allowed JavaScript Origins" in your Login With Amazon App Console.  Once you have Docker installed and running, execute `docker-compose up` and visit `http://localhost` to view the website.  To access phpMyAdmin, navigate to `http://localhost:8183` and login with the following credentials; Server: `db`, user: `root`, password: `password`.
+Once you have Docker installed and running, execute `docker-compose up -d` and visit `http://localhost` to view the website.  To access phpMyAdmin, navigate to `http://localhost:8183` and login with the following credentials; Server: `db`, user: `root`, password: `password` (these credentials come from `.env.docker` if you want to change them).
 
 ## Contributing
 

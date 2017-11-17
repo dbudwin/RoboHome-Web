@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Device;
 use App\Http\Controllers\API\DeviceInformation\IDeviceInformation;
 use App\Http\Controllers\Common\Controller;
 use App\Http\Globals\DeviceActions;
@@ -13,26 +12,22 @@ use Illuminate\Http\Request;
 
 class DevicesController extends Controller
 {
-    private $deviceModel;
-    private $userModel;
     private $messagePublisher;
     private $deviceInformation;
 
-    public function __construct(Device $deviceModel, User $userModel, MessagePublisher $messagePublisher, IDeviceInformation $deviceInformation)
+    public function __construct(MessagePublisher $messagePublisher, IDeviceInformation $deviceInformation)
     {
-        $this->middleware('apiAuthenticator', ['except' => ['info']]);
+        $this->middleware('auth:api', ['except' => ['info']]);
 
-        $this->deviceModel = $deviceModel;
-        $this->userModel = $userModel;
         $this->messagePublisher = $messagePublisher;
         $this->deviceInformation = $deviceInformation;
     }
 
     public function index(Request $request): JsonResponse
     {
-        $userId = $request->get('currentUserId');
+        $currentUser = $request->user();
 
-        $devicesForCurrentUser = $this->currentUser($userId)->devices;
+        $devicesForCurrentUser = $currentUser->devices;
 
         $response = [
             'header' => $this->createHeader($request, 'DiscoverAppliancesResponse', 'Alexa.ConnectedHome.Discovery'),
@@ -60,11 +55,11 @@ class DevicesController extends Controller
 
     public function info(Request $request): JsonResponse
     {
-        $userId = $request->get('userId');
+        $currentUser = $request->user();
         $deviceId = $request->get('deviceId');
         $action = $request->get('action');
 
-        $doesUserOwnDevice = $this->doesUserOwnDevice($userId, $deviceId);
+        $doesUserOwnDevice = $this->doesUserOwnDevice($currentUser, $deviceId);
 
         if (!$doesUserOwnDevice) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -75,10 +70,11 @@ class DevicesController extends Controller
 
     private function handleControlRequest(Request $request, string $action, string $responseName): JsonResponse
     {
-        $userId = $request->get('currentUserId');
+        $currentUser = $request->user();
+        $userId = $currentUser->id;
         $deviceId = $request->input('id');
 
-        $doesUserOwnDevice = $this->doesUserOwnDevice($userId, $deviceId);
+        $doesUserOwnDevice = $this->doesUserOwnDevice($currentUser, $deviceId);
 
         if (!$doesUserOwnDevice) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -135,17 +131,8 @@ class DevicesController extends Controller
         return $header;
     }
 
-    private function currentUser(string $userId): User
+    private function doesUserOwnDevice(User $currentUser, int $deviceId): bool
     {
-        $currentUser = $this->userModel->where('user_id', $userId)->first();
-
-        return $currentUser;
-    }
-
-    private function doesUserOwnDevice(string $userId, int $deviceId): bool
-    {
-        $currentUser = $this->currentUser($userId);
-
         if ($currentUser === null) {
             return false;
         }

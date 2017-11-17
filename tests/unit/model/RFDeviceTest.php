@@ -4,17 +4,21 @@ namespace Tests\Unit\Model;
 
 use App\RFDevice;
 
-class RFDeviceTest extends ModelTestCase
+class RFDeviceTest extends TestCaseWithRealDatabase
 {
     public function testAdd_GivenRFDeviceAddedToDatabase_DatabaseOnlyHasOneRFDeviceRecord(): void
     {
-        $rfDevice = new RFDevice();
         $onCode = self::$faker->randomNumber();
         $offCode = self::$faker->randomNumber();
         $pulseLength = self::$faker->randomNumber();
         $deviceId = self::$faker->randomNumber();
 
-        $rfDevice = $rfDevice->add($onCode, $offCode, $pulseLength, $deviceId);
+        $rfDevice = factory(RFDevice::class)->create([
+            'on_code' => $onCode,
+            'off_code' => $offCode,
+            'pulse_length' => $pulseLength,
+            'device_id' => $deviceId
+        ]);
 
         $this->assertCount(1, RFDevice::all());
         $this->assertEquals($onCode, $rfDevice->on_code);
