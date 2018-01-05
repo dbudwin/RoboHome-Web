@@ -25,7 +25,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
         $this->app->instance(IDeviceInformation::class, $this->mockDeviceInformation);
 
-        $this->messageId = self::$faker->uuid;
+        $this->messageId = self::$faker->uuid();
     }
 
     public function testIndex_GivenUserExistsWithNoDevices_ReturnsJsonResponse(): void
@@ -270,7 +270,10 @@ class DevicesControllerTest extends DevicesControllerTestCase
     private function mockUserOwnsDevice(int $deviceId, bool $doesUserOwnDevice): User
     {
         $mockUser = $this->createMockUser();
-        $mockUser->shouldReceive('doesUserOwnDevice')->with($deviceId)->once()->andReturn($doesUserOwnDevice);
+        $mockUser
+            ->shouldReceive('doesUserOwnDevice')->with($deviceId)->once()->andReturn($doesUserOwnDevice)
+            ->shouldReceive('token')->andReturn(self::$faker->uuid())
+            ->shouldReceive('tokenCan')->andReturn(self::$faker->word());
 
         return $mockUser;
     }
