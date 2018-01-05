@@ -26,6 +26,10 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+        Passport::tokensCan([
+            'control' => 'Access user profile and control devices'
+        ]);
+
         Passport::routes();
     }
 }
