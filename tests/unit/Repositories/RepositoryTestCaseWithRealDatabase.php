@@ -3,10 +3,16 @@
 namespace Tests\Unit\Repositories;
 
 use App\Http\Globals\DeviceTypes;
+use App\User;
 use Tests\Unit\Model\TestCaseWithRealDatabase;
 
 class RepositoryTestCaseWithRealDatabase extends TestCaseWithRealDatabase
 {
+    protected function createUser(): User
+    {
+        return factory(User::class)->create();
+    }
+
     protected function createDeviceProperties(): array
     {
         $properties = [

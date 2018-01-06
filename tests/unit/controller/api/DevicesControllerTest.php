@@ -5,6 +5,7 @@ namespace Tests\Unit\Controller\Api;
 use App\Device;
 use App\Http\Controllers\API\DeviceInformation\IDeviceInformation;
 use App\Http\Globals\DeviceActions;
+use App\Repositories\UserRepository;
 use App\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\TestResponse;
@@ -125,6 +126,9 @@ class DevicesControllerTest extends DevicesControllerTestCase
     {
         $device = $this->createDevices()[0];
         $mockUser = $this->mockUserOwnsDevice($device->id, true);
+        $mockUserRepository = $this->givenGetCalledOnUserRepository($mockUser);
+
+        $this->app->instance(UserRepository::class, $mockUserRepository);
 
         $this->mockDeviceInformation->shouldReceive('info')->once()->andReturn(new JsonResponse());
 
@@ -137,6 +141,9 @@ class DevicesControllerTest extends DevicesControllerTestCase
     {
         $deviceId = self::$faker->randomDigit();
         $mockUser = $this->mockUserOwnsDevice($deviceId, false);
+        $mockUserRepository = $this->givenGetCalledOnUserRepository($mockUser);
+
+        $this->app->instance(UserRepository::class, $mockUserRepository);
 
         $response = $this->callInfo($mockUser, $deviceId);
 
@@ -276,5 +283,13 @@ class DevicesControllerTest extends DevicesControllerTestCase
             ->shouldReceive('tokenCan')->andReturn(self::$faker->word());
 
         return $mockUser;
+    }
+
+    private function givenGetCalledOnUserRepository(User $user): UserRepository
+    {
+        $mockUserRepository = Mockery::mock(UserRepository::class);
+        $mockUserRepository->shouldReceive('get')->once()->andReturn($user);
+
+        return $mockUserRepository;
     }
 }

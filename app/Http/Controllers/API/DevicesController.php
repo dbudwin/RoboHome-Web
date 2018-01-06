@@ -6,6 +6,7 @@ use App\Http\Controllers\API\DeviceInformation\IDeviceInformation;
 use App\Http\Controllers\Common\Controller;
 use App\Http\Globals\DeviceActions;
 use App\Http\MQTT\MessagePublisher;
+use App\Repositories\IUserRepository;
 use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,13 +15,15 @@ class DevicesController extends Controller
 {
     private $messagePublisher;
     private $deviceInformation;
+    private $userRepository;
 
-    public function __construct(MessagePublisher $messagePublisher, IDeviceInformation $deviceInformation)
+    public function __construct(MessagePublisher $messagePublisher, IDeviceInformation $deviceInformation, IUserRepository $userRepository)
     {
         $this->middleware('auth:api', ['except' => ['info']]);
 
         $this->messagePublisher = $messagePublisher;
         $this->deviceInformation = $deviceInformation;
+        $this->userRepository = $userRepository;
     }
 
     public function index(Request $request): JsonResponse
@@ -55,11 +58,13 @@ class DevicesController extends Controller
 
     public function info(Request $request): JsonResponse
     {
-        $currentUser = $request->user();
+        $currentUserId = $request->get('userId');
         $deviceId = $request->get('deviceId');
         $action = $request->get('action');
 
-        $doesUserOwnDevice = $this->doesUserOwnDevice($currentUser, $deviceId);
+        $user = $this->userRepository->get($currentUserId);
+
+        $doesUserOwnDevice = $this->doesUserOwnDevice($user, $deviceId);
 
         if (!$doesUserOwnDevice) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -131,13 +136,13 @@ class DevicesController extends Controller
         return $header;
     }
 
-    private function doesUserOwnDevice(User $currentUser, int $deviceId): bool
+    private function doesUserOwnDevice(User $user, int $deviceId): bool
     {
-        if ($currentUser === null) {
+        if ($user === null) {
             return false;
         }
 
-        $doesUserOwnDevice = $currentUser->doesUserOwnDevice($deviceId);
+        $doesUserOwnDevice = $user->doesUserOwnDevice($deviceId);
 
         return $doesUserOwnDevice;
     }
