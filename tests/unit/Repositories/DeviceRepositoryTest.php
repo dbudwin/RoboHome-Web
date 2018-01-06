@@ -6,7 +6,6 @@ use App\Device;
 use App\Repositories\IDeviceRepository;
 use App\Repositories\IRFDeviceRepository;
 use App\RFDevice;
-use App\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Mockery;
 
@@ -123,11 +122,6 @@ class DeviceRepositoryTest extends RepositoryTestCaseWithRealDatabase
         $name = $this->deviceRepository->name($device->id);
 
         $this->assertEquals($device->name, $name);
-    }
-
-    private function createUser(): User
-    {
-        return factory(User::class)->create();
     }
 
     private function createDevice(): Device
