@@ -29,9 +29,6 @@
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">./app</directory>
-            <exclude>
-                <directory suffix=".php">./app/Http/Wrappers</directory>
-            </exclude>
         </whitelist>
     </filter>
     <logging>
