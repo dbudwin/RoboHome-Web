@@ -10,7 +10,8 @@ class IndexTest extends DuskTestCase
     public function testIndex_VerifyPath(): void
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/')
+            $browser
+                ->visit('/')
                 ->assertPathIs('/');
         });
     }
@@ -18,7 +19,8 @@ class IndexTest extends DuskTestCase
     public function testIndex_SeesTitle(): void
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/')
+            $browser
+                ->visit('/')
                 ->assertTitle('RoboHome');
         });
     }
@@ -26,24 +28,47 @@ class IndexTest extends DuskTestCase
     public function testIndex_SeesTextInBody(): void
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/')
-                ->assertSee('Welcome to RoboHome');
+            $browser
+                ->visit('/')
+                ->assertSeeIn('@welcome', 'Welcome to RoboHome');
         });
     }
 
     public function testIndex_SeesLogInLink(): void
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/')
+            $browser
+                ->visit('/')
                 ->assertSeeLink('Log In');
+        });
+    }
+
+    public function testIndex_ClickLogInLink_RedirectsToLoginPage(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $browser
+                ->visit('/')
+                ->clickLink('Log In')
+                ->assertPathIs('/login');
         });
     }
 
     public function testIndex_SeesRegisterLink(): void
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/')
+            $browser
+                ->visit('/')
                 ->assertSeeLink('Register');
+        });
+    }
+
+    public function testIndex_ClickRegisterLink_RedirectsToRegisterPage(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $browser
+                ->visit('/')
+                ->clickLink('Register')
+                ->assertPathIs('/register');
         });
     }
 }
