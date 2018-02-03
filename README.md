@@ -35,17 +35,18 @@ RoboHome is a SaaS tool that also integrates with Amazon's Echo to enable contro
 
 This project uses [Docker Compose](https://docs.docker.com/compose/) to help easily emulate a test environment for rapid development and testing.  This container has the PHP, MySQL, and phpMyAdmin services.
 
-There are a few configuration steps that are different from the manual configuration:
-1. Rename `.env.docker` to `.env`.
-2. `composer` and `php artisan` are preinstalled commands in the Docker container that you can use via the `web.sh` script in the root directory. For example: `./web.sh composer install` to install Composer dependencies on the container or `./web.sh php artisan migrate` to run the Laravel migrations on the container. This script will run in container automatically.
-
-Once you have Docker installed and running, execute `docker-compose up -d` and visit `http://localhost` to view the website.  To access phpMyAdmin, navigate to `http://localhost:8183` and login with the following credentials; Server: `db`, user: `root`, password: `password` (these credentials come from `.env.docker` if you want to change them).
+1. Start Docker and execute `./StartDockerAndRunTests.sh`.  This will create a backup of the `.env` file, download and start all the containers, configure Laravel, run all the tests, and then restore the `.env` file.
+    - Once running, visit `http://localhost` to view the website.  To access phpMyAdmin, navigate to `http://localhost:8183` and login with the following credentials; username: `root`, password: `password` (these credentials come from `.env.docker` if you want to change them).
+    - This is a good step to execute before contributing code.
+2. To run custom commands inside the container running Laravel, pass the command to `web.sh` like `./web.sh composer install`.
 
 ## Contributing
 
 ### How To Contribute :gift:
 
-Contributions are always welcome!  Please fork this repo and open a PR with your code or feel free to make an issue.  All PRs will need to be reviewed and pass automated checks.  If feedback is given on a PR, please submit updates to the original PR in the form of [fixup! commits](https://robots.thoughtbot.com/autosquashing-git-commits) which will later be squashed before the PR is merged.
+Contributions are always welcome!  Please fork this repo and open a pull request from a new branch with your code or feel free to make an issue.  All pull requests will need to be reviewed and pass automated checks.  If feedback is given on a pull request, please submit updates to the original pull request in the form of [fixup! commits](https://robots.thoughtbot.com/autosquashing-git-commits) which will later be squashed before the pull request is merged.
+
+For more information, consult the [contributing guidelines](https://github.com/dbudwin/RoboHome-Web/blob/master/CONTRIBUTING.md).
 
 This repo supports the principles of [Bob Martin's Clean Code](http://www.goodreads.com/book/show/3735293-clean-code).
 
