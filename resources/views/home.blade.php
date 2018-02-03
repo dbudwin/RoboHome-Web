@@ -7,7 +7,7 @@
         <div class="col-sm-12">
             <div class="container">
                 <div class="jumbotron">
-                    <h2>
+                    <h2 dusk="welcome">
                         Welcome to RoboHome
                     </h2>
                     <p>

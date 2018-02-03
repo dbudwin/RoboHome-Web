@@ -1,7 +1,5 @@
 language: php
-
 sudo: required
-
 dist: trusty
 
 php:
@@ -15,6 +13,7 @@ matrix:
     - php: nightly
 
 addons:
+  chrome: stable
   code_climate:
     repo_token: $CODECLIMATE_REPO_TOKEN
 
@@ -28,24 +27,22 @@ services:
 before_install:
   - mysql -e 'CREATE DATABASE robohome;'
 
-before_script:
-  - composer self-update
-  - composer install --prefer-dist
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
-  - ./vendor/laravel/dusk/bin/chromedriver-linux &
+install:
   - cp .env.testing .env
+  - travis_retry composer install --no-interaction --prefer-dist --no-suggest
+
+before_script:
   - php artisan key:generate
   - php artisan migrate --no-interaction -vvv
   - php artisan passport:install
-  - php artisan serve > /dev/null 2>&1 &
+  - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
+  - php artisan serve &
 
 script:
   - ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml --configuration phpunit.xml
-  - php artisan dusk
 
 after_success:
-    - travis_retry php vendor/bin/coveralls -v
+  - travis_retry php vendor/bin/coveralls -v
 
 notifications:
   slack:

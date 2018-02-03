@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Dusk\DuskServiceProvider;
 use LibMQTT\Client;
 
 class AppServiceProvider extends ServiceProvider
@@ -24,14 +23,5 @@ class AppServiceProvider extends ServiceProvider
 
             return $client;
         });
-
-        $this->registerDuskServiceProvider();
-    }
-
-    private function registerDuskServiceProvider(): void
-    {
-        if ($this->app->environment('local', 'testing')) {
-            $this->app->register(DuskServiceProvider::class);
-        }
     }
 }

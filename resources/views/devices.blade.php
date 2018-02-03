@@ -4,7 +4,7 @@
         <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
         <script>
             $(document).ready(function() {
-                $('#editDeviceModal').on('show.bs.modal', function (event) {
+                $('#edit-device-modal').on('show.bs.modal', function (event) {
                     var button = $(event.relatedTarget);
 
                     var deviceId = button.data('device-id');
@@ -69,22 +69,22 @@
                     @include('partials.flash-messages')
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                             <div class="panel-title">
+                             <div class="panel-title" dusk="devices-table-header">
                                  {{ $name }}'s Controllable Devices
                              </div>
                         </div>
                         <div class="panel-body">
-                            <table class="table table-striped table-condensed">
+                            <table class="table table-striped table-condensed" dusk="devices-table">
                                 @foreach ($devices as $device)
                                     <tr>
                                         <td class="col-xs-1">
-                                            <div class="dropdown">
-                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Edit Device">
+                                            <div class="dropdown" dusk="modify-device-dropdown">
+                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Edit Device" dusk="modify-device-button">
                                                     <span class="glyphicon glyphicon-cog"></span> <span class="caret"></span>
                                                 </button>
                                                 <ul class="dropdown-menu">
                                                     <li>
-                                                        <a href="#editDeviceModal" aria-label="Edit Device" data-toggle="modal" data-target="#editDeviceModal" data-device-id="{{ $device->id }}" data-device-name="{{ $device->name }}" data-device-description="{{ $device->description }}" @foreach($device->htmlDataAttributesForSpecificDeviceProperties() as $property) {{ $property }} @endforeach>
+                                                        <a href="#edit-device-modal" aria-label="Edit Device" data-toggle="modal" data-target="#edit-device-modal" data-device-id="{{ $device->id }}" data-device-name="{{ $device->name }}" data-device-description="{{ $device->description }}" @foreach($device->htmlDataAttributesForSpecificDeviceProperties() as $property) {{ $property }} @endforeach>
                                                             <span class="glyphicon glyphicon-pencil"></span> Edit
                                                         </a>
                                                     </li>
@@ -115,7 +115,7 @@
                             </table>
                         </div>
                         <div class="panel-footer">
-                            <button type="button" class="btn btn-default" aria-label="Add Device" data-toggle="modal" data-target="#addDeviceModal">
+                            <button type="button" class="btn btn-default" aria-label="Add Device" data-toggle="modal" data-target="#add-device-modal" dusk="open-add-device-button-modal">
                                 <span class="glyphicon glyphicon-plus"></span> Add Device
                             </button>
                             @include('partials.add-device-modal')
