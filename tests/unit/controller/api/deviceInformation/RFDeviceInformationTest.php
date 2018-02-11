@@ -14,6 +14,7 @@ class RFDeviceInformationTest extends TestCase
 {
     private $onCode;
     private $offCode;
+    private $pulseLength;
 
     public function setUp(): void
     {
@@ -21,6 +22,7 @@ class RFDeviceInformationTest extends TestCase
 
         $this->onCode = self::$faker->randomDigit();
         $this->offCode = self::$faker->randomDigit();
+        $this->pulseLength = self::$faker->randomDigit();
     }
 
     public function testInfo_GivenTurnOnAction_ReturnsJsonResponseWithCorrectOnCode(): void
@@ -32,6 +34,7 @@ class RFDeviceInformationTest extends TestCase
         $result = json_decode($response->getContent(), true);
 
         $this->assertEquals($result['code'], $this->onCode);
+        $this->assertEquals($result['pulse_length'], $this->pulseLength);
     }
 
     public function testInfo_GivenTurnOffAction_ReturnsJsonResponseWithCorrectOffCode(): void
@@ -43,6 +46,7 @@ class RFDeviceInformationTest extends TestCase
         $result = json_decode($response->getContent(), true);
 
         $this->assertEquals($result['code'], $this->offCode);
+        $this->assertEquals($result['pulse_length'], $this->pulseLength);
     }
 
     public function testInfo_GivenUnknownAction_Returns400(): void
@@ -59,7 +63,7 @@ class RFDeviceInformationTest extends TestCase
 
     private function callInfo(string $action): JsonResponse
     {
-        $rfDevice = $this->createRFDevice($this->onCode, $this->offCode);
+        $rfDevice = $this->createRFDevice($this->onCode, $this->offCode, $this->pulseLength);
 
         $mockRfDeviceRepository = Mockery::mock(RFDeviceRepository::class);
         $mockRfDeviceRepository->shouldReceive('get')->with($rfDevice->device_id)->once()->andReturn($rfDevice);
@@ -71,12 +75,13 @@ class RFDeviceInformationTest extends TestCase
         return $response;
     }
 
-    private function createRFDevice(int $onCode, int $offCode): RFDevice
+    private function createRFDevice(int $onCode, int $offCode, int $pulseLength): RFDevice
     {
         $rfDevice = factory(RFDevice::class)->make([
             'device_id' => self::$faker->randomNumber,
             'on_code' => $onCode,
-            'off_code' => $offCode
+            'off_code' => $offCode,
+            'pulse_length' => $pulseLength,
         ]);
 
         return $rfDevice;
