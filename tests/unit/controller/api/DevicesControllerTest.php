@@ -62,64 +62,58 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $response->assertStatus(401);
     }
 
-    public function testTurnOn_GivenUserExistsWithDevice_ReturnsJsonResponse(): void
+    public function testAllDeviceActions_GivenUserExistsWithDevice_ReturnsJsonResponse(): void
     {
-        $device = $this->createDevices()[0];
-        $mockUser = $this->mockUserOwnsDevice($device->id, true);
+        foreach ($this->deviceActionsConstants() as $deviceAction) {
+            $device = $this->createDevices()[0];
+            $mockUser = $this->mockUserOwnsDevice($device->id, true);
 
-        $response = $this->callControl($mockUser, DeviceActions::TURN_ON, $device->id);
+            $this->mockMessagePublisher(1);
 
-        $this->assertControlConfirmation($response);
+            $response = $this->callControl($mockUser, $deviceAction, $device->id);
+
+            $this->assertControlConfirmation($response);
+        }
     }
 
-    public function testTurnOn_GivenUserExistsWithDevice_CallsPublish(): void
+    public function testAllDeviceActions_GivenUserExistsWithDevice_CallsPublishSuccessfully_Returns200(): void
     {
-        $device = $this->createDevices()[0];
-        $mockUser = $this->mockUserOwnsDevice($device->id, true);
+        foreach ($this->deviceActionsConstants() as $deviceAction) {
+            $device = $this->createDevices()[0];
+            $mockUser = $this->mockUserOwnsDevice($device->id, true);
 
-        $this->mockMessagePublisher(1);
+            $this->mockMessagePublisher(1);
 
-        $this->callControl($mockUser, DeviceActions::TURN_ON, $device->id);
+            $response = $this->callControl($mockUser, $deviceAction, $device->id);
+
+            $response->assertSuccessful();
+        }
     }
 
-    public function testTurnOn_GivenUserExistsWithNoDevices_Returns401(): void
+    public function testAllDeviceActions_GivenUserExistsWithDevice_CallsPublishUnsuccessfully_Returns500(): void
     {
-        $deviceId = self::$faker->randomDigit();
-        $mockUser = $this->mockUserOwnsDevice($deviceId, false);
+        foreach ($this->deviceActionsConstants() as $deviceAction) {
+            $device = $this->createDevices()[0];
+            $mockUser = $this->mockUserOwnsDevice($device->id, true);
 
-        $response = $this->callControl($mockUser, DeviceActions::TURN_ON, $deviceId);
+            $this->mockMessagePublisher(1, false);
 
-        $response->assertStatus(401);
+            $response = $this->callControl($mockUser, $deviceAction, $device->id);
+
+            $response->assertStatus(500);
+        }
     }
 
-    public function testTurnOff_GivenUserExistsWithDevice_ReturnsJsonResponse(): void
+    public function testAllDeviceActions_GivenUserExistsWithNoDevices_Returns401(): void
     {
-        $device = $this->createDevices()[0];
-        $mockUser = $this->mockUserOwnsDevice($device->id, true);
+        foreach ($this->deviceActionsConstants() as $deviceAction) {
+            $deviceId = self::$faker->randomDigit();
+            $mockUser = $this->mockUserOwnsDevice($deviceId, false);
 
-        $response = $this->callControl($mockUser, DeviceActions::TURN_OFF, $device->id);
+            $response = $this->callControl($mockUser, $deviceAction, $deviceId);
 
-        $this->assertControlConfirmation($response);
-    }
-
-    public function testTurnOff_GivenUserExistsWithDevice_CallsPublish(): void
-    {
-        $device = $this->createDevices()[0];
-        $mockUser = $this->mockUserOwnsDevice($device->id, true);
-
-        $this->mockMessagePublisher(1);
-
-        $this->callControl($mockUser, DeviceActions::TURN_OFF, $device->id);
-    }
-
-    public function testTurnOff_GivenUserExistsWithNoDevices_Returns401(): void
-    {
-        $deviceId = self::$faker->randomDigit();
-        $mockUser = $this->mockUserOwnsDevice($deviceId, false);
-
-        $response = $this->callControl($mockUser, DeviceActions::TURN_OFF, $deviceId);
-
-        $response->assertStatus(401);
+            $response->assertStatus(401);
+        }
     }
 
     public function testInfo_GivenUserExistsWithDevice_ReturnsJsonResponse(): void
@@ -134,7 +128,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
         $response = $this->callInfo($mockUser, $device->id);
 
-        $response->assertStatus(200);
+        $response->assertSuccessful();
     }
 
     public function testInfo_GivenRandomUserAndDevice_Returns401(): void
@@ -291,5 +285,13 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $mockUserRepository->shouldReceive('get')->once()->andReturn($user);
 
         return $mockUserRepository;
+    }
+
+    private function deviceActionsConstants(): array
+    {
+        $deviceActionsClass = new \ReflectionClass(DeviceActions::class);
+        $deviceActions = $deviceActionsClass->getConstants();
+
+        return $deviceActions;
     }
 }

@@ -31,7 +31,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $response = $this->actingAs($mockUser)->get('/devices');
 
         $response->assertSee($user->name . '\'s Controllable Devices');
-        $response->assertStatus(200);
+        $response->assertSuccessful();
     }
 
     public function testDevices_GivenUserLoggedIn_ViewContainsUsersDevices(): void
@@ -62,7 +62,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $response->assertSee($htmlAttribute);
         $response->assertSee($deviceName);
         $response->assertSee($deviceDescription);
-        $response->assertStatus(200);
+        $response->assertSuccessful();
     }
 
     public function testAdd_GivenPostedData_CallsAddOnModelsThenRedirectsToDevices(): void
