@@ -7,7 +7,6 @@ use App\Repositories\DeviceRepository;
 use App\User;
 use Illuminate\Foundation\Testing\TestResponse;
 use Mockery;
-use Mockery\MockInterface;
 use Tests\Unit\Controller\Common\DevicesControllerTestCase;
 
 class DevicesControllerTest extends DevicesControllerTestCase
