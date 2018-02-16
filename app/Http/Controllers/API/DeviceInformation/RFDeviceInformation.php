@@ -24,11 +24,13 @@ class RFDeviceInformation implements IDeviceInformation
 
         if ($action === 'turnon') {
             $response = [
-                'code' => $rfDevice->on_code
+                'code' => $rfDevice->on_code,
+                'pulse_length' => $rfDevice->pulse_length
             ];
         } elseif ($action === 'turnoff') {
             $response = [
-                'code' => $rfDevice->off_code
+                'code' => $rfDevice->off_code,
+                'pulse_length' => $rfDevice->pulse_length
             ];
         }
 
