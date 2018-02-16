@@ -341,10 +341,10 @@ class DevicesControllerTest extends DevicesControllerTestCase
         return $user;
     }
 
-    private function mockUserOwnsDevice(int $deviceId, bool $doesUserOwnDevice): User
+    private function mockUserOwnsDevice(int $deviceId, bool $userOwnsDevice): User
     {
         $mockUser = Mockery::mock(User::class);
-        $mockUser->shouldReceive('doesUserOwnDevice')->with($deviceId)->once()->andReturn($doesUserOwnDevice);
+        $mockUser->shouldReceive('ownsDevice')->with($deviceId)->once()->andReturn($userOwnsDevice);
 
         return $mockUser;
     }

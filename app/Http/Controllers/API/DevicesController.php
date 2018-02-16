@@ -7,7 +7,6 @@ use App\Http\Controllers\Common\Controller;
 use App\Http\Globals\DeviceActions;
 use App\Http\MQTT\MessagePublisher;
 use App\Repositories\IUserRepository;
-use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -58,15 +57,14 @@ class DevicesController extends Controller
 
     public function info(Request $request): JsonResponse
     {
-        $currentUserId = $request->get('userId');
+        $userId = $request->get('userId');
         $deviceId = $request->get('deviceId');
         $action = $request->get('action');
 
-        $user = $this->userRepository->get($currentUserId);
+        $user = $this->userRepository->get($userId);
+        $userOwnsDevice = $user->ownsDevice($deviceId);
 
-        $doesUserOwnDevice = $this->doesUserOwnDevice($user, $deviceId);
-
-        if (!$doesUserOwnDevice) {
+        if (!$userOwnsDevice) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
@@ -75,13 +73,13 @@ class DevicesController extends Controller
 
     private function handleControlRequest(Request $request, string $action, string $responseName): JsonResponse
     {
-        $currentUser = $request->user();
-        $userId = $currentUser->id;
+        $user = $request->user();
+        $userId = $user->id;
         $deviceId = $request->input('id');
 
-        $doesUserOwnDevice = $this->doesUserOwnDevice($currentUser, $deviceId);
+        $userOwnsDevice = $user->ownsDevice($deviceId);
 
-        if (!$doesUserOwnDevice) {
+        if (!$userOwnsDevice) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
@@ -138,16 +136,5 @@ class DevicesController extends Controller
         ];
 
         return $header;
-    }
-
-    private function doesUserOwnDevice(User $user, int $deviceId): bool
-    {
-        if ($user === null) {
-            return false;
-        }
-
-        $doesUserOwnDevice = $user->doesUserOwnDevice($deviceId);
-
-        return $doesUserOwnDevice;
     }
 }
