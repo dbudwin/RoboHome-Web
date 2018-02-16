@@ -8,12 +8,20 @@ use Tests\DuskTestCase;
 
 class DevicesTest extends DuskTestCase
 {
+    private $user;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->user = $this->createUser();
+    }
+
     public function testDevices_GivenUserLoggedIn_VerifyPath(): void
     {
         $this->browse(function (Browser $browser) {
-            $user = $this->createUser();
             $browser
-                ->loginAs($user)
+                ->loginAs($this->user)
                 ->visit('/devices')
                 ->assertPathIs('/devices');
         });
@@ -22,9 +30,8 @@ class DevicesTest extends DuskTestCase
     public function testDevices_GivenUserLoggedIn_SeesTitle(): void
     {
         $this->browse(function (Browser $browser) {
-            $user = $this->createUser();
             $browser
-                ->loginAs($user)
+                ->loginAs($this->user)
                 ->visit('/devices')
                 ->assertTitle('RoboHome | Devices');
         });
@@ -33,9 +40,8 @@ class DevicesTest extends DuskTestCase
     public function testDevices_GivenUserLoggedIn_SeesLogoutLink(): void
     {
         $this->browse(function (Browser $browser) {
-            $user = $this->createUser();
             $browser
-                ->loginAs($user)
+                ->loginAs($this->user)
                 ->visit('/devices')
                 ->assertSeeLink('Logout');
         });
@@ -44,10 +50,9 @@ class DevicesTest extends DuskTestCase
     public function testDevices_GivenUserLoggedIn_SeesHeaderWithUserName(): void
     {
         $this->browse(function (Browser $browser) {
-            $user = $this->createUser();
-            $userName = $user->name;
+            $userName = $this->user->name;
             $browser
-                ->loginAs($user)
+                ->loginAs($this->user)
                 ->visit('/devices')
                 ->assertSeeIn('@devices-table-header', "$userName's Controllable Devices");
         });
@@ -56,9 +61,8 @@ class DevicesTest extends DuskTestCase
     public function testDevices_GivenUserLoggedIn_ClicksLogout_RedirectToIndexPage(): void
     {
         $this->browse(function (Browser $browser) {
-            $user = $this->createUser();
             $browser
-                ->loginAs($user)
+                ->loginAs($this->user)
                 ->visit('/devices')
                 ->clickLink('Logout')
                 ->assertPathIs('/');
@@ -68,9 +72,8 @@ class DevicesTest extends DuskTestCase
     public function testDevices_GivenUserLoggedIn_ClicksAddDeviceButton_OpensAddDeviceModal(): void
     {
         $this->browse(function (Browser $browser) {
-            $user = $this->createUser();
             $browser
-                ->loginAs($user)
+                ->loginAs($this->user)
                 ->visit('/devices')
                 ->press('Add Device')
                 ->whenAvailable('#add-device-modal', function ($modal) {
@@ -203,10 +206,8 @@ class DevicesTest extends DuskTestCase
 
     private function loginAndAddDevice(Browser $browser, string $deviceName, string $deviceDescription, int $onCode, int $offCode, int $pulseLength) : Browser
     {
-        $user = $this->createUser();
-
         $browser
-            ->loginAs($user)
+            ->loginAs($this->user)
             ->visit('/devices')
             ->click('@open-add-device-button-modal')
             ->whenAvailable('#add-device-modal', function ($modal) use ($deviceName, $deviceDescription, $onCode, $offCode, $pulseLength) {
