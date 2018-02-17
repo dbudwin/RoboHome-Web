@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Controller\Api\DeviceInformation;
+namespace Tests\Unit\Controller\API\DeviceInformation;
 
 use App\Http\Controllers\API\DeviceInformation\ErrantDeviceInformation;
 use Tests\TestCase;
