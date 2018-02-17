@@ -28,26 +28,26 @@ class UserTest extends TestCaseWithRealDatabase
         $this->assertEquals($numberOfDevices, $devices->count());
     }
 
-    public function testDoesUserOwnDevice_GivenFirstUserDoesNotOwnAnyDevices_ReturnsFalse(): void
+    public function testOwnsDevice_GivenFirstUserDoesNotOwnAnyDevices_ReturnsFalse(): void
     {
         $firstUser = $this->createUser();
         $secondUser = $this->createUser();
 
         $deviceIdForSecondUser = $this->createSingleDeviceForUser($secondUser)->id;
 
-        $doesUserOwnDevice = $firstUser->doesUserOwnDevice($deviceIdForSecondUser);
+        $userOwnsDevice = $firstUser->ownsDevice($deviceIdForSecondUser);
 
-        $this->assertFalse($doesUserOwnDevice);
+        $this->assertFalse($userOwnsDevice);
     }
 
-    public function testDoesUserOwnDevice_GivenUserOwnsDevice_ReturnsTrue(): void
+    public function testOwnsDevice_GivenUserOwnsDevice_ReturnsTrue(): void
     {
         $user = $this->createUser();
         $device = $this->createSingleDeviceForUser($user);
 
-        $doesUserOwnDevice = $user->doesUserOwnDevice($device->id);
+        $userOwnsDevice = $user->ownsDevice($device->id);
 
-        $this->assertTrue($doesUserOwnDevice);
+        $this->assertTrue($userOwnsDevice);
     }
 
     private function createUser(): User

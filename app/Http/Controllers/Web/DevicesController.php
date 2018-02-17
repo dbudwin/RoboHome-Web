@@ -47,9 +47,9 @@ class DevicesController extends Controller
 
     public function delete(Request $request, int $id): RedirectResponse
     {
-        $doesUserOwnDevice = $request->user()->doesUserOwnDevice($id);
+        $userOwnsDevice = $request->user()->ownsDevice($id);
 
-        if (!$doesUserOwnDevice) {
+        if (!$userOwnsDevice) {
             $request->session()->flash(FlashMessageLevels::DANGER, 'Error deleting device!');
 
             return redirect()->route('devices');
@@ -69,9 +69,9 @@ class DevicesController extends Controller
 
     public function update(Request $request, int $id): RedirectResponse
     {
-        $doesUserOwnDevice = $request->user()->doesUserOwnDevice($id);
+        $userOwnsDevice = $request->user()->ownsDevice($id);
 
-        if (!$doesUserOwnDevice) {
+        if (!$userOwnsDevice) {
             $request->session()->flash(FlashMessageLevels::DANGER, 'Error updating device!');
 
             return redirect()->route('devices');
@@ -89,9 +89,9 @@ class DevicesController extends Controller
     public function handleControlRequest(Request $request, string $action, int $deviceId): RedirectResponse
     {
         $currentUser = $request->user();
-        $doesUserOwnDevice = $currentUser->doesUserOwnDevice($deviceId);
+        $userOwnsDevice = $currentUser->ownsDevice($deviceId);
 
-        if (!$doesUserOwnDevice) {
+        if (!$userOwnsDevice) {
             $request->session()->flash(FlashMessageLevels::DANGER, 'Error controlling device!');
 
             return redirect()->route('devices');

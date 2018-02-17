@@ -8,6 +8,7 @@ use App\Http\Globals\DeviceActions;
 use App\Repositories\UserRepository;
 use App\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\TestResponse;
 use Illuminate\Http\JsonResponse;
 use Mockery;
@@ -131,7 +132,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $response->assertSuccessful();
     }
 
-    public function testInfo_GivenRandomUserAndDevice_Returns401(): void
+    public function testInfo_GivenRandomUserThatExistsAndDevice_Returns401(): void
     {
         $deviceId = self::$faker->randomDigit();
         $mockUser = $this->mockUserOwnsDevice($deviceId, false);
@@ -144,13 +145,28 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $response->assertStatus(401);
     }
 
+    public function testInfo_GivenNonexistentUserAndDevice_Returns404(): void
+    {
+        $mockUserRepository = $this->givenUserRepositoryThrowsException();
+
+        $this->app->instance(UserRepository::class, $mockUserRepository);
+
+        $response = $this->postJson('/api/devices/info', [
+            'userId' => self::$faker->randomNumber(),
+            'action' => self::$faker->word(),
+            'deviceId' => self::$faker->randomDigit()
+        ], []);
+
+        $response->assertStatus(404);
+    }
+
     private function createMockUser(): User
     {
         $user = $this->createUser();
 
         $mockUser = Mockery::mock(User::class);
         $mockUser
-            ->shouldReceive('getAuthIdentifier')->once()->andReturn($user->id)
+            ->shouldReceive('getAuthIdentifier')->andReturn($user->id)
             ->shouldReceive('getAttribute')->with('id')->andReturn($user->id);
 
         return $mockUser;
@@ -181,7 +197,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
     private function callInfo(User $user, int $deviceId): TestResponse
     {
-        $response = $this->actingAs($user, 'api')->postJson('/api/devices/info', [
+        $response = $this->postJson('/api/devices/info', [
             'userId' => $user->id,
             'action' => self::$faker->word(),
             'deviceId' => $deviceId
@@ -268,11 +284,11 @@ class DevicesControllerTest extends DevicesControllerTestCase
         ]);
     }
 
-    private function mockUserOwnsDevice(int $deviceId, bool $doesUserOwnDevice): User
+    private function mockUserOwnsDevice(int $deviceId, bool $userOwnsDevice): User
     {
         $mockUser = $this->createMockUser();
         $mockUser
-            ->shouldReceive('doesUserOwnDevice')->with($deviceId)->once()->andReturn($doesUserOwnDevice)
+            ->shouldReceive('ownsDevice')->with($deviceId)->once()->andReturn($userOwnsDevice)
             ->shouldReceive('token')->andReturn(self::$faker->uuid())
             ->shouldReceive('tokenCan')->andReturn(self::$faker->word());
 
@@ -283,6 +299,14 @@ class DevicesControllerTest extends DevicesControllerTestCase
     {
         $mockUserRepository = Mockery::mock(UserRepository::class);
         $mockUserRepository->shouldReceive('get')->once()->andReturn($user);
+
+        return $mockUserRepository;
+    }
+
+    private function givenUserRepositoryThrowsException(): UserRepository
+    {
+        $mockUserRepository = Mockery::mock(UserRepository::class);
+        $mockUserRepository->shouldReceive('get')->once()->andThrow(ModelNotFoundException::class);
 
         return $mockUserRepository;
     }
