@@ -40,9 +40,7 @@ class DevicesController extends Controller
         $device = $this->deviceRepository->create($properties, $currentUserId);
         $name = $device->name;
 
-        $request->session()->flash(FlashMessageLevels::SUCCESS, "Device '$name' was successfully added!");
-
-        return redirect()->route('devices');
+        return $this->redirectToDevicesWithMessage($request, FlashMessageLevels::SUCCESS, "Device '$name' was successfully added!");
     }
 
     public function delete(Request $request, int $id): RedirectResponse
@@ -50,21 +48,17 @@ class DevicesController extends Controller
         $userOwnsDevice = $request->user()->ownsDevice($id);
 
         if (!$userOwnsDevice) {
-            $request->session()->flash(FlashMessageLevels::DANGER, 'Error deleting device!');
-
-            return redirect()->route('devices');
+            return $this->redirectToDevicesWithMessage($request, FlashMessageLevels::DANGER, 'Error deleting device!');
         }
 
         $name = $this->deviceRepository->name($id);
         $deleted = $this->deviceRepository->delete($id);
 
         if (!$deleted) {
-            $request->session()->flash(FlashMessageLevels::DANGER, "Encountered an error while deleting device '$name'!");
-        } else {
-            $request->session()->flash(FlashMessageLevels::SUCCESS, "Device '$name' was successfully deleted!");
+            return $this->redirectToDevicesWithMessage($request, FlashMessageLevels::DANGER, "Encountered an error while deleting device '$name'!");
         }
 
-        return redirect()->route('devices');
+        return $this->redirectToDevicesWithMessage($request, FlashMessageLevels::SUCCESS, "Device '$name' was successfully deleted!");
     }
 
     public function update(Request $request, int $id): RedirectResponse
@@ -72,18 +66,14 @@ class DevicesController extends Controller
         $userOwnsDevice = $request->user()->ownsDevice($id);
 
         if (!$userOwnsDevice) {
-            $request->session()->flash(FlashMessageLevels::DANGER, 'Error updating device!');
-
-            return redirect()->route('devices');
+            return $this->redirectToDevicesWithMessage($request, FlashMessageLevels::DANGER, 'Error updating device!');
         }
 
         $properties = $request->all();
 
         $device = $this->deviceRepository->update($id, $properties);
 
-        $request->session()->flash(FlashMessageLevels::SUCCESS, "Device '$device->name' was successfully updated!");
-
-        return redirect()->route('devices');
+        return $this->redirectToDevicesWithMessage($request, FlashMessageLevels::SUCCESS, "Device '$device->name' was successfully updated!");
     }
 
     public function handleControlRequest(Request $request, string $action, int $deviceId): RedirectResponse
@@ -92,12 +82,17 @@ class DevicesController extends Controller
         $userOwnsDevice = $currentUser->ownsDevice($deviceId);
 
         if (!$userOwnsDevice) {
-            $request->session()->flash(FlashMessageLevels::DANGER, 'Error controlling device!');
-
-            return redirect()->route('devices');
+            return $this->redirectToDevicesWithMessage($request, FlashMessageLevels::DANGER, 'Error controlling device!');
         }
 
         $this->messagePublisher->publish($currentUser->id, $action, $deviceId);
+
+        return redirect()->route('devices');
+    }
+
+    private function redirectToDevicesWithMessage(Request $request, string $flashLevel, string $message): RedirectResponse
+    {
+        $request->session()->flash($flashLevel, $message);
 
         return redirect()->route('devices');
     }
