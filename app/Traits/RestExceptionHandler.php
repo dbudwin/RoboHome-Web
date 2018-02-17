@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 trait RestExceptionHandler
 {
-    protected function jsonResponseForException(Exception $exception): JsonResponse
+    public function jsonResponseForException(Exception $exception): JsonResponse
     {
         switch (true) {
             case $this->isAuthenticationException($exception):
