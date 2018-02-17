@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Controller\Api;
+namespace Tests\Unit\Controller\API;
 
 use App\Device;
 use App\Http\Controllers\API\DeviceInformation\IDeviceInformation;
