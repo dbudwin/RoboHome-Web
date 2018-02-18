@@ -17,7 +17,7 @@ RoboHome is a SaaS tool that also integrates with Amazon's Echo to enable contro
 
 ### Requirements :white_check_mark:
 
-1. Web server with PHP 7.1 or greater with MySQL
+1. Web server with PHP 7.1.3 or greater with MySQL
 2. SSL/TLS cert [available for Free with Let's Encrypt](https://www.letsencrypt.org/).  Note, we must use _slightly_ less secure ciphers than the max due to hardware limitations of the ESP8266 which will need to talk to the RoboHome-Web API over HTTPS to gather information about devices.  If set up correctly, by entering your website in [SSL Lab's SSL Server Test](https://www.ssllabs.com/ssltest/index.html), you should still get an "A" rating.  To get the appropiate ciphers for your server visit [Cipherli.st](https://cipherli.st/) and click "Yes, give me a ciphersuite that works with legacy / old software."
 3. MQTT broker for pub-sub. I personally use [CloudMQTT](https://www.cloudmqtt.com/). This service is used to send messages from a web service to a microcontroller.
 4. [Composer](https://getcomposer.org/) dependency manager for PHP
