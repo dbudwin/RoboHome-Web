@@ -7,6 +7,6 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:api', 'scope:control');
 
 Route::resource('/devices', 'API\DevicesController');
-Route::post('/devices/turnon', 'API\DevicesController@turnOn')->name('turnOn');
-Route::post('/devices/turnoff', 'API\DevicesController@turnOff')->name('turnOff');
-Route::post('/devices/info', 'API\DevicesController@info')->name('info');
+Route::post('/devices/turnon', 'API\DevicesController@turnOn')->name('turnOn')->middleware('scope:control');
+Route::post('/devices/turnoff', 'API\DevicesController@turnOff')->name('turnOff')->middleware('scope:control');
+Route::post('/devices/info', 'API\DevicesController@info')->name('info')->middleware('scope:info');

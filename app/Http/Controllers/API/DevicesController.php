@@ -18,7 +18,7 @@ class DevicesController extends Controller
 
     public function __construct(MessagePublisher $messagePublisher, IDeviceInformation $deviceInformation, IUserRepository $userRepository)
     {
-        $this->middleware('auth:api', ['except' => ['info']]);
+        $this->middleware('auth:api');
 
         $this->messagePublisher = $messagePublisher;
         $this->deviceInformation = $deviceInformation;
@@ -57,11 +57,10 @@ class DevicesController extends Controller
 
     public function info(Request $request): JsonResponse
     {
-        $userId = $request->get('userId');
+        $user = $request->user();
         $deviceId = $request->get('deviceId');
         $action = $request->get('action');
 
-        $user = $this->userRepository->get($userId);
         $userOwnsDevice = $user->ownsDevice($deviceId);
 
         if (!$userOwnsDevice) {

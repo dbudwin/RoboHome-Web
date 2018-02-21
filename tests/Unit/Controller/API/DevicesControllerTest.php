@@ -5,12 +5,11 @@ namespace Tests\Unit\Controller\API;
 use App\Device;
 use App\Http\Controllers\API\DeviceInformation\IDeviceInformation;
 use App\Http\Globals\DeviceActions;
-use App\Repositories\UserRepository;
 use App\User;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\TestResponse;
 use Illuminate\Http\JsonResponse;
+use Laravel\Passport\Passport;
 use Mockery;
 use Tests\Unit\Controller\Common\DevicesControllerTestCase;
 
@@ -117,47 +116,47 @@ class DevicesControllerTest extends DevicesControllerTestCase
         }
     }
 
+    public function testInfo_GivenUserExistsWithDeviceWithRandomScope_Returns400(): void
+    {
+        $deviceId = self::$faker->randomDigit();
+        $mockUser = $mockUser = Mockery::mock(User::class)->makePartial();
+        $mockUser->shouldReceive('ownsDevice')->with($deviceId)->never();
+
+        Passport::actingAs($mockUser, [self::$faker->word()]);
+
+        $this->mockDeviceInformation->shouldReceive('info')->never();
+
+        $response = $this->callInfo($deviceId);
+
+        $response->assertStatus(400);
+    }
+
     public function testInfo_GivenUserExistsWithDevice_ReturnsJsonResponse(): void
     {
-        $device = $this->createDevices()[0];
-        $mockUser = $this->mockUserOwnsDevice($device->id, true);
-        $mockUserRepository = $this->givenGetCalledOnUserRepository($mockUser);
+        $deviceId = self::$faker->randomDigit();
+        $mockUser = $mockUser = Mockery::mock(User::class)->makePartial();
+        $mockUser->shouldReceive('ownsDevice')->with($deviceId)->once()->andReturn(true);
 
-        $this->app->instance(UserRepository::class, $mockUserRepository);
+        Passport::actingAs($mockUser, ['info']);
 
         $this->mockDeviceInformation->shouldReceive('info')->once()->andReturn(new JsonResponse());
 
-        $response = $this->callInfo($mockUser, $device->id);
+        $response = $this->callInfo($deviceId);
 
         $response->assertSuccessful();
     }
 
-    public function testInfo_GivenRandomUserThatExistsAndDevice_Returns401(): void
+    public function testInfo_GivenRandomUserThatExistsAndDeviceTheyDoNotOwn_Returns401(): void
     {
         $deviceId = self::$faker->randomDigit();
-        $mockUser = $this->mockUserOwnsDevice($deviceId, false);
-        $mockUserRepository = $this->givenGetCalledOnUserRepository($mockUser);
+        $mockUser = $mockUser = Mockery::mock(User::class)->makePartial();
+        $mockUser->shouldReceive('ownsDevice')->with($deviceId)->once();
 
-        $this->app->instance(UserRepository::class, $mockUserRepository);
+        Passport::actingAs($mockUser, ['info']);
 
-        $response = $this->callInfo($mockUser, $deviceId);
+        $response = $this->callInfo($deviceId);
 
         $response->assertStatus(401);
-    }
-
-    public function testInfo_GivenNonexistentUserAndDevice_Returns404(): void
-    {
-        $mockUserRepository = $this->givenUserRepositoryThrowsException();
-
-        $this->app->instance(UserRepository::class, $mockUserRepository);
-
-        $response = $this->postJson('/api/devices/info', [
-            'userId' => self::$faker->randomNumber(),
-            'action' => self::$faker->word(),
-            'deviceId' => self::$faker->randomDigit()
-        ], []);
-
-        $response->assertStatus(404);
     }
 
     private function createMockUser(): User
@@ -195,10 +194,9 @@ class DevicesControllerTest extends DevicesControllerTestCase
         return $response;
     }
 
-    private function callInfo(User $user, int $deviceId): TestResponse
+    private function callInfo(int $deviceId): TestResponse
     {
         $response = $this->postJson('/api/devices/info', [
-            'userId' => $user->id,
             'action' => self::$faker->word(),
             'deviceId' => $deviceId
         ], []);
@@ -293,22 +291,6 @@ class DevicesControllerTest extends DevicesControllerTestCase
             ->shouldReceive('tokenCan')->andReturn(self::$faker->word());
 
         return $mockUser;
-    }
-
-    private function givenGetCalledOnUserRepository(User $user): UserRepository
-    {
-        $mockUserRepository = Mockery::mock(UserRepository::class);
-        $mockUserRepository->shouldReceive('get')->once()->andReturn($user);
-
-        return $mockUserRepository;
-    }
-
-    private function givenUserRepositoryThrowsException(): UserRepository
-    {
-        $mockUserRepository = Mockery::mock(UserRepository::class);
-        $mockUserRepository->shouldReceive('get')->once()->andThrow(ModelNotFoundException::class);
-
-        return $mockUserRepository;
     }
 
     private function deviceActionsConstants(): array
