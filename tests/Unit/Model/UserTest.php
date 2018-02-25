@@ -52,18 +52,14 @@ class UserTest extends TestCaseWithRealDatabase
 
     private function createUser(): User
     {
-        $user = factory(User::class)->create();
-
-        return $user;
+        return factory(User::class)->create();
     }
 
     private function createSingleDeviceForUser(User $user): Device
     {
-        $device = factory(Device::class)->create([
+        return factory(Device::class)->create([
             'user_id' => $user->id
         ]);
-
-        return $device;
     }
 
     private function createSeveralDevicesForUser(User $user, int $numberOfDevicesForUser): void

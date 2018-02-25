@@ -10,7 +10,7 @@ class ControllerTestCase extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
-    protected function assertRedirectedToRouteWith302(TestResponse $response, $route): void
+    protected function assertRedirectedToRouteWith302(TestResponse $response, string $route): void
     {
         $response->assertStatus(302);
         $response->assertRedirect($route);
