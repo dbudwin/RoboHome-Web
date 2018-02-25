@@ -27,7 +27,8 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Passport::tokensCan([
-            'control' => 'Access user profile and control devices'
+            'control' => 'Access user profile and control devices',
+            'info' => 'Request information about a user or device, but cannot control or edit it'
         ]);
 
         Passport::routes();

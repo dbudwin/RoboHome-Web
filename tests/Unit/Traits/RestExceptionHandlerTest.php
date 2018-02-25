@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
+use Laravel\Passport\Exceptions\MissingScopeException;
 use Tests\TestCase;
 
 class RestExceptionHandlerTest extends TestCase
@@ -32,6 +33,13 @@ class RestExceptionHandlerTest extends TestCase
         $response = $this->mockRestExceptionHandler->jsonResponseForException(new ModelNotFoundException());
 
         $this->assertJsonResponse($response, json_encode(['error' => 'Record not found']), 404);
+    }
+
+    public function testJsonResponseForException_GivenMissingScopeException_Returns400WithError()
+    {
+        $response = $this->mockRestExceptionHandler->jsonResponseForException(new MissingScopeException());
+
+        $this->assertJsonResponse($response, json_encode(['error' => 'Missing scope']), 400);
     }
 
     public function testJsonResponseForException_GivenException_Returns400WithError()

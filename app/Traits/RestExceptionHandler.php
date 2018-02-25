@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Laravel\Passport\Exceptions\MissingScopeException;
 
 trait RestExceptionHandler
 {
@@ -16,6 +17,8 @@ trait RestExceptionHandler
                 return $this->notAuthenticated();
             case $this->isModelNotFoundException($exception):
                 return $this->modelNotFound();
+            case $this->isMissingScopeException($exception):
+                return $this->missingScope();
             default:
                 return $this->badRequest();
         }
@@ -36,6 +39,11 @@ trait RestExceptionHandler
         return $this->jsonResponse(['error' => 'Bad request'], 400);
     }
 
+    private function missingScope(): JsonResponse
+    {
+        return $this->jsonResponse(['error' => 'Missing scope'], 400);
+    }
+
     private function isAuthenticationException(Exception $exception): bool
     {
         return $exception instanceof AuthenticationException;
@@ -44,6 +52,11 @@ trait RestExceptionHandler
     private function isModelNotFoundException(Exception $exception): bool
     {
         return $exception instanceof ModelNotFoundException;
+    }
+
+    private function isMissingScopeException(Exception $exception): bool
+    {
+        return $exception instanceof MissingScopeException;
     }
 
     private function jsonResponse(array $payload, int $statusCode): JsonResponse
