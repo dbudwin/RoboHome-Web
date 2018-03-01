@@ -10,7 +10,7 @@ class SettingsControllerTest extends ControllerTestCase
 {
     public function testMqtt_GivenUserNotLoggedIn_Returns401(): void
     {
-        $response = $this->postJson('/api/settings/mqtt');
+        $response = $this->getJson('/api/settings/mqtt');
 
         $response->assertStatus(401);
     }
@@ -19,7 +19,7 @@ class SettingsControllerTest extends ControllerTestCase
     {
         Passport::actingAs(factory(User::class)->make(), [self::$faker->word()]);
 
-        $response = $this->postJson('/api/settings/mqtt');
+        $response = $this->getJson('/api/settings/mqtt');
 
         $response->assertStatus(400);
     }
@@ -38,7 +38,7 @@ class SettingsControllerTest extends ControllerTestCase
 
         Passport::actingAs(factory(User::class)->make(), ['info']);
 
-        $response = $this->postJson('/api/settings/mqtt');
+        $response = $this->getJson('/api/settings/mqtt');
 
         $response->assertStatus(200);
         $response->assertExactJson([
