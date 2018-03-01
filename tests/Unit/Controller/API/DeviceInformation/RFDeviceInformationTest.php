@@ -6,7 +6,7 @@ use App\Http\Controllers\API\DeviceInformation\RFDeviceInformation;
 use App\Http\Globals\DeviceActions;
 use App\Repositories\RFDeviceRepository;
 use App\RFDevice;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Foundation\Testing\TestResponse;
 use Mockery;
 use Tests\TestCase;
 
@@ -27,26 +27,22 @@ class RFDeviceInformationTest extends TestCase
 
     public function testInfo_GivenTurnOnAction_ReturnsJsonResponseWithCorrectOnCode(): void
     {
-        $action = DeviceActions::TURN_ON;
+        $response = $this->callInfo(DeviceActions::TURN_ON);
 
-        $response = $this->callInfo($action);
-
-        $result = json_decode($response->getContent(), true);
-
-        $this->assertEquals($result['code'], $this->onCode);
-        $this->assertEquals($result['pulse_length'], $this->pulseLength);
+        $response->assertExactJson([
+            'code' => $this->onCode,
+            'pulse_length' => $this->pulseLength
+        ]);
     }
 
     public function testInfo_GivenTurnOffAction_ReturnsJsonResponseWithCorrectOffCode(): void
     {
-        $action = DeviceActions::TURN_OFF;
+        $response = $this->callInfo(DeviceActions::TURN_OFF);
 
-        $response = $this->callInfo($action);
-
-        $result = json_decode($response->getContent(), true);
-
-        $this->assertEquals($result['code'], $this->offCode);
-        $this->assertEquals($result['pulse_length'], $this->pulseLength);
+        $response->assertExactJson([
+            'code' => $this->offCode,
+            'pulse_length' => $this->pulseLength
+        ]);
     }
 
     public function testInfo_GivenUnknownAction_Returns400(): void
@@ -55,15 +51,16 @@ class RFDeviceInformationTest extends TestCase
 
         $response = $this->callInfo($action);
 
-        $result = json_decode($response->getContent(), true);
+        $response->assertStatus(400);
 
-        $this->assertEquals($response->status(), 400);
-        $this->assertEquals($result['error'], "Device does not support action '$action'");
+        $response->assertExactJson([
+            'error' => "Device does not support action '$action'"
+        ]);
     }
 
-    private function callInfo(string $action): JsonResponse
+    private function callInfo(string $action): TestResponse
     {
-        $rfDevice = $this->createRFDevice($this->onCode, $this->offCode, $this->pulseLength);
+        $rfDevice = $this->makeRFDevice($this->onCode, $this->offCode, $this->pulseLength);
 
         $mockRfDeviceRepository = Mockery::mock(RFDeviceRepository::class);
         $mockRfDeviceRepository->shouldReceive('get')->with($rfDevice->device_id)->once()->andReturn($rfDevice);
@@ -72,18 +69,16 @@ class RFDeviceInformationTest extends TestCase
 
         $response = $rfDeviceInformation->info($rfDevice->device_id, $action);
 
-        return $response;
+        return TestResponse::fromBaseResponse($response);
     }
 
-    private function createRFDevice(int $onCode, int $offCode, int $pulseLength): RFDevice
+    private function makeRFDevice(int $onCode, int $offCode, int $pulseLength): RFDevice
     {
-        $rfDevice = factory(RFDevice::class)->make([
+        return factory(RFDevice::class)->make([
             'device_id' => self::$faker->randomNumber,
             'on_code' => $onCode,
             'off_code' => $offCode,
             'pulse_length' => $pulseLength,
         ]);
-
-        return $rfDevice;
     }
 }

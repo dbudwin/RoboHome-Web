@@ -20,14 +20,9 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
     public function testDevices_GivenUserLoggedIn_ViewContainsUsersName(): void
     {
-        $user = $this->createUser();
+        $user = $this->makeUser();
 
-        $mockUser = Mockery::mock(User::class);
-        $mockUser
-            ->shouldReceive('getAttribute')->with('name')->once()->andReturn($user->name)
-            ->shouldReceive('getAttribute')->with('devices')->once()->andReturn([]);
-
-        $response = $this->actingAs($mockUser)->get('/devices');
+        $response = $this->actingAs($user)->get('/devices');
 
         $response->assertSee($user->name . '\'s Controllable Devices');
         $response->assertSuccessful();
@@ -35,7 +30,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
     public function testDevices_GivenUserLoggedIn_ViewContainsUsersDevices(): void
     {
-        $user = $this->createUser();
+        $user = $this->makeUser();
         $deviceName = self::$faker->word();
         $deviceDescription = self::$faker->sentence();
         $htmlAttributeName = self::$faker->word();
@@ -66,7 +61,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
     public function testAdd_GivenPostedData_CallsAddOnModelsThenRedirectsToDevices(): void
     {
-        $user = $this->givenSingleUserExists();
+        $user = $this->makeUser();
         $device = factory(Device::class)->make();
 
         $response = $this->callAdd($device, $user);
@@ -76,7 +71,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
     public function testAdd_GivenSingleUserExists_SessionContainsSuccessMessage(): void
     {
-        $user = $this->givenSingleUserExists();
+        $user = $this->makeUser();
         $device = factory(Device::class)->make();
 
         $response = $this->callAdd($device, $user);
@@ -121,9 +116,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
     public function testUpdate_GivenUserDoesNotOwnDevice_RedirectToDevices(): void
     {
-        $device = factory(Device::class)->make([
-            'id' => self::$faker->randomNumber()
-        ]);
+        $device = $this->makeDevice();
 
         $mockUser = $this->mockUserOwnsDevice($device->id, false);
 
@@ -134,9 +127,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
     public function testUpdate_GivenUserDoesNotOwnDevice_SessionContainsErrorMessage(): void
     {
-        $device = factory(Device::class)->make([
-            'id' => self::$faker->randomNumber()
-        ]);
+        $device = $this->makeDevice();
 
         $mockUser = $this->mockUserOwnsDevice($device->id, false);
 
@@ -147,9 +138,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
     public function testUpdate_GivenUserOwnsDevice_RedirectToDevices(): void
     {
-        $device = factory(Device::class)->make([
-            'id' => self::$faker->randomNumber()
-        ]);
+        $device = $this->makeDevice();
 
         $mockUser = $this->mockUserOwnsDevice($device->id, true);
 
@@ -160,9 +149,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
     public function testUpdate_GivenUserOwnsDevice_SessionContainsSuccessMessage(): void
     {
-        $device = factory(Device::class)->make([
-            'id' => self::$faker->randomNumber()
-        ]);
+        $device = $this->makeDevice();
 
         $mockUser = $this->mockUserOwnsDevice($device->id, true);
 
@@ -222,7 +209,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
         $csrfToken = self::$faker->uuid();
 
-        $response = $this->actingAs($user)->withSession(['_token' => $csrfToken])
+        return $this->actingAs($user)->withSession(['_token' => $csrfToken])
             ->post('/devices/add', [
                 'name' => $device->name,
                 'description' => self::$faker->sentence(),
@@ -231,8 +218,6 @@ class DevicesControllerTest extends DevicesControllerTestCase
                 'pulse_length' => self::$faker->randomDigit(),
                 '_token' => $csrfToken
             ]);
-
-        return $response;
     }
 
     private function callDeleteOnDeviceUserDoesNotOwn(): TestResponse
@@ -248,9 +233,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
         $this->app->instance(DeviceRepository::class, $mockDeviceRepository);
 
-        $response = $this->actingAs($mockUser)->get("/devices/delete/$deviceId");
-
-        return $response;
+        return $this->actingAs($mockUser)->get("/devices/delete/$deviceId");
     }
 
     private function callDeleteOnDeviceUserOwns(bool $wasDeleteSuccessful = true): TestResponse
@@ -278,19 +261,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
         $this->app->instance(DeviceRepository::class, $mockDeviceRepository);
 
-        $csrfToken = self::$faker->uuid();
-
-        $response = $this->actingAs($user)->withSession(['_token' => $csrfToken])
-            ->post("/devices/update/$device->id", [
-                'name' => self::$faker->word(),
-                'description' => self::$faker->sentence(),
-                'on_code' => self::$faker->randomNumber(),
-                'off_code' => self::$faker->randomNumber(),
-                'pulse_length' => self::$faker->randomNumber(),
-                '_token' => $csrfToken
-            ]);
-
-        return $response;
+        return $this->postToUpdateWithUserAndDeviceId($user, $device->id);
     }
 
     private function callUpdateOnDeviceUserOwns(User $user, Device $device): TestResponse
@@ -299,10 +270,15 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
         $this->app->instance(DeviceRepository::class, $mockDeviceRepository);
 
+        return $this->postToUpdateWithUserAndDeviceId($user, $device->id);
+    }
+
+    private function postToUpdateWithUserAndDeviceId(User $user, int $deviceId): TestResponse
+    {
         $csrfToken = self::$faker->uuid();
 
-        $response = $this->actingAs($user)->withSession(['_token' => $csrfToken])
-            ->post("/devices/update/$device->id", [
+        return $this->actingAs($user)->withSession(['_token' => $csrfToken])
+            ->post("/devices/update/$deviceId", [
                 'name' => self::$faker->word(),
                 'description' => self::$faker->sentence(),
                 'on_code' => self::$faker->randomNumber(),
@@ -310,34 +286,30 @@ class DevicesControllerTest extends DevicesControllerTestCase
                 'pulse_length' => self::$faker->randomNumber(),
                 '_token' => $csrfToken
             ]);
-
-        return $response;
     }
 
     private function callControl(User $user, string $action, int $deviceId): TestResponse
     {
         $csrfToken = self::$faker->uuid();
 
-        $response = $this->actingAs($user)->withSession(['_token' => $csrfToken])
+        return $this->actingAs($user)->withSession(['_token' => $csrfToken])
             ->post("/devices/$action/$deviceId", [
                 '_token' => $csrfToken
             ]);
-
-        return $response;
     }
 
-    private function givenSingleUserExists(): User
+    protected function makeUser(): User
     {
-        $user = $this->createUser();
+        return factory(User::class)->make([
+            'id' => self::$faker->randomNumber()
+        ]);
+    }
 
-        $mockUser = Mockery::mock(User::class);
-        $mockUser
-            ->shouldReceive('where')->with('id', $user->id)->atMost()->once()->andReturn(Mockery::self())
-            ->shouldReceive('first')->atMost()->once()->andReturn($user);
-
-        $this->app->instance(User::class, $mockUser);
-
-        return $user;
+    private function makeDevice(): Device
+    {
+        return factory(Device::class)->make([
+            'id' => self::$faker->randomNumber()
+        ]);
     }
 
     private function mockUserOwnsDevice(int $deviceId, bool $userOwnsDevice): User

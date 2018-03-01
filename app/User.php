@@ -27,7 +27,7 @@ class User extends Authenticatable
         return $this->hasMany(Device::class);
     }
 
-    public function ownsDevice($deviceId): bool
+    public function ownsDevice(int $deviceId): bool
     {
         return $this->devices->contains($deviceId);
     }
