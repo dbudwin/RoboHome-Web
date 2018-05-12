@@ -6,6 +6,7 @@
                 <h4 class="modal-title" id="edit-device-modal-label">Update Existing Device</h4>
             </div>
             <form id="device-update-form" method="POST" dusk="edit-device-form">
+                @method('PUT')
                 @include('partials.device-form-body')
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
