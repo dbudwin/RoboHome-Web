@@ -42,7 +42,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
             ->shouldReceive('getAttribute')->with('id')->atLeast()->once()->andReturn(self::$faker->randomDigit())
             ->shouldReceive('getAttribute')->with('name')->atLeast()->once()->andReturn($deviceName)
             ->shouldReceive('getAttribute')->with('description')->atLeast()->once()->andReturn($deviceDescription)
-            ->shouldReceive('htmlDataAttributesForSpecificDeviceProperties')->once()->andReturn([ $htmlAttribute ]);
+            ->shouldReceive('htmlDataAttributesForSpecificDevice')->once()->andReturn([ $htmlAttribute ]);
 
         $this->app->instance(Device::class, $mockDevice);
 

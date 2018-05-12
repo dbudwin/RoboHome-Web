@@ -15,7 +15,7 @@ class DeviceTest extends TestCaseWithRealDatabase
             $addedDevice = $this->addDeviceToDatabase($specificDeviceType);
             $specificDevice = $this->addSpecificDevice($addedDevice->id, $specificDeviceType);
             $specificDeviceProperties = $specificDevice->getFillable();
-            $htmlAttributes = $addedDevice->htmlDataAttributesForSpecificDeviceProperties();
+            $htmlAttributes = $addedDevice->htmlDataAttributesForSpecificDevice();
 
             $attributeNames = [];
             $attributeValues = [];

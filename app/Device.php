@@ -18,7 +18,7 @@ class Device extends Model
         });
     }
 
-    public function htmlDataAttributesForSpecificDeviceProperties(): array
+    public function htmlDataAttributesForSpecificDevice(): array
     {
         $specificDevice = $this->specificDevice();
 

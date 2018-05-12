@@ -84,7 +84,7 @@
                                                 </button>
                                                 <ul class="dropdown-menu">
                                                     <li>
-                                                        <a href="#edit-device-modal" aria-label="Edit Device" data-toggle="modal" data-target="#edit-device-modal" data-device-id="{{ $device->id }}" data-device-name="{{ $device->name }}" data-device-description="{{ $device->description }}" @foreach($device->htmlDataAttributesForSpecificDeviceProperties() as $property) {{ $property }} @endforeach>
+                                                        <a href="#edit-device-modal" aria-label="Edit Device" data-toggle="modal" data-target="#edit-device-modal" data-device-id="{{ $device->id }}" data-device-name="{{ $device->name }}" data-device-description="{{ $device->description }}" @foreach($device->htmlDataAttributesForSpecificDevice() as $property) {{ $property }} @endforeach>
                                                             <span class="glyphicon glyphicon-pencil"></span> Edit
                                                         </a>
                                                     </li>
