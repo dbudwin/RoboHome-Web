@@ -9,6 +9,7 @@ use App\Repositories\IDeviceRepository;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Webpatser\Uuid\Uuid;
 
 class DevicesController extends Controller
 {
@@ -85,7 +86,7 @@ class DevicesController extends Controller
             return $this->redirectToDevicesWithMessage($request, FlashMessageLevels::DANGER, 'Error controlling device!');
         }
 
-        $this->messagePublisher->publish($currentUser->id, $action, $deviceId);
+        $this->messagePublisher->publish(Uuid::import($currentUser->public_id), $action, $deviceId);
 
         return redirect()->route('devices');
     }

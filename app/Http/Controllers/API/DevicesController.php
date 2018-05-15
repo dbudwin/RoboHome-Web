@@ -8,11 +8,12 @@ use App\Http\Globals\DeviceActions;
 use App\Http\MQTT\MessagePublisher;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Webpatser\Uuid\Uuid;
 
 class DevicesController extends Controller
 {
-    private $messagePublisher;
     private $deviceInformation;
+    private $messagePublisher;
 
     public function __construct(IDeviceInformation $deviceInformation, MessagePublisher $messagePublisher)
     {
@@ -70,7 +71,7 @@ class DevicesController extends Controller
     private function handleControlRequest(Request $request, string $action, string $responseName): JsonResponse
     {
         $user = $request->user();
-        $userId = $user->id;
+        $publicUserId = Uuid::import($user->public_id);
         $deviceId = $request->input('id');
 
         $userOwnsDevice = $user->ownsDevice($deviceId);
@@ -81,7 +82,7 @@ class DevicesController extends Controller
 
         $urlValidAction = strtolower($action);
 
-        $published = $this->messagePublisher->publish($userId, $urlValidAction, $deviceId);
+        $published = $this->messagePublisher->publish($publicUserId, $urlValidAction, $deviceId);
 
         if (!$published) {
             return response()->json(['error' => 'Message not published'], 500);
