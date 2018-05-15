@@ -42,7 +42,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
             ->shouldReceive('getAttribute')->with('id')->atLeast()->once()->andReturn(self::$faker->randomDigit())
             ->shouldReceive('getAttribute')->with('name')->atLeast()->once()->andReturn($deviceName)
             ->shouldReceive('getAttribute')->with('description')->atLeast()->once()->andReturn($deviceDescription)
-            ->shouldReceive('htmlDataAttributesForSpecificDeviceProperties')->once()->andReturn([ $htmlAttribute ]);
+            ->shouldReceive('htmlDataAttributesForSpecificDevice')->once()->andReturn([ $htmlAttribute ]);
 
         $this->app->instance(Device::class, $mockDevice);
 
@@ -261,7 +261,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
         $this->app->instance(DeviceRepository::class, $mockDeviceRepository);
 
-        return $this->postToUpdateWithUserAndDeviceId($user, $device->id);
+        return $this->putToUpdateWithUserAndDeviceId($user, $device->id);
     }
 
     private function callUpdateOnDeviceUserOwns(User $user, Device $device): TestResponse
@@ -270,15 +270,15 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
         $this->app->instance(DeviceRepository::class, $mockDeviceRepository);
 
-        return $this->postToUpdateWithUserAndDeviceId($user, $device->id);
+        return $this->putToUpdateWithUserAndDeviceId($user, $device->id);
     }
 
-    private function postToUpdateWithUserAndDeviceId(User $user, int $deviceId): TestResponse
+    private function putToUpdateWithUserAndDeviceId(User $user, int $deviceId): TestResponse
     {
         $csrfToken = self::$faker->uuid();
 
         return $this->actingAs($user)->withSession(['_token' => $csrfToken])
-            ->post("/devices/update/$deviceId", [
+            ->put("/devices/update/$deviceId", [
                 'name' => self::$faker->word(),
                 'description' => self::$faker->sentence(),
                 'on_code' => self::$faker->randomNumber(),

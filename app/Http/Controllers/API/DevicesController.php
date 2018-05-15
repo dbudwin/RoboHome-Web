@@ -6,7 +6,6 @@ use App\Http\Controllers\API\DeviceInformation\IDeviceInformation;
 use App\Http\Controllers\Common\Controller;
 use App\Http\Globals\DeviceActions;
 use App\Http\MQTT\MessagePublisher;
-use App\Repositories\IUserRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -14,15 +13,13 @@ class DevicesController extends Controller
 {
     private $messagePublisher;
     private $deviceInformation;
-    private $userRepository;
 
-    public function __construct(MessagePublisher $messagePublisher, IDeviceInformation $deviceInformation, IUserRepository $userRepository)
+    public function __construct(IDeviceInformation $deviceInformation, MessagePublisher $messagePublisher)
     {
         $this->middleware('auth:api');
 
-        $this->messagePublisher = $messagePublisher;
         $this->deviceInformation = $deviceInformation;
-        $this->userRepository = $userRepository;
+        $this->messagePublisher = $messagePublisher;
     }
 
     public function index(Request $request): JsonResponse

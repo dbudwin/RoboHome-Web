@@ -1,4 +1,4 @@
-{{ csrf_field() }}
+@csrf
 <div class="modal-body">
     <div class="form-group row">
         <label for="name" class="col-xs-4 col-form-label">Device Name</label>
