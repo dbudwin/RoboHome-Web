@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Webpatser\Uuid\Uuid;
 
 class Device extends Model
 {
@@ -15,6 +16,10 @@ class Device extends Model
 
         static::deleting(function (Device $device) {
             $device->specificDevice()->delete();
+        });
+
+        self::creating(function (Device $device) {
+            $device->public_id = Uuid::generate(4);
         });
     }
 
