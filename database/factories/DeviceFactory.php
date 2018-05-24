@@ -10,6 +10,7 @@ $factory->define(App\Device::class, function (Faker $faker) {
         'user_id' => function () {
             return factory(App\User::class)->make()->id;
         },
-        'device_type_id' => DeviceTypes::RF_DEVICE
+        'device_type_id' => DeviceTypes::RF_DEVICE,
+        'public_id' => $faker->uuid()
     ];
 });

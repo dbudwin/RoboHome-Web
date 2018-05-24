@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Device;
 use App\Http\Globals\DeviceTypes;
+use Webpatser\Uuid\Uuid;
 
 class DeviceRepository implements IDeviceRepository
 {
@@ -33,6 +34,11 @@ class DeviceRepository implements IDeviceRepository
     public function get(int $id): Device
     {
         return Device::findOrFail($id);
+    }
+
+    public function getForPublicId(Uuid $publicId): Device
+    {
+        return Device::where('public_id', (string)$publicId)->firstOrFail();
     }
 
     public function update(int $id, array $deviceProperties): Device

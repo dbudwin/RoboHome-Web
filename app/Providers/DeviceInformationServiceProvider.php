@@ -20,12 +20,12 @@ class DeviceInformationServiceProvider extends ServiceProvider
 
     public function registerDeviceInformationTypes(Request $request): void
     {
-        if (!$request->has('deviceId')) {
+        if (!$request->has('publicDeviceId')) {
             $this->app->bind(IDeviceInformation::class, ErrantDeviceInformation::class);
             return;
         }
 
-        $deviceId = $request->get('deviceId');
+        $deviceId = $request->get('publicDeviceId');
 
         $deviceModel = app('App\Device');
 

@@ -7,7 +7,7 @@
                 $('#edit-device-modal').on('show.bs.modal', function (event) {
                     var button = $(event.relatedTarget);
 
-                    var deviceId = button.data('device-id');
+                    var devicePublicId = button.data('device-public-id');
                     var deviceName = button.data('device-name');
                     var deviceDescription = button.data('device-description');
                     var deviceOnCode = button.data('device-on-code');
@@ -16,7 +16,7 @@
 
                     var modal = $(this);
 
-                    modal.find('#device-update-form').attr('action', '/devices/update/' + deviceId)
+                    modal.find('#device-update-form').attr('action', '/devices/update/' + devicePublicId)
                     modal.find('#device-name-input').val(deviceName);
                     modal.find('#device-description-input').val(deviceDescription);
                     modal.find('#device-on-code-input').val(deviceOnCode);
@@ -25,13 +25,13 @@
                 })
             });
 
-            function controlDevice(action, id) {
+            function controlDevice(action, publicDeviceId) {
                 $.ajax({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     type: "POST",
-                    url: "/devices/" + action + "/" + id
+                    url: "/devices/" + action + "/" + publicDeviceId
                 });
             }
         </script>
@@ -83,12 +83,12 @@
                                                 </button>
                                                 <ul class="dropdown-menu">
                                                     <li>
-                                                        <a href="#edit-device-modal" aria-label="Edit Device" data-toggle="modal" data-target="#edit-device-modal" data-device-id="{{ $device->id }}" data-device-name="{{ $device->name }}" data-device-description="{{ $device->description }}" @foreach($device->htmlDataAttributesForSpecificDevice() as $property) {{ $property }} @endforeach>
+                                                        <a href="#edit-device-modal" aria-label="Edit Device" data-toggle="modal" data-target="#edit-device-modal" data-device-public-id="{{ $device->public_id }}" data-device-name="{{ $device->name }}" data-device-description="{{ $device->description }}" @foreach($device->htmlDataAttributesForSpecificDevice() as $property) {{ $property }} @endforeach>
                                                             <span class="glyphicon glyphicon-pencil"></span> Edit
                                                         </a>
                                                     </li>
                                                     <li>
-                                                        <a href="/devices/delete/{{ $device->id }}">
+                                                        <a href="/devices/delete/{{ $device->public_id }}">
                                                             <span class="glyphicon glyphicon-remove"></span> Delete
                                                         </a>
                                                     </li>
@@ -105,8 +105,8 @@
                                         </td>
                                         <td class="col-xs-5">
                                             <div class="btn-group pull-right" role="group" aria-label="Device Controls">
-                                                <button type="button" class="btn btn-primary" onclick="controlDevice('turnon', '{{ $device->id }}');">On</button>
-                                                <button type="button" class="btn btn-primary" onclick="controlDevice('turnoff', '{{ $device->id }}');">Off</button>
+                                                <button type="button" class="btn btn-primary" onclick="controlDevice('turnon', '{{ $device->public_id }}');">On</button>
+                                                <button type="button" class="btn btn-primary" onclick="controlDevice('turnoff', '{{ $device->public_id }}');">Off</button>
                                             </div>
                                         </td>
                                     </tr>

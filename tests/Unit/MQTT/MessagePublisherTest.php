@@ -11,7 +11,7 @@ use Webpatser\Uuid\Uuid;
 class MessagePublisherTest extends TestCase
 {
     private $publicUserId;
-    private $deviceId;
+    private $publicDeviceId;
     private $action;
 
     public function setUp(): void
@@ -19,7 +19,7 @@ class MessagePublisherTest extends TestCase
         parent::setUp();
 
         $this->publicUserId = Uuid::generate(4);
-        $this->deviceId = self::$faker->randomDigit();
+        $this->publicDeviceId = Uuid::generate(4);
         $this->action = self::$faker->word();
     }
 
@@ -29,7 +29,7 @@ class MessagePublisherTest extends TestCase
 
         $messagePublisher = new MessagePublisher($mockClient);
 
-        $result = $messagePublisher->publish($this->publicUserId, $this->action, $this->deviceId);
+        $result = $messagePublisher->publish($this->action, $this->publicUserId, $this->publicDeviceId);
 
         $this->assertTrue($result);
     }
@@ -40,7 +40,7 @@ class MessagePublisherTest extends TestCase
 
         $messagePublisher = new MessagePublisher($mockClient);
 
-        $result = $messagePublisher->publish($this->publicUserId, $this->action, $this->deviceId);
+        $result = $messagePublisher->publish($this->action, $this->publicUserId, $this->publicDeviceId);
 
         $this->assertFalse($result);
     }
@@ -54,14 +54,14 @@ class MessagePublisherTest extends TestCase
 
         $messagePublisher = new MessagePublisher($mockClient);
 
-        $result = $messagePublisher->publish($this->publicUserId, $this->action, $this->deviceId);
+        $result = $messagePublisher->publish($this->action, $this->publicUserId, $this->publicDeviceId);
 
         $this->assertFalse($result);
     }
 
     private function mockClient(bool $publishedSuccessfully)
     {
-        $topic = "RoboHome/$this->publicUserId/$this->deviceId";
+        $topic = "RoboHome/$this->publicUserId/$this->publicDeviceId";
 
         $mockClient = Mockery::mock(Client::class);
         $mockClient
