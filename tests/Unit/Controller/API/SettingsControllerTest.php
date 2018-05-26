@@ -26,27 +26,32 @@ class SettingsControllerTest extends ControllerTestCase
 
     public function testMqtt_GivenUserWithInfoScope_ReturnsMqttSettings(): void
     {
-        $server = self::$faker->domainName();
-        $tlsPort = self::$faker->randomNumber();
-        $user = self::$faker->email();
-        $password = self::$faker->password();
+        $user = factory(User::class)->make();
+        $publicUserId = $user->public_id;
 
-        putenv("MQTT_SERVER=$server");
-        putenv("MQTT_TLS_PORT=$tlsPort");
-        putenv("MQTT_USER=$user");
-        putenv("MQTT_PASSWORD=$password");
+        $mqttServer = self::$faker->domainName();
+        $mqttTlsPort = self::$faker->randomNumber();
+        $mqttUser = self::$faker->email();
+        $mqttPassword = self::$faker->password();
+        $mqttTopic = "RoboHome/$publicUserId/+";
 
-        Passport::actingAs(factory(User::class)->make(), ['info']);
+        putenv("MQTT_SERVER=$mqttServer");
+        putenv("MQTT_TLS_PORT=$mqttTlsPort");
+        putenv("MQTT_USER=$mqttUser");
+        putenv("MQTT_PASSWORD=$mqttPassword");
+
+        Passport::actingAs($user, ['info']);
 
         $response = $this->getJson('/api/settings/mqtt');
 
         $response->assertStatus(200);
         $response->assertExactJson([
             'mqtt' => [
-                'server' => $server,
-                'tlsPort' => strval($tlsPort),
-                'user' => $user,
-                'password' => $password
+                'server' => $mqttServer,
+                'tlsPort' => strval($mqttTlsPort),
+                'user' => $mqttUser,
+                'password' => $mqttPassword,
+                'topic' => $mqttTopic
             ]
         ]);
     }
