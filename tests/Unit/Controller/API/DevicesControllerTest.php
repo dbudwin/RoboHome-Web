@@ -291,10 +291,10 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
     private function createMockUser(): User
     {
-        $userId = self::$faker->randomNumber();
+        $publicUserId = self::$faker->uuid();
 
         $mockUser = $mockUser = Mockery::mock(User::class)->makePartial();
-        $mockUser->shouldReceive('getAttribute')->with('id')->andReturn($userId);
+        $mockUser->shouldReceive('getAttribute')->with('public_id')->andReturn($publicUserId);
 
         return $mockUser;
     }

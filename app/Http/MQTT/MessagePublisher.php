@@ -3,6 +3,7 @@
 namespace App\Http\MQTT;
 
 use LibMQTT\Client;
+use Webpatser\Uuid\Uuid;
 
 class MessagePublisher
 {
@@ -13,13 +14,13 @@ class MessagePublisher
         $this->client = $client;
     }
 
-    public function publish(string $userId, string $action, int $deviceId): bool
+    public function publish(Uuid $publicUserId, string $action, int $deviceId): bool
     {
         if (!$this->client->connect()) {
             return false;
         }
 
-        $published = $this->client->publish("RoboHome/$userId/$deviceId", $action, 0);
+        $published = $this->client->publish("RoboHome/$publicUserId->string/$deviceId", $action, 0);
 
         $this->client->close();
 

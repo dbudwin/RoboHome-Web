@@ -187,12 +187,12 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
     public function testHandleControlRequest_GivenUserExistsWithDevice_CallsPublish(): void
     {
-        $userId = self::$faker->randomDigit();
+        $publicUserId = self::$faker->uuid();
         $deviceId = self::$faker->randomDigit();
         $action = self::$faker->word();
 
         $mockUser = $this->mockUserOwnsDevice($deviceId, true);
-        $mockUser->shouldReceive('getAttribute')->with('id')->once()->andReturn($userId);
+        $mockUser->shouldReceive('getAttribute')->with('public_id')->once()->andReturn($publicUserId);
 
         $this->mockMessagePublisher(1);
 

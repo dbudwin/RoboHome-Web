@@ -11,3 +11,4 @@ Route::post('/devices/turnon', 'API\DevicesController@turnOn')->name('turnOn')->
 Route::post('/devices/turnoff', 'API\DevicesController@turnOff')->name('turnOff')->middleware('scope:control');
 Route::post('/devices/info', 'API\DevicesController@info')->name('info')->middleware('scope:info');
 Route::get('/settings/mqtt', 'API\SettingsController@mqtt')->name('mqttSettings')->middleware('scope:info');
+Route::get('/users/publicId', 'API\UsersController@publicId')->name('publicId')->middleware('scope:info');

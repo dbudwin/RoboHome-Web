@@ -6,10 +6,11 @@ use App\Http\MQTT\MessagePublisher;
 use LibMQTT\Client;
 use Mockery;
 use Tests\TestCase;
+use Webpatser\Uuid\Uuid;
 
 class MessagePublisherTest extends TestCase
 {
-    private $userId;
+    private $publicUserId;
     private $deviceId;
     private $action;
 
@@ -17,7 +18,7 @@ class MessagePublisherTest extends TestCase
     {
         parent::setUp();
 
-        $this->userId = self::$faker->uuid();
+        $this->publicUserId = Uuid::generate(4);
         $this->deviceId = self::$faker->randomDigit();
         $this->action = self::$faker->word();
     }
@@ -28,7 +29,7 @@ class MessagePublisherTest extends TestCase
 
         $messagePublisher = new MessagePublisher($mockClient);
 
-        $result = $messagePublisher->publish($this->userId, $this->action, $this->deviceId);
+        $result = $messagePublisher->publish($this->publicUserId, $this->action, $this->deviceId);
 
         $this->assertTrue($result);
     }
@@ -39,7 +40,7 @@ class MessagePublisherTest extends TestCase
 
         $messagePublisher = new MessagePublisher($mockClient);
 
-        $result = $messagePublisher->publish($this->userId, $this->action, $this->deviceId);
+        $result = $messagePublisher->publish($this->publicUserId, $this->action, $this->deviceId);
 
         $this->assertFalse($result);
     }
@@ -53,14 +54,14 @@ class MessagePublisherTest extends TestCase
 
         $messagePublisher = new MessagePublisher($mockClient);
 
-        $result = $messagePublisher->publish($this->userId, $this->action, $this->deviceId);
+        $result = $messagePublisher->publish($this->publicUserId, $this->action, $this->deviceId);
 
         $this->assertFalse($result);
     }
 
     private function mockClient(bool $publishedSuccessfully)
     {
-        $topic = "RoboHome/$this->userId/$this->deviceId";
+        $topic = "RoboHome/$this->publicUserId/$this->deviceId";
 
         $mockClient = Mockery::mock(Client::class);
         $mockClient
