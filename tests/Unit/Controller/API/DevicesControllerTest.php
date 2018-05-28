@@ -5,6 +5,7 @@ namespace Tests\Unit\Controller\API;
 use App\Device;
 use App\Http\Controllers\API\DeviceInformation\IDeviceInformation;
 use App\Http\Globals\DeviceActions;
+use App\Repositories\IDeviceRepository;
 use App\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\TestResponse;
@@ -12,9 +13,11 @@ use Illuminate\Http\JsonResponse;
 use Laravel\Passport\Passport;
 use Mockery;
 use Tests\Unit\Controller\Common\DevicesControllerTestCase;
+use Webpatser\Uuid\Uuid;
 
 class DevicesControllerTest extends DevicesControllerTestCase
 {
+    private $mockDeviceRepository;
     private $mockDeviceInformation;
     private $mockUser;
     private $messageId;
@@ -23,10 +26,12 @@ class DevicesControllerTest extends DevicesControllerTestCase
     {
         parent::setUp();
 
+        $this->mockDeviceRepository = Mockery::mock(IDeviceRepository::class);
         $this->mockDeviceInformation = Mockery::mock(IDeviceInformation::class);
         $this->mockUser = $this->createMockUser();
         $this->messageId = self::$faker->uuid();
 
+        $this->app->instance(IDeviceRepository::class, $this->mockDeviceRepository);
         $this->app->instance(IDeviceInformation::class, $this->mockDeviceInformation);
     }
 
@@ -115,30 +120,38 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $response->assertStatus(400);
     }
 
+    public function testInfo_GivenRandomUserThatExistsAndDeviceTheyDoNotOwn_Returns401(): void
+    {
+        $deviceUserDoesNotOwn = $this->createDevices()[0];
+        $publicDeviceId = self::$faker->uuid();
+        $this->mockUserOwnsDevice($deviceUserDoesNotOwn->id, false);
+
+        Passport::actingAs($this->mockUser, ['info']);
+
+        $this->mockDeviceRepository->shouldReceive('getForPublicId')->with(Mockery::on(function (Uuid $argument) use ($publicDeviceId) {
+            return $argument instanceof Uuid && $argument == Uuid::import($publicDeviceId);
+        }))->once()->andReturn($deviceUserDoesNotOwn);
+
+        $response = $this->callInfo($publicDeviceId);
+
+        $response->assertStatus(401);
+    }
+
     public function testInfo_GivenUserExistsWithDevice_ReturnsJsonResponse(): void
     {
-        $deviceId = self::$faker->randomDigit();
-        $this->mockUserOwnsDevice($deviceId, true);
+        $device = $this->createDevices()[0];
+        $this->mockUserOwnsDevice($device->id, true);
 
         Passport::actingAs($this->mockUser, ['info']);
 
         $this->mockDeviceInformation->shouldReceive('info')->once()->andReturn(new JsonResponse());
+        $this->mockDeviceRepository->shouldReceive('getForPublicId')->with(Mockery::on(function (Uuid $argument) use ($device) {
+            return $argument instanceof Uuid && $argument == Uuid::import($device->public_id);
+        }))->once()->andReturn($device);
 
-        $response = $this->callInfo($deviceId);
+        $response = $this->callInfo($device->public_id);
 
         $response->assertSuccessful();
-    }
-
-    public function testInfo_GivenRandomUserThatExistsAndDeviceTheyDoNotOwn_Returns401(): void
-    {
-        $deviceId = self::$faker->randomDigit();
-        $this->mockUserOwnsDevice($deviceId, false);
-
-        Passport::actingAs($this->mockUser, ['info']);
-
-        $response = $this->callInfo($deviceId);
-
-        $response->assertStatus(401);
     }
 
     private function callDevices(): TestResponse
@@ -153,26 +166,26 @@ class DevicesControllerTest extends DevicesControllerTestCase
         return $response;
     }
 
-    private function callControl(string $action, int $deviceId): TestResponse
+    private function callControl(string $action, string $publicDeviceId): TestResponse
     {
         $urlValidAction = strtolower($action);
 
         Passport::actingAs($this->mockUser, ['control']);
 
-        $response = $this->postJson('/api/devices/' . $urlValidAction, ['id' => $deviceId], [
-                'HTTP_Authorization' => 'Bearer ' . self::$faker->uuid(),
-                'HTTP_Message_Id' => $this->messageId
-            ]);
+        $response = $this->postJson('/api/devices/' . $urlValidAction, ['publicDeviceId' => $publicDeviceId], [
+            'HTTP_Authorization' => 'Bearer ' . self::$faker->uuid(),
+            'HTTP_Message_Id' => $this->messageId
+        ]);
 
         return $response;
     }
 
-    private function callInfo(int $deviceId): TestResponse
+    private function callInfo(string $publicDeviceId): TestResponse
     {
         $response = $this->postJson('/api/devices/info', [
             'action' => self::$faker->word(),
-            'deviceId' => $deviceId
-        ], []);
+            'publicDeviceId' => $publicDeviceId
+        ]);
 
         return $response;
     }
@@ -181,10 +194,13 @@ class DevicesControllerTest extends DevicesControllerTestCase
     {
         $device = $this->createDevices()[0];
         $this->mockUserOwnsDevice($device->id, true);
+        $this->mockDeviceRepository->shouldReceive('getForPublicId')->with(Mockery::on(function (Uuid $argument) use ($device) {
+            return $argument instanceof Uuid && $argument == Uuid::import($device->public_id);
+        }))->once()->andReturn($device);
 
         $this->mockMessagePublisher(1);
 
-        $response = $this->callControl($action, $device->id);
+        $response = $this->callControl($action, $device->public_id);
 
         $this->assertControlConfirmation($response, $name);
     }
@@ -193,10 +209,13 @@ class DevicesControllerTest extends DevicesControllerTestCase
     {
         $device = $this->createDevices()[0];
         $this->mockUserOwnsDevice($device->id, true);
+        $this->mockDeviceRepository->shouldReceive('getForPublicId')->with(Mockery::on(function (Uuid $argument) use ($device) {
+            return $argument instanceof Uuid && $argument == Uuid::import($device->public_id);
+        }))->once()->andReturn($device);
 
         $this->mockMessagePublisher(1);
 
-        $response = $this->callControl($action, $device->id);
+        $response = $this->callControl($action, $device->public_id);
 
         $response->assertSuccessful();
     }
@@ -205,20 +224,26 @@ class DevicesControllerTest extends DevicesControllerTestCase
     {
         $device = $this->createDevices()[0];
         $this->mockUserOwnsDevice($device->id, true);
+        $this->mockDeviceRepository->shouldReceive('getForPublicId')->with(Mockery::on(function (Uuid $argument) use ($device) {
+            return $argument instanceof Uuid && $argument == Uuid::import($device->public_id);
+        }))->once()->andReturn($device);
 
         $this->mockMessagePublisher(1, false);
 
-        $response = $this->callControl($action, $device->id);
+        $response = $this->callControl($action, $device->public_id);
 
         $response->assertStatus(500);
     }
 
     private function assertUnauthorizedWhenUserAttemptsToControlDeviceTheyDoNotOwn(string $action): void
     {
-        $deviceId = self::$faker->randomDigit();
-        $this->mockUserOwnsDevice($deviceId, false);
+        $device = $this->createDevices()[0];
+        $this->mockUserOwnsDevice($device->id, false);
+        $this->mockDeviceRepository->shouldReceive('getForPublicId')->with(Mockery::on(function (Uuid $argument) use ($device) {
+            return $argument instanceof Uuid && $argument == Uuid::import($device->public_id);
+        }))->once()->andReturn($device);
 
-        $response = $this->callControl($action, $deviceId);
+        $response = $this->callControl($action, $device->public_id);
 
         $response->assertStatus(401);
     }

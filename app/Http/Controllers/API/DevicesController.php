@@ -6,19 +6,22 @@ use App\Http\Controllers\API\DeviceInformation\IDeviceInformation;
 use App\Http\Controllers\Common\Controller;
 use App\Http\Globals\DeviceActions;
 use App\Http\MQTT\MessagePublisher;
+use App\Repositories\IDeviceRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Webpatser\Uuid\Uuid;
 
 class DevicesController extends Controller
 {
+    private $deviceRepository;
     private $deviceInformation;
     private $messagePublisher;
 
-    public function __construct(IDeviceInformation $deviceInformation, MessagePublisher $messagePublisher)
+    public function __construct(IDeviceRepository $deviceRepository, IDeviceInformation $deviceInformation, MessagePublisher $messagePublisher)
     {
         $this->middleware('auth:api');
 
+        $this->deviceRepository = $deviceRepository;
         $this->deviceInformation = $deviceInformation;
         $this->messagePublisher = $messagePublisher;
     }
@@ -56,8 +59,9 @@ class DevicesController extends Controller
     public function info(Request $request): JsonResponse
     {
         $user = $request->user();
-        $deviceId = $request->get('deviceId');
+        $publicDeviceId = $request->get('publicDeviceId');
         $action = $request->get('action');
+        $deviceId = $this->deviceRepository->getForPublicId(Uuid::import($publicDeviceId))->id;
 
         $userOwnsDevice = $user->ownsDevice($deviceId);
 
@@ -72,7 +76,8 @@ class DevicesController extends Controller
     {
         $user = $request->user();
         $publicUserId = Uuid::import($user->public_id);
-        $deviceId = $request->input('id');
+        $publicDeviceId = Uuid::import($request->input('publicDeviceId'));
+        $deviceId = $this->deviceRepository->getForPublicId($publicDeviceId)->id;
 
         $userOwnsDevice = $user->ownsDevice($deviceId);
 
@@ -82,7 +87,7 @@ class DevicesController extends Controller
 
         $urlValidAction = strtolower($action);
 
-        $published = $this->messagePublisher->publish($publicUserId, $urlValidAction, $deviceId);
+        $published = $this->messagePublisher->publish($urlValidAction, $publicUserId, $publicDeviceId);
 
         if (!$published) {
             return response()->json(['error' => 'Message not published'], 500);

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Webpatser\Uuid\Uuid;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -23,7 +24,15 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Route::pattern('id', '[0-9]+');
+        $lowercaseLettersOnly = '[a-z]+';
+        $uuidVersion4RegEx = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
+
+        Route::pattern('action', $lowercaseLettersOnly);
+        Route::pattern('publicDeviceId', $uuidVersion4RegEx);
+
+        Route::bind('publicDeviceId', function (string $value) {
+            return Uuid::import($value);
+        });
 
         parent::boot();
     }

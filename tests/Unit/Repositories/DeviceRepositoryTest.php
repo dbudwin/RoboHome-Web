@@ -8,6 +8,7 @@ use App\Repositories\IRFDeviceRepository;
 use App\RFDevice;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Mockery;
+use Webpatser\Uuid\Uuid;
 
 class DeviceRepositoryTest extends RepositoryTestCaseWithRealDatabase
 {
@@ -43,11 +44,30 @@ class DeviceRepositoryTest extends RepositoryTestCaseWithRealDatabase
         $this->deviceRepository->get($nonexistentDeviceId);
     }
 
-    public function testGet_GivenDeviceExists_ReturnsRFDevice(): void
+    public function testGet_GivenDeviceExists_ReturnsDevice(): void
     {
         $device = $this->createDevice();
 
         $retrievedDevice = $this->deviceRepository->get($device->id);
+
+        $this->assertTrue($retrievedDevice->is($device));
+    }
+
+    public function testGetForPublicId_GivenDeviceDoesNotExist_ThrowsModelNotFoundException(): void
+    {
+        $nonexistentPublicDeviceId = Uuid::import(self::$faker->uuid());
+
+        $this->expectException(ModelNotFoundException::class);
+
+        $this->deviceRepository->getForPublicId($nonexistentPublicDeviceId);
+    }
+
+    public function testGetForPublicId_GivenDeviceExists_ReturnsDevice(): void
+    {
+        $device = $this->createDevice();
+        $publicDeviceId = Uuid::import($device->public_id);
+
+        $retrievedDevice = $this->deviceRepository->getForPublicId($publicDeviceId);
 
         $this->assertTrue($retrievedDevice->is($device));
     }

@@ -19,7 +19,7 @@
 <!--- What types of changes does your code introduce? Put an `x` in all the boxes that apply: -->
 - [ ] Bug fix (non-breaking change which fixes an issue)
 - [ ] New feature (non-breaking change which adds functionality)
-- [ ] Enhancement (non-breaking change which is not noticeable to end users)
+- [ ] Enhancement/Security (non-breaking change which is not noticeable to end users)
 - [ ] Breaking change (fix or feature that would cause existing functionality to change)
 
 ## Checklist:
@@ -31,4 +31,4 @@
 - [ ] I have read the **CONTRIBUTING** document.
 - [ ] I have added tests to cover my changes.
 - [ ] This is a complete change and doesn't leave the project in a bad state.
-- [ ] All new and existing tests passed.
+- [ ] All new and existing tests pass.
