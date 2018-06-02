@@ -3,13 +3,12 @@
 namespace Tests\Unit\Controller\API;
 
 use App\Device;
-use App\Http\Controllers\API\DeviceInformation\IDeviceInformation;
+use App\DeviceActionInfo\IDeviceActionInfoBroker;
 use App\Http\Globals\DeviceActions;
 use App\Repositories\IDeviceRepository;
 use App\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\TestResponse;
-use Illuminate\Http\JsonResponse;
 use Laravel\Passport\Passport;
 use Mockery;
 use Tests\Unit\Controller\Common\DevicesControllerTestCase;
@@ -18,7 +17,6 @@ use Webpatser\Uuid\Uuid;
 class DevicesControllerTest extends DevicesControllerTestCase
 {
     private $mockDeviceRepository;
-    private $mockDeviceInformation;
     private $mockUser;
     private $messageId;
 
@@ -27,12 +25,10 @@ class DevicesControllerTest extends DevicesControllerTestCase
         parent::setUp();
 
         $this->mockDeviceRepository = Mockery::mock(IDeviceRepository::class);
-        $this->mockDeviceInformation = Mockery::mock(IDeviceInformation::class);
         $this->mockUser = $this->createMockUser();
         $this->messageId = self::$faker->uuid();
 
         $this->app->instance(IDeviceRepository::class, $this->mockDeviceRepository);
-        $this->app->instance(IDeviceInformation::class, $this->mockDeviceInformation);
     }
 
     public function testIndex_GivenUserExistsWithNoDevices_ReturnsJsonResponse(): void
@@ -109,13 +105,12 @@ class DevicesControllerTest extends DevicesControllerTestCase
     public function testInfo_GivenUserExistsWithDeviceWithRandomScope_Returns400(): void
     {
         $deviceId = self::$faker->randomDigit();
+        $action = self::$faker->word();
         $this->mockUser->shouldReceive('ownsDevice')->with($deviceId)->never();
 
         Passport::actingAs($this->mockUser, [self::$faker->word()]);
 
-        $this->mockDeviceInformation->shouldReceive('info')->never();
-
-        $response = $this->callInfo($deviceId);
+        $response = $this->callInfo($deviceId, $action);
 
         $response->assertStatus(400);
     }
@@ -124,6 +119,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
     {
         $deviceUserDoesNotOwn = $this->createDevices()[0];
         $publicDeviceId = self::$faker->uuid();
+        $action = self::$faker->word();
         $this->mockUserOwnsDevice($deviceUserDoesNotOwn->id, false);
 
         Passport::actingAs($this->mockUser, ['info']);
@@ -132,7 +128,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
             return $argument instanceof Uuid && $argument == Uuid::import($publicDeviceId);
         }))->once()->andReturn($deviceUserDoesNotOwn);
 
-        $response = $this->callInfo($publicDeviceId);
+        $response = $this->callInfo($publicDeviceId, $action);
 
         $response->assertStatus(401);
     }
@@ -140,16 +136,24 @@ class DevicesControllerTest extends DevicesControllerTestCase
     public function testInfo_GivenUserExistsWithDevice_ReturnsJsonResponse(): void
     {
         $device = $this->createDevices()[0];
+        $action = self::$faker->word();
         $this->mockUserOwnsDevice($device->id, true);
 
         Passport::actingAs($this->mockUser, ['info']);
 
-        $this->mockDeviceInformation->shouldReceive('info')->once()->andReturn(new JsonResponse());
+        $mockDeviceActionInfoBroker = Mockery::mock(IDeviceActionInfoBroker::class);
+        $mockDeviceActionInfoBroker
+            ->shouldReceive('infoNeededToPerformDeviceAction')
+            ->once()
+            ->withArgs([$device, $action])
+            ->andReturn(response()->json("test"));
+        $this->app->instance(IDeviceActionInfoBroker::class, $mockDeviceActionInfoBroker);
+
         $this->mockDeviceRepository->shouldReceive('getForPublicId')->with(Mockery::on(function (Uuid $argument) use ($device) {
             return $argument instanceof Uuid && $argument == Uuid::import($device->public_id);
         }))->once()->andReturn($device);
 
-        $response = $this->callInfo($device->public_id);
+        $response = $this->callInfo($device->public_id, $action);
 
         $response->assertSuccessful();
     }
@@ -172,7 +176,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
         Passport::actingAs($this->mockUser, ['control']);
 
-        $response = $this->postJson('/api/devices/' . $urlValidAction, ['publicDeviceId' => $publicDeviceId], [
+        $response = $this->postJson('/api/devices/control/' . $urlValidAction, ['publicDeviceId' => $publicDeviceId], [
             'HTTP_Authorization' => 'Bearer ' . self::$faker->uuid(),
             'HTTP_Message_Id' => $this->messageId
         ]);
@@ -180,10 +184,10 @@ class DevicesControllerTest extends DevicesControllerTestCase
         return $response;
     }
 
-    private function callInfo(string $publicDeviceId): TestResponse
+    private function callInfo(string $publicDeviceId, string $action): TestResponse
     {
         $response = $this->postJson('/api/devices/info', [
-            'action' => self::$faker->word(),
+            'action' => $action,
             'publicDeviceId' => $publicDeviceId
         ]);
 

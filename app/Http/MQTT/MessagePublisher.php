@@ -2,7 +2,6 @@
 
 namespace App\Http\MQTT;
 
-use Illuminate\Support\Facades\Validator;
 use LibMQTT\Client;
 use Webpatser\Uuid\Uuid;
 
