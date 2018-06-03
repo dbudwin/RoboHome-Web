@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Device;
 use App\DeviceActionInfo\IDeviceActionInfoBroker;
 use App\Http\Controllers\Common\Controller;
 use App\Http\Globals\DeviceActions;
@@ -45,16 +44,9 @@ class DevicesController extends Controller
 
     public function info(Request $request): JsonResponse
     {
-        $user = $request->user();
         $publicDeviceId = $request->get('publicDeviceId');
         $action = $request->get('action');
         $device = $this->deviceRepository->getForPublicId(Uuid::import($publicDeviceId));
-
-        $userOwnsDevice = $user->ownsDevice($device->id);
-
-        if (!$userOwnsDevice) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
 
         return $this->deviceInformationBroker->infoNeededToPerformDeviceAction($device, $action);
     }
@@ -64,13 +56,6 @@ class DevicesController extends Controller
         $user = $request->user();
         $publicUserId = Uuid::import($user->public_id);
         $publicDeviceId = Uuid::import($request->input('publicDeviceId'));
-        $deviceId = $this->deviceRepository->getForPublicId($publicDeviceId)->id;
-
-        $userOwnsDevice = $user->ownsDevice($deviceId);
-
-        if (!$userOwnsDevice) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
 
         $urlValidAction = strtolower($action);
 
