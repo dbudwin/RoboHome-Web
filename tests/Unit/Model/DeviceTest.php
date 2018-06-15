@@ -35,6 +35,18 @@ class DeviceTest extends TestCaseWithRealDatabase
         }
     }
 
+    public function testSpecificDevice_GivenDeviceAddedToDatabase_AttributesMatch(): void
+    {
+        foreach ($this->deviceTypeConstants() as $specificDeviceType) {
+            $addedDevice = $this->addDeviceToDatabase($specificDeviceType);
+            $expectedSpecificDevice = $this->addSpecificDevice($addedDevice->id, $specificDeviceType);
+
+            $actualSpecificDevice = $addedDevice->specificDevice();
+
+            $this->assertEquals($expectedSpecificDevice->attributesToArray(), $actualSpecificDevice->attributesToArray());
+        }
+    }
+
     private function addDeviceToDatabase(int $deviceType): Device
     {
         return factory(Device::class)->create([

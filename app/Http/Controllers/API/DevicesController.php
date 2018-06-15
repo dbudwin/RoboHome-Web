@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\API\DeviceInformation\IDeviceInformation;
+use App\Device;
+use App\DeviceActionInfo\IDeviceActionInfoBroker;
 use App\Http\Controllers\Common\Controller;
 use App\Http\Globals\DeviceActions;
 use App\Http\MQTT\MessagePublisher;
@@ -14,15 +15,15 @@ use Webpatser\Uuid\Uuid;
 class DevicesController extends Controller
 {
     private $deviceRepository;
-    private $deviceInformation;
+    private $deviceInformationBroker;
     private $messagePublisher;
 
-    public function __construct(IDeviceRepository $deviceRepository, IDeviceInformation $deviceInformation, MessagePublisher $messagePublisher)
+    public function __construct(IDeviceRepository $deviceRepository, IDeviceActionInfoBroker $deviceInformationBroker, MessagePublisher $messagePublisher)
     {
         $this->middleware('auth:api');
 
         $this->deviceRepository = $deviceRepository;
-        $this->deviceInformation = $deviceInformation;
+        $this->deviceInformationBroker = $deviceInformationBroker;
         $this->messagePublisher = $messagePublisher;
     }
 
@@ -42,37 +43,23 @@ class DevicesController extends Controller
         return response()->json($response);
     }
 
-    public function turnOn(Request $request): JsonResponse
-    {
-        $response = $this->handleControlRequest($request, DeviceActions::TURN_ON, 'TurnOnConfirmation');
-
-        return $response;
-    }
-
-    public function turnOff(Request $request): JsonResponse
-    {
-        $response = $this->handleControlRequest($request, DeviceActions::TURN_OFF, 'TurnOffConfirmation');
-
-        return $response;
-    }
-
     public function info(Request $request): JsonResponse
     {
         $user = $request->user();
         $publicDeviceId = $request->get('publicDeviceId');
         $action = $request->get('action');
-        $deviceId = $this->deviceRepository->getForPublicId(Uuid::import($publicDeviceId))->id;
+        $device = $this->deviceRepository->getForPublicId(Uuid::import($publicDeviceId));
 
-        $userOwnsDevice = $user->ownsDevice($deviceId);
+        $userOwnsDevice = $user->ownsDevice($device->id);
 
         if (!$userOwnsDevice) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return $this->deviceInformation->info($deviceId, $action);
+        return $this->deviceInformationBroker->infoNeededToPerformDeviceAction($device, $action);
     }
 
-    private function handleControlRequest(Request $request, string $action, string $responseName): JsonResponse
+    public function control(Request $request, string $action): JsonResponse
     {
         $user = $request->user();
         $publicUserId = Uuid::import($user->public_id);
@@ -93,8 +80,13 @@ class DevicesController extends Controller
             return response()->json(['error' => 'Message not published'], 500);
         }
 
+        return $this->buildControlJson($request, $action);
+    }
+
+    private function buildControlJson(Request $request, string $action): JsonResponse
+    {
         $response = [
-            'header' => $this->createHeader($request, $responseName, 'Alexa.ConnectedHome.Control'),
+            'header' => $this->createHeader($request, DeviceActions::actionToConfirmationName($action), 'Alexa.ConnectedHome.Control'),
             'payload' => (object)[]
         ];
 

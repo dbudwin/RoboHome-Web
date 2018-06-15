@@ -40,7 +40,7 @@ class Device extends Model
         return $htmlDataAttributesForSpecificDeviceProperties;
     }
 
-    private function specificDevice(): Model
+    public function specificDevice(): Model
     {
         $deviceTypeId = $this->device_type_id;
         $deviceType = DeviceType::find($deviceTypeId)->type;

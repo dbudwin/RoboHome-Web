@@ -6,7 +6,6 @@ use App\Traits\RestExceptionHandler;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\JsonResponse;
 use Laravel\Passport\Exceptions\MissingScopeException;
 use Tests\TestCase;
 
@@ -47,11 +46,5 @@ class RestExceptionHandlerTest extends TestCase
         $response = $this->mockRestExceptionHandler->jsonResponseForException(new Exception());
 
         $this->assertJsonResponse($response, json_encode(['error' => 'Bad request']), 400);
-    }
-
-    private function assertJsonResponse(JsonResponse $response, string $expectedJson, int $expectedStatusCode): void
-    {
-        $this->assertEquals($response->getStatusCode(), $expectedStatusCode);
-        $this->assertJsonStringEqualsJsonString(json_encode($response->getData()), $expectedJson);
     }
 }
