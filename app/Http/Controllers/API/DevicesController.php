@@ -44,9 +44,9 @@ class DevicesController extends Controller
 
     public function info(Request $request): JsonResponse
     {
-        $publicDeviceId = $request->get('publicDeviceId');
+        $publicDeviceId = Uuid::import($request->input('publicDeviceId'));
         $action = $request->get('action');
-        $device = $this->deviceRepository->getForPublicId(Uuid::import($publicDeviceId));
+        $device = $this->deviceRepository->getForPublicId($publicDeviceId);
 
         return $this->deviceInformationBroker->infoNeededToPerformDeviceAction($device, $action);
     }
