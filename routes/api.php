@@ -7,7 +7,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:api', 'scope:control');
 
 Route::resource('/devices', 'API\DevicesController');
-Route::post('/devices/control/{action}', 'API\DevicesController@control')->name('control')->middleware('scope:control');
-Route::post('/devices/info', 'API\DevicesController@info')->name('info')->middleware('scope:info');
+Route::post('/devices/control/{action}', 'API\DevicesController@control')->name('control')->middleware('scope:control', 'apiVerifyUserOwnsDevice');
+Route::post('/devices/info', 'API\DevicesController@info')->name('info')->middleware('scope:info', 'apiVerifyUserOwnsDevice');
 Route::get('/settings/mqtt', 'API\SettingsController@mqtt')->name('mqttSettings')->middleware('scope:info');
 Route::get('/users/publicId', 'API\UsersController@publicId')->name('publicId')->middleware('scope:info');

@@ -146,12 +146,12 @@ class DevicesControllerTest extends DevicesControllerTestCase
             ->shouldReceive('infoNeededToPerformDeviceAction')
             ->once()
             ->withArgs([$device, $action])
-            ->andReturn(response()->json("test"));
+            ->andReturn(response()->json(self::$faker->word()));
         $this->app->instance(IDeviceActionInfoBroker::class, $mockDeviceActionInfoBroker);
 
         $this->mockDeviceRepository->shouldReceive('getForPublicId')->with(Mockery::on(function (Uuid $argument) use ($device) {
             return $argument instanceof Uuid && $argument == Uuid::import($device->public_id);
-        }))->once()->andReturn($device);
+        }))->times(2)->andReturn($device);
 
         $response = $this->callInfo($device->public_id, $action);
 
