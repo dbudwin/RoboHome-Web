@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\TestResponse;
 use Laravel\Passport\Passport;
 use Mockery;
+use ReflectionClass;
 use Tests\Unit\Controller\Common\DevicesControllerTestCase;
 use Webpatser\Uuid\Uuid;
 
@@ -60,46 +61,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         ]);
 
         $response->assertStatus(401);
-    }
-
-    public function testTurnOn_GivenUserExistsWithDevice_ReturnsJsonResponse(): void
-    {
-        $this->assertSuccessfulControlJsonResponse(DeviceActions::TURN_ON, 'TurnOnConfirmation');
-    }
-
-    public function testTurnOff_GivenUserExistsWithDevice_ReturnsJsonResponse(): void
-    {
-        $this->assertSuccessfulControlJsonResponse(DeviceActions::TURN_OFF, 'TurnOffConfirmation');
-    }
-
-    public function testTurnOn_GivenUserExistsWithDevice_CallsPublishSuccessfully_Returns200(): void
-    {
-        $this->assertPublishedCalledAndMessagePublished(DeviceActions::TURN_ON);
-    }
-
-    public function testTurnOff_GivenUserExistsWithDevice_CallsPublishSuccessfully_Returns200(): void
-    {
-        $this->assertPublishedCalledAndMessagePublished(DeviceActions::TURN_OFF);
-    }
-
-    public function testTurnOn_GivenUserExistsWithDevice_CallsPublishUnsuccessfully_Returns500(): void
-    {
-        $this->assertPublishedCalledAndMessageNotPublished(DeviceActions::TURN_ON);
-    }
-
-    public function testTurnOff_GivenUserExistsWithDevice_CallsPublishUnsuccessfully_Returns500(): void
-    {
-        $this->assertPublishedCalledAndMessageNotPublished(DeviceActions::TURN_OFF);
-    }
-
-    public function testTurnOn_GivenUserExistsWithNoDevices_Returns401(): void
-    {
-        $this->assertUnauthorizedWhenUserAttemptsToControlDeviceTheyDoNotOwn(DeviceActions::TURN_ON);
-    }
-
-    public function testTurnOff_GivenUserExistsWithNoDevices_Returns401(): void
-    {
-        $this->assertUnauthorizedWhenUserAttemptsToControlDeviceTheyDoNotOwn(DeviceActions::TURN_OFF);
+        $response->assertExactJson(['error' => 'User not authenticated']);
     }
 
     public function testInfo_GivenUserExistsWithDeviceWithRandomScope_Returns400(): void
@@ -113,6 +75,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $response = $this->callInfo($deviceId, $action);
 
         $response->assertStatus(400);
+        $response->assertExactJson(['error' => 'Missing scope']);
     }
 
     public function testInfo_GivenRandomUserThatExistsAndDeviceTheyDoNotOwn_Returns401(): void
@@ -131,6 +94,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $response = $this->callInfo($publicDeviceId, $action);
 
         $response->assertStatus(401);
+        $response->assertExactJson(['error' => 'Unauthorized']);
     }
 
     public function testInfo_GivenUserExistsWithDevice_ReturnsJsonResponse(): void
@@ -158,6 +122,64 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $response->assertSuccessful();
     }
 
+    public function testControl_GivenUserExistsWithDevice_Returns200JsonResponse(): void
+    {
+        $device = $this->createDevice();
+
+        $this->mockMessagePublisher(1);
+
+        $action = $this->randomDeviceAction();
+
+        $response = $this->callControl($action, $device->public_id);
+
+        $response->assertSuccessful();
+        $this->assertControlConfirmation($response, ucfirst($action . 'Confirmation'));
+    }
+
+    public function testControl_GivenUserExistsWithDevice_CallsPublishUnsuccessfully_Returns500(): void
+    {
+        $device = $this->createDevice();
+
+        $this->mockMessagePublisher(1, false);
+
+        $response = $this->callControl($this->randomDeviceAction(), $device->public_id);
+
+        $response->assertStatus(500);
+        $response->assertExactJson(['error' => 'Message not published']);
+    }
+
+    public function testControl_GivenUnknownDeviceActionForUserThatExistsWithDevice_Returns400(): void
+    {
+        $device = $this->createDevice();
+
+        $this->mockMessagePublisher(1);
+
+        $unknownAction = self::$faker->word();
+
+        $response = $this->callControl($unknownAction, $device->public_id);
+
+        $response->assertStatus(400);
+        $response->assertExactJson(['error' => 'Bad request']);
+    }
+
+    public function testControl_GivenUserExistsWithNoDevices_Returns401(): void
+    {
+        $device = $this->createDevice(false);
+
+        $response = $this->callControl($this->randomDeviceAction(), $device->public_id);
+
+        $response->assertStatus(401);
+        $response->assertExactJson(['error' => 'Unauthorized']);
+    }
+
+    private function randomDeviceAction(): string
+    {
+        $deviceActionsReflectedClass = new ReflectionClass(DeviceActions::class);
+        $deviceActions = $deviceActionsReflectedClass->getConstants();
+
+        return $deviceActions[array_rand($deviceActions)];
+    }
+
     private function callDevices(): TestResponse
     {
         Passport::actingAs($this->mockUser, ['control']);
@@ -165,6 +187,16 @@ class DevicesControllerTest extends DevicesControllerTestCase
         $response = $this->getJson('/api/devices', [
             'HTTP_Authorization' => 'Bearer ' . self::$faker->uuid(),
             'HTTP_Message_Id' => $this->messageId
+        ]);
+
+        return $response;
+    }
+
+    private function callInfo(string $publicDeviceId, string $action): TestResponse
+    {
+        $response = $this->postJson('/api/devices/info', [
+            'action' => $action,
+            'publicDeviceId' => $publicDeviceId
         ]);
 
         return $response;
@@ -184,72 +216,15 @@ class DevicesControllerTest extends DevicesControllerTestCase
         return $response;
     }
 
-    private function callInfo(string $publicDeviceId, string $action): TestResponse
-    {
-        $response = $this->postJson('/api/devices/info', [
-            'action' => $action,
-            'publicDeviceId' => $publicDeviceId
-        ]);
-
-        return $response;
-    }
-
-    private function assertSuccessfulControlJsonResponse(string $action, string $name): void
+    private function createDevice(bool $isOwnedByUser = true): Device
     {
         $device = $this->createDevices()[0];
-        $this->mockUserOwnsDevice($device->id, true);
+        $this->mockUserOwnsDevice($device->id, $isOwnedByUser);
         $this->mockDeviceRepository->shouldReceive('getForPublicId')->with(Mockery::on(function (Uuid $argument) use ($device) {
             return $argument instanceof Uuid && $argument == Uuid::import($device->public_id);
         }))->once()->andReturn($device);
 
-        $this->mockMessagePublisher(1);
-
-        $response = $this->callControl($action, $device->public_id);
-
-        $this->assertControlConfirmation($response, $name);
-    }
-
-    private function assertPublishedCalledAndMessagePublished(string $action): void
-    {
-        $device = $this->createDevices()[0];
-        $this->mockUserOwnsDevice($device->id, true);
-        $this->mockDeviceRepository->shouldReceive('getForPublicId')->with(Mockery::on(function (Uuid $argument) use ($device) {
-            return $argument instanceof Uuid && $argument == Uuid::import($device->public_id);
-        }))->once()->andReturn($device);
-
-        $this->mockMessagePublisher(1);
-
-        $response = $this->callControl($action, $device->public_id);
-
-        $response->assertSuccessful();
-    }
-
-    private function assertPublishedCalledAndMessageNotPublished(string $action): void
-    {
-        $device = $this->createDevices()[0];
-        $this->mockUserOwnsDevice($device->id, true);
-        $this->mockDeviceRepository->shouldReceive('getForPublicId')->with(Mockery::on(function (Uuid $argument) use ($device) {
-            return $argument instanceof Uuid && $argument == Uuid::import($device->public_id);
-        }))->once()->andReturn($device);
-
-        $this->mockMessagePublisher(1, false);
-
-        $response = $this->callControl($action, $device->public_id);
-
-        $response->assertStatus(500);
-    }
-
-    private function assertUnauthorizedWhenUserAttemptsToControlDeviceTheyDoNotOwn(string $action): void
-    {
-        $device = $this->createDevices()[0];
-        $this->mockUserOwnsDevice($device->id, false);
-        $this->mockDeviceRepository->shouldReceive('getForPublicId')->with(Mockery::on(function (Uuid $argument) use ($device) {
-            return $argument instanceof Uuid && $argument == Uuid::import($device->public_id);
-        }))->once()->andReturn($device);
-
-        $response = $this->callControl($action, $device->public_id);
-
-        $response->assertStatus(401);
+        return $device;
     }
 
     private function assertDiscoverAppliancesResponseWithoutDevice(TestResponse $response, string $name): void

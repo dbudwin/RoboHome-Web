@@ -13,6 +13,7 @@ class SettingsControllerTest extends ControllerTestCase
         $response = $this->getJson('/api/settings/mqtt');
 
         $response->assertStatus(401);
+        $response->assertExactJson(['error' => 'User not authenticated']);
     }
 
     public function testMqtt_GivenUserWithRandomScope_Returns400(): void
@@ -22,6 +23,7 @@ class SettingsControllerTest extends ControllerTestCase
         $response = $this->getJson('/api/settings/mqtt');
 
         $response->assertStatus(400);
+        $response->assertExactJson(['error' => 'Missing scope']);
     }
 
     public function testMqtt_GivenUserWithInfoScope_ReturnsMqttSettings(): void

@@ -15,6 +15,7 @@ class UsersControllerTest extends ControllerTestCase
         $response = $this->getJson('/api/users/publicId');
 
         $response->assertStatus(400);
+        $response->assertExactJson(['error' => 'Missing scope']);
     }
 
     public function testPublicId_GivenUserWithScope_Returns200(): void
