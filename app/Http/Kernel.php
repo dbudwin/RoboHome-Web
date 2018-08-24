@@ -61,5 +61,6 @@ class Kernel extends HttpKernel
         'scopes' => \Laravel\Passport\Http\Middleware\CheckScopes::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'apiVerifyUserOwnsDevice' =>  \App\Http\Middleware\ApiVerifyUserOwnsDevice::class,
+        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
     ];
 }

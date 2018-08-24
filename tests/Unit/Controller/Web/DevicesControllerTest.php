@@ -49,6 +49,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
         $mockUser = Mockery::mock(User::class);
         $mockUser
+            ->shouldReceive('hasVerifiedEmail')->once()->andReturn(true)
             ->shouldReceive('getAttribute')->with('name')->once()->andReturn($user->name)
             ->shouldReceive('getAttribute')->with('devices')->once()->andReturn([$mockDevice]);
 
@@ -367,7 +368,9 @@ class DevicesControllerTest extends DevicesControllerTestCase
     private function mockUserOwnsDevice(int $deviceId, bool $userOwnsDevice): User
     {
         $mockUser = Mockery::mock(User::class);
-        $mockUser->shouldReceive('ownsDevice')->with($deviceId)->once()->andReturn($userOwnsDevice);
+        $mockUser
+            ->shouldReceive('ownsDevice')->with($deviceId)->once()->andReturn($userOwnsDevice)
+            ->shouldReceive('hasVerifiedEmail')->once()->andReturn(true);
 
         return $mockUser;
     }
