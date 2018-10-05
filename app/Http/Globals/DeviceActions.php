@@ -7,13 +7,13 @@ abstract class DeviceActions
     const TURN_ON = 'turnOn';
     const TURN_OFF = 'turnOff';
 
-    public static function actionToConfirmationName(string $action): string
+    public static function actionToDirectiveName(string $action): string
     {
-        switch ($action) {
+        switch (strtolower($action)) {
             case strtolower(DeviceActions::TURN_ON):
-                return 'TurnOnConfirmation';
+                return 'ON';
             case strtolower(DeviceActions::TURN_OFF):
-                return 'TurnOffConfirmation';
+                return 'OFF';
         }
     }
 }
