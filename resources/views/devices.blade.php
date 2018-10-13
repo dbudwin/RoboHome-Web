@@ -2,6 +2,7 @@
     <head>
         <title>RoboHome | Devices</title>
         <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <script>
             $(document).ready(function() {
                 $('#edit-device-modal').on('show.bs.modal', function (event) {
@@ -32,6 +33,24 @@
                     },
                     type: "POST",
                     url: "/devices/" + action + "/" + publicDeviceId
+                });
+            }
+
+            function confirmBeforeDelete(that) {
+                let deviceName = $(that).data("device-name");
+                let deleteLink = $(that).data("delete-link");
+
+                swal({
+                    title: deviceName,
+                    text: "Are you sure you want to delete this device?",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        window.location.href = deleteLink;
+                    }
                 });
             }
         </script>
@@ -88,7 +107,7 @@
                                                         </a>
                                                     </li>
                                                     <li>
-                                                        <a href="/devices/delete/{{ $device->public_id }}">
+                                                    <a href="#" data-device-name="{{ $device->name }}" data-delete-link="/devices/delete/{{ $device->public_id }}" onclick="confirmBeforeDelete(this)">
                                                             <span class="glyphicon glyphicon-remove"></span> Delete
                                                         </a>
                                                     </li>
