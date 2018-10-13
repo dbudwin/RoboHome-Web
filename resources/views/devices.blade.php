@@ -23,6 +23,11 @@
                     modal.find('#device-off-code-input').val(deviceOffCode);
                     modal.find('#device-pulse-length-input').val(devicePulseLength);
                 })
+
+                // Confirm before delete
+                $('.confirmation').on('click', function () {
+                    return confirm('Are you sure?');
+                });
             });
 
             function controlDevice(action, publicDeviceId) {
@@ -88,7 +93,7 @@
                                                         </a>
                                                     </li>
                                                     <li>
-                                                        <a href="/devices/delete/{{ $device->public_id }}">
+                                                        <a href="/devices/delete/{{ $device->public_id }}" class="confirmation">
                                                             <span class="glyphicon glyphicon-remove"></span> Delete
                                                         </a>
                                                     </li>
