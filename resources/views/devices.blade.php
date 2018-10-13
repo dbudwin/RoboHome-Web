@@ -2,6 +2,7 @@
     <head>
         <title>RoboHome | Devices</title>
         <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <script>
             $(document).ready(function() {
                 $('#edit-device-modal').on('show.bs.modal', function (event) {
@@ -88,9 +89,12 @@
                                                         </a>
                                                     </li>
                                                     <li>
-                                                        <a href="/devices/delete/{{ $device->public_id }}">
+                                                        <a id="delete" href="/devices/delete/{{ $device->public_id }}">
                                                             <span class="glyphicon glyphicon-remove"></span> Delete
                                                         </a>
+                                                        <form id="delete-form" action="/devices/delete/{{ $device->public_id }}" method="GET" style="display: none;">
+                                                            @csrf
+                                                        </form>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -125,4 +129,23 @@
             </div>
         </div>
     </body>
+    <script>
+        $( "#delete" ).click(function(event) {
+            event.preventDefault();
+            swal({
+              title: "Are you sure?",
+              text: "Once deleted, you will not be able to recover this device!",
+              icon: "warning",
+              buttons: true,
+              dangerMode: true,
+            })
+            .then((willDelete) => {
+              if (willDelete) {
+                document.getElementById('delete-form').submit();
+              } else {
+                swal("Your Device is safe!");
+              }
+            });
+        });
+    </script>
 </html>
