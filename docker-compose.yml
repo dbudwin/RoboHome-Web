@@ -10,6 +10,7 @@ services:
       MYSQL_ROOT_PASSWORD: password
 
   web:
+    container_name: robohomeweb_web_1
     image: choqco/dk-laravel:php71
     ports:
       - "80:80"
