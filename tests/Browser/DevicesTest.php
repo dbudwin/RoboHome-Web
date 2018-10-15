@@ -133,7 +133,7 @@ class DevicesTest extends DuskTestCase
         });
     }
 
-    public function testDevices_GivenUserLoggedIn_DeletesExistingDevice_Cancel(): void
+    public function testDevices_GivenUserLoggedIn_DeletesExistingDevice_UserCancelsDeleteOperation(): void
     {
         $this->browse(function (Browser $browser) {
             $deviceName = self::$faker->word();
