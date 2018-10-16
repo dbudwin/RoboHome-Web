@@ -13,11 +13,11 @@
         "webpatser/laravel-uuid": "^3.0"
     },
     "require-dev": {
-        "codedungeon/phpunit-result-printer": "^0.6.0",
+        "codedungeon/phpunit-result-printer": "^0.23.0",
         "filp/whoops": "~2.0",
         "fzaninotto/faker": "~1.8",
         "laravel/dusk": "^4.0",
-        "mockery/mockery": "1.1.*",
+        "mockery/mockery": "1.2.*",
         "nunomaduro/collision": "~2.0",
         "php-coveralls/php-coveralls": "^2.1",
         "phpunit/phpunit": "~7.3"
