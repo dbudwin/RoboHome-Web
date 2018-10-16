@@ -123,11 +123,31 @@ class DevicesTest extends DuskTestCase
             $this->loginAndAddDevice($browser, $deviceName, $deviceDescription, $onCode, $offCode, $pulseLength)
                 ->press('@modify-device-button')
                 ->clickLink('Delete')
+                ->press('OK')
                 ->assertSeeIn('@success-flash-message', "Device '$deviceName' was successfully deleted!")
                 ->assertDontSeeIn('@devices-table', $deviceName)
                 ->assertDontSeeIn('@devices-table', $deviceDescription)
                 ->assertDontSee('@devices-table', 'On')
                 ->assertDontSee('@devices-table', 'Off');
+        });
+    }
+
+    public function testDevices_GivenUserLoggedIn_DeletesExistingDevice_UserCancelsDeleteOperation(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $deviceName = self::$faker->word();
+            $deviceDescription = self::$faker->sentence();
+            $onCode = self::$faker->randomNumber();
+            $offCode = self::$faker->randomNumber();
+            $pulseLength = self::$faker->randomNumber();
+
+            $this->loginAndAddDevice($browser, $deviceName, $deviceDescription, $onCode, $offCode, $pulseLength)
+                ->press('@modify-device-button')
+                ->clickLink('Delete')
+                ->press('Cancel')
+                ->assertDontSeeIn('@success-flash-message', "Device '$deviceName' was successfully deleted!")
+                ->assertSeeIn('@devices-table', $deviceName)
+                ->assertSeeIn('@devices-table', $deviceDescription);
         });
     }
 
