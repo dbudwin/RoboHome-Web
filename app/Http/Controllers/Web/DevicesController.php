@@ -10,6 +10,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Webpatser\Uuid\Uuid;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Validator as BaseValidator;
 
 class DevicesController extends Controller
 {
@@ -38,6 +40,12 @@ class DevicesController extends Controller
     {
         $properties = $request->all();
         $currentUserId = $request->user()->id;
+
+        $validator = $this->validateDuplicateName($properties, $currentUserId);
+        if ($validator->fails()) {
+            return $this->redirectToDevicesWithMessage($request, FlashMessageLevels::DANGER, 'Cannot create device with duplicate name!');
+        }
+
         $device = $this->deviceRepository->create($properties, $currentUserId);
         $name = $device->name;
 
@@ -75,6 +83,12 @@ class DevicesController extends Controller
         }
 
         $properties = $request->all();
+        $currentUserId = $request->user()->id;
+
+        $validator = $this->validateDuplicateName($properties, $currentUserId);
+        if ($validator->fails()) {
+            return $this->redirectToDevicesWithMessage($request, FlashMessageLevels::DANGER, 'Cannot update device with duplicate name!');
+        }
 
         $device = $this->deviceRepository->update($deviceId, $properties);
 
@@ -101,5 +115,14 @@ class DevicesController extends Controller
         $request->session()->flash($flashLevel, $message);
 
         return redirect()->route('devices');
+    }
+
+    private function validateDuplicateName(array $properties, int $currentUserId): BaseValidator
+    {
+        $validator = Validator::make($properties, [
+            'name' => 'unique:devices,name,null,null,user_id,' . $currentUserId
+        ]);
+
+        return $validator;
     }
 }
