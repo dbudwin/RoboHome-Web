@@ -10,6 +10,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Webpatser\Uuid\Uuid;
+use Validator;
+use Illuminate\Validation\Rule;
 
 class DevicesController extends Controller
 {
@@ -38,6 +40,21 @@ class DevicesController extends Controller
     {
         $properties = $request->all();
         $currentUserId = $request->user()->id;
+
+        $validator = Validator::make( $data = array_merge($properties, ['user_id' => $currentUserId]), [
+            'name' => [
+                'required',
+                Rule::unique('devices')->where(function ($query) use ($data) {
+                    return $query->where('name', $data['name'])
+                                ->where('user_id', $data['user_id']);
+                })
+            ],
+        ]);
+        if ($validator->fails()) {
+            $name = $properties['name'];
+            return $this->redirectToDevicesWithMessage($request, FlashMessageLevels::DANGER, "Device '$name' has existed!");
+        }
+
         $device = $this->deviceRepository->create($properties, $currentUserId);
         $name = $device->name;
 
