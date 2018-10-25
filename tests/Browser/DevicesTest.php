@@ -111,6 +111,37 @@ class DevicesTest extends DuskTestCase
         });
     }
 
+    public function testDevices_GivenUserLoggedIn_AddsDuplicatedDevice(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $deviceName = self::$faker->word();
+            $deviceDescription = self::$faker->sentence();
+            $onCode = self::$faker->randomNumber();
+            $offCode = self::$faker->randomNumber();
+            $pulseLength = self::$faker->randomNumber();
+
+            $this->loginAndAddDevice($browser, $deviceName, $deviceDescription, $onCode, $offCode, $pulseLength)
+                ->assertSeeIn('@success-flash-message', "Device '$deviceName' was successfully added!")
+                ->assertSeeIn('@devices-table', $deviceName)
+                ->assertSeeIn('@devices-table', $deviceDescription)
+                ->assertSeeIn('@devices-table', 'On')
+                ->assertSeeIn('@devices-table', 'Off')
+                ->press('@modify-device-button')
+                ->assertSeeIn('@modify-device-dropdown', 'Edit')
+                ->assertSeeIn('@modify-device-dropdown', 'Delete');
+
+            $this->loginAndAddDevice($browser, $deviceName, $deviceDescription, $onCode, $offCode, $pulseLength)
+                ->assertSeeIn('@danger-flash-message', "Device '$deviceName' has existed!")
+                ->assertSeeIn('@devices-table', $deviceName)
+                ->assertSeeIn('@devices-table', $deviceDescription)
+                ->assertSeeIn('@devices-table', 'On')
+                ->assertSeeIn('@devices-table', 'Off')
+                ->press('@modify-device-button')
+                ->assertSeeIn('@modify-device-dropdown', 'Edit')
+                ->assertSeeIn('@modify-device-dropdown', 'Delete');
+        });
+    }
+
     public function testDevices_GivenUserLoggedIn_DeletesExistingDevice_DeviceRemovedFromPage(): void
     {
         $this->browse(function (Browser $browser) {
