@@ -71,4 +71,13 @@ class IndexTest extends DuskTestCase
                 ->assertPathIs('/register');
         });
     }
+
+    public function testIndex_HasCopyrightNotice(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $browser
+                ->visit('/')
+                ->assertSeeIn('@copyright-notice', '© ' . gmdate('Y') . ' by RoboHome');
+        });
+    }
 }

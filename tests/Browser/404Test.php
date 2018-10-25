@@ -45,4 +45,13 @@ class Test extends DuskTestCase
                 ->assertPathIs('/');
         });
     }
+
+    public function test404_GivenNonexistentUrl_HasCopyrightNotice(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $browser
+                ->visit('/path-not-exist')
+                ->assertSeeIn('@copyright-notice', '© ' . gmdate('Y') . ' by RoboHome');
+        });
+    }
 }

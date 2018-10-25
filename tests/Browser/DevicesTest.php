@@ -217,6 +217,25 @@ class DevicesTest extends DuskTestCase
         });
     }
 
+    public function testDevices_GivenUserLoggedIn_HasCopyrightNotice(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $browser
+                ->loginAs($this->user)
+                ->visit('/devices')
+                ->assertSeeIn('@copyright-notice', '© ' . gmdate('Y') . ' by RoboHome');
+        });
+    }
+
+    public function testDevices_GivenUserNotLoggedIn_HasCopyrightNotice(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $browser
+                ->visit('/devices')
+                ->assertSeeIn('@copyright-notice', '© ' . gmdate('Y') . ' by RoboHome');
+        });
+    }
+
     private function createUser(): User
     {
         $user = factory(User::class)->create();
