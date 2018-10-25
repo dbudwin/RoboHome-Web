@@ -1,0 +1,108 @@
+.notfound-container {
+    height: 50vh;
+    position: relative;
+}
+
+.notfound-container .notfound {
+    -ms-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.notfound {
+    line-height: 1.4;
+    max-width: 520px;
+    width: 100%;
+}
+
+.notfound .notfound-404 {
+    height: 150px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 200px;
+    z-index: -1;
+}
+
+.notfound .notfound-404 h1 {
+    -ms-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    color: #e3e3e3;
+    font-family: 'Poppins', sans-serif;
+    font-size: 238px;
+    font-weight: 700;
+    left: 50%;
+    letter-spacing: 7px;
+    margin: 0;
+    position: absolute;
+    text-transform: uppercase;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.notfound h2 {
+    color: #222;
+    font-family: 'Poppins', sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 15px;
+    margin-top: 12px;
+    text-transform: uppercase;
+}
+
+.notfound a {
+    border-radius: 15px;
+    color: #57a3f8;
+    display: inline-block;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.notfound a:hover {
+    color: #57a3f8;
+}
+
+.notfound a>.arrow {
+    -ms-transform: rotate(135deg);
+    -webkit-transform: rotate(135deg);
+    border: solid #57a3f8;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+    position: relative;
+    top: -2px;
+    transform: rotate(135deg);
+}
+
+@media only screen and (max-width: 767px) {
+    .notfound .notfound-404 {
+        height: 110px;
+        line-height: 110px;
+    }
+
+    .notfound .notfound-404 h1 {
+        font-size: 170px;
+    }
+
+    .notfound h2 {
+        font-size: 24px;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .notfound .notfound-404 {
+        left: 40px;
+    }
+
+    .notfound .notfound-404 h1 {
+        font-size: 120px;
+    }
+
+    .notfound h2 {
+        font-size: 18px;
+    }
+}
