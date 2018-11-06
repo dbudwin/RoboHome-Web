@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Webpatser\Uuid\Uuid;
+use Validator;
 
 class DevicesController extends Controller
 {
@@ -38,6 +39,11 @@ class DevicesController extends Controller
     {
         $properties = $request->all();
         $currentUserId = $request->user()->id;
+
+        if ($this->isDuplicateDeviceName($properties, $currentUserId)) {
+            return $this->redirectToDevicesWithMessage($request, FlashMessageLevels::DANGER, "Device '{$properties['name']}' has existed!");
+        }
+
         $device = $this->deviceRepository->create($properties, $currentUserId);
         $name = $device->name;
 
@@ -75,6 +81,9 @@ class DevicesController extends Controller
         }
 
         $properties = $request->all();
+        if ($this->isDuplicateDeviceName($properties, $request->user()->id)) {
+            return $this->redirectToDevicesWithMessage($request, FlashMessageLevels::DANGER, "Device '{$properties['name']}' has existed!");
+        }
 
         $device = $this->deviceRepository->update($deviceId, $properties);
 
@@ -101,5 +110,13 @@ class DevicesController extends Controller
         $request->session()->flash($flashLevel, $message);
 
         return redirect()->route('devices');
+    }
+
+    private function isDuplicateDeviceName(array $properties, int $currentUserId): bool
+    {
+        $validator = Validator::make($properties, [
+            'name' => 'unique:devices,name,null,null,user_id,' . $currentUserId
+        ]);
+        return $validator->fails();
     }
 }
