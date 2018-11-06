@@ -7,10 +7,7 @@ $(document).ready(function () {
       var deviceName = $(this).find('#device-name-input').val();
       var devices = response.data.payload.discoveredAppliances;
 
-      console.log('deviceName:' + deviceName);
       for (let i=0; i<devices.length; ++i) {
-        console.log('deviceName[i]:' + devices[i].friendlyName);
-
         if (deviceName == devices[i].friendlyName) {
           $(this).find('#device-name-input-message').text("Device with '" + deviceName + "' already exists!");
           return false;
