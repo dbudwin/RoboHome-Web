@@ -4,6 +4,7 @@
         <label for="name" class="col-xs-4 col-form-label">Device Name</label>
         <div class="col-xs-8">
             <input id="device-name-input" class="form-control" type="text" placeholder="e.x. Living Room Light" name="name" required="true" maxlength="50">
+            <p id="device-name-input-message" class="text-warning"></p>
         </div>
     </div>
     <div class="form-group row">
