@@ -7,6 +7,7 @@ use App\Http\Controllers\Common\Controller;
 use App\Http\Globals\DeviceActions;
 use App\Http\MQTT\MessagePublisher;
 use App\Repositories\IDeviceRepository;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Webpatser\Uuid\Uuid;
@@ -33,9 +34,11 @@ class DevicesController extends Controller
         $devicesForCurrentUser = $currentUser->devices;
 
         $response = [
-            'header' => $this->createHeader($request, 'DiscoverAppliancesResponse', 'Alexa.ConnectedHome.Discovery'),
-            'payload' => [
-                'discoveredAppliances' => $this->buildAppliancesJson($devicesForCurrentUser)
+            'event' => [
+                'header' => $this->createHeader($request, 'Discover.Response', 'Alexa.Discovery'),
+                'payload' => [
+                    'endpoints' => $this->buildDiscoverEndpointsJsonResponse($devicesForCurrentUser)
+                ]
             ]
         ];
 
@@ -65,55 +68,83 @@ class DevicesController extends Controller
             return response()->json(['error' => 'Message not published'], 500);
         }
 
-        return $this->buildControlJson($request, $action);
+        return $this->buildControlEndpointJsonResponse($request, $action, $publicDeviceId);
     }
 
-    private function buildControlJson(Request $request, string $action): JsonResponse
+    private function buildControlEndpointJsonResponse(Request $request, string $action, string $publicDeviceId): JsonResponse
     {
+        $authorizationHeader = $request->header('Authorization');
+
         $response = [
-            'header' => $this->createHeader($request, DeviceActions::actionToConfirmationName($action), 'Alexa.ConnectedHome.Control'),
-            'payload' => (object)[]
+            'context' => [
+                'properties' => array([
+                    'namespace' => 'Alexa.PowerController',
+                    'name' => 'powerState',
+                    'value' => DeviceActions::actionToDirectiveName($action),
+                    'timeOfSample' => Carbon::now()->toIso8601String(),
+                    'uncertaintyInMilliseconds' => 50
+                ])
+            ],
+            'event' => [
+                'header' => $this->createHeader($request, 'Response', 'Alexa'),
+                'endpoint' => [
+                    'scope' => [
+                        'type' => 'BearerToken',
+                        'token' => $this->extractAuthorizationTokenFromHeader($authorizationHeader)
+                    ],
+                    'endpointId' => $publicDeviceId
+                ],
+                'payload' => (object)[]
+            ]
         ];
 
         return response()->json($response);
     }
 
-    private function buildAppliancesJson($devicesForCurrentUser): array
+    private function buildDiscoverEndpointsJsonResponse($devicesForCurrentUser): array
     {
-        $actions = [DeviceActions::TURN_ON, DeviceActions::TURN_OFF];
+        $endpoints = [];
 
-        $appliances = [];
-
-        for ($i = 0; $i < count($devicesForCurrentUser); $i++) {
-            $appliance = [
-                'actions' => $actions,
-                'additionalApplianceDetails' => (object)[],
-                'applianceId' => $devicesForCurrentUser[$i]->id,
-                'friendlyName' => $devicesForCurrentUser[$i]->name,
-                'friendlyDescription' => $devicesForCurrentUser[$i]->description,
-                'isReachable' => true,
+        foreach ($devicesForCurrentUser as $device) {
+            $endpoint = [
+                'endpointId' => $device->public_id,
+                'friendlyName' => $device->name,
+                'description' => $device->description,
                 'manufacturerName' => 'N/A',
-                'modelName' => 'N/A',
-                'version' => 'N/A'
+                'displayCategories' => array('LIGHT'),
+                'capabilities' => array([
+                    'type' => 'AlexaInterface',
+                    'interface' => 'Alexa.PowerController',
+                    'version' => '3'
+                ])
             ];
 
-            array_push($appliances, $appliance);
+            array_push($endpoints, $endpoint);
         }
 
-        return $appliances;
+        return $endpoints;
     }
 
-    private function createHeader(Request $request, string $responseName, string $namespace): array
+    private function createHeader(Request $request, string $directive, string $namespace): array
     {
         $messageId = $request->header('Message-Id');
 
         $header = [
-            'messageId' => $messageId,
-            'name' => $responseName,
             'namespace' => $namespace,
-            'payloadVersion' => '2'
+            'name' => $directive,
+            'messageId' => $messageId,
+            'payloadVersion' => '3'
         ];
 
         return $header;
+    }
+
+    private function extractAuthorizationTokenFromHeader(string $authorizationHeader): string
+    {
+        if (preg_match('/Bearer\s(\S+)/', $authorizationHeader, $matches)) {
+            return $matches[1];
+        }
+
+        return null;
     }
 }

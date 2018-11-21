@@ -7,6 +7,7 @@ use App\DeviceActionInfo\IDeviceActionInfoBroker;
 use App\Http\Globals\DeviceActions;
 use App\Repositories\IDeviceRepository;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\TestResponse;
 use Laravel\Passport\Passport;
@@ -38,12 +39,12 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
         $response = $this->callDevices();
 
-        $this->assertDiscoverAppliancesResponseWithoutDevice($response, 'DiscoverAppliancesResponse');
+        $this->assertDiscoverAppliancesResponseWithoutDevice($response, 'Discover.Response');
     }
 
     public function testIndex_GivenUserExistsWithDevices_ReturnsJsonResponse(): void
     {
-        $numberOfDevices = self::$faker->numberBetween(1, 10);
+        $numberOfDevices = self::$faker->numberBetween(1, 3);
         $devices = $this->createDevices($numberOfDevices);
 
         $this->mockUser->shouldReceive('getAttribute')->with('devices')->once()->andReturn($devices);
@@ -130,10 +131,12 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
         $action = $this->randomDeviceAction();
 
-        $response = $this->callControl($action, $device->public_id);
+        $authorizationToken = self::$faker->uuid();
+
+        $response = $this->callControl($action, $device->public_id, $authorizationToken);
 
         $response->assertSuccessful();
-        $this->assertControlConfirmation($response, ucfirst($action . 'Confirmation'));
+        $this->assertControlResponse($response, ucfirst($action), $device->public_id, $authorizationToken);
     }
 
     public function testControl_GivenUserExistsWithDevice_CallsPublishUnsuccessfully_Returns500(): void
@@ -142,7 +145,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
         $this->mockMessagePublisher(1, false);
 
-        $response = $this->callControl($this->randomDeviceAction(), $device->public_id);
+        $response = $this->callControl($this->randomDeviceAction(), $device->public_id, self::$faker->uuid());
 
         $response->assertStatus(500);
         $response->assertExactJson(['error' => 'Message not published']);
@@ -156,7 +159,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
 
         $unknownAction = self::$faker->word();
 
-        $response = $this->callControl($unknownAction, $device->public_id);
+        $response = $this->callControl($unknownAction, $device->public_id, self::$faker->uuid());
 
         $response->assertStatus(400);
         $response->assertExactJson(['error' => 'Bad request']);
@@ -166,7 +169,7 @@ class DevicesControllerTest extends DevicesControllerTestCase
     {
         $device = $this->createDevice(false);
 
-        $response = $this->callControl($this->randomDeviceAction(), $device->public_id);
+        $response = $this->callControl($this->randomDeviceAction(), $device->public_id, self::$faker->uuid());
 
         $response->assertStatus(401);
         $response->assertExactJson(['error' => 'Unauthorized']);
@@ -202,14 +205,14 @@ class DevicesControllerTest extends DevicesControllerTestCase
         return $response;
     }
 
-    private function callControl(string $action, string $publicDeviceId): TestResponse
+    private function callControl(string $action, string $publicDeviceId, string $authorizationToken): TestResponse
     {
         $urlValidAction = strtolower($action);
 
         Passport::actingAs($this->mockUser, ['control']);
 
         $response = $this->postJson('/api/devices/control/' . $urlValidAction, ['publicDeviceId' => $publicDeviceId], [
-            'HTTP_Authorization' => 'Bearer ' . self::$faker->uuid(),
+            'HTTP_Authorization' => 'Bearer ' . $authorizationToken,
             'HTTP_Message_Id' => $this->messageId
         ]);
 
@@ -230,14 +233,16 @@ class DevicesControllerTest extends DevicesControllerTestCase
     private function assertDiscoverAppliancesResponseWithoutDevice(TestResponse $response, string $name): void
     {
         $response->assertExactJson([
-            'header' => [
-                'messageId' => $this->messageId,
-                'name' => $name,
-                'namespace' => 'Alexa.ConnectedHome.Discovery',
-                'payloadVersion' => '2'
-            ],
-            'payload' => [
-                'discoveredAppliances' => []
+            'event' => [
+                'header' => [
+                    'messageId' => $this->messageId,
+                    'name' => $name,
+                    'namespace' => 'Alexa.Discovery',
+                    'payloadVersion' => '3'
+                ],
+                'payload' => [
+                    'endpoints' => []
+                ]
             ]
         ]);
     }
@@ -246,43 +251,64 @@ class DevicesControllerTest extends DevicesControllerTestCase
     {
         $appliances = [];
 
-        for ($i = 0; $i < $devices->count(); $i++) {
+        foreach ($devices as $device) {
             $appliances[] = [
-                'actions' => [DeviceActions::TURN_ON, DeviceActions::TURN_OFF],
-                'additionalApplianceDetails' => [],
-                'applianceId' => $devices[$i]->id,
-                'friendlyName' => $devices[$i]->name,
-                'friendlyDescription' => $devices[$i]->description,
-                'isReachable' => true,
+                'endpointId' => $device->public_id,
+                'friendlyName' => $device->name,
+                'description' => $device->description,
                 'manufacturerName' => 'N/A',
-                'modelName' => 'N/A',
-                'version' => 'N/A'
+                'displayCategories' => array('LIGHT'),
+                'capabilities' => array([
+                    'type' => 'AlexaInterface',
+                    'interface' => 'Alexa.PowerController',
+                    'version' => '3'
+                ])
             ];
         }
 
         $response->assertExactJson([
-            'header' => [
-                'messageId' => $this->messageId,
-                'name' => 'DiscoverAppliancesResponse',
-                'namespace' => 'Alexa.ConnectedHome.Discovery',
-                'payloadVersion' => '2'
-            ],
-            'payload' => [
-                'discoveredAppliances' => $appliances
+            'event' => [
+                'header' => [
+                    'messageId' => $this->messageId,
+                    'name' => 'Discover.Response',
+                    'namespace' => 'Alexa.Discovery',
+                    'payloadVersion' => '3'
+                ],
+                'payload' => [
+                    'endpoints' => $appliances
+                ]
             ]
         ]);
     }
 
-    private function assertControlConfirmation(TestResponse $response, string $name): void
+    private function assertControlResponse(TestResponse $response, string $name, string $devicePublicId, string $authorizationToken): void
     {
         $response->assertExactJson([
-            'header' => [
-                'messageId' => $this->messageId,
-                'name' => $name,
-                'namespace' => 'Alexa.ConnectedHome.Control',
-                'payloadVersion' => '2'
+            'context' => [
+                'properties' => array([
+                    'namespace' => 'Alexa.PowerController',
+                    'name' => 'powerState',
+                    'value' => DeviceActions::actionToDirectiveName($name),
+                    'timeOfSample' => Carbon::now()->toIso8601String(),
+                    'uncertaintyInMilliseconds' => 50
+                ])
             ],
-            'payload' => []
+            'event' => [
+                'header' => [
+                    'messageId' => $this->messageId,
+                    'name' => 'Response',
+                    'namespace' => 'Alexa',
+                    'payloadVersion' => '3'
+                ],
+                'endpoint' => [
+                    'scope' => [
+                        'type' => 'BearerToken',
+                        'token' => $authorizationToken
+                    ],
+                    'endpointId' => $devicePublicId
+                ],
+                'payload' => (object)[]
+            ]
         ]);
     }
 
